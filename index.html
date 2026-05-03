@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>StreetBite</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif}
+body{background:#F7F2EA;color:#1C1208}
+
+/* ── SCREENS ── */
+.screen{
+  position:absolute;top:0;left:0;right:0;bottom:64px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#F7F2EA;
+}
+.screen.gone{display:none}
+
+/* ── LOADING ── */
+#loading{
+  position:fixed;inset:0;z-index:300;
+  background:#F7F2EA;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.logo-lockup{text-align:center}
+.logo-main{font-family:'DM Serif Display',serif;font-size:36px;color:#1C1208;letter-spacing:-.5px}
+.logo-main em{font-style:italic;color:#D4692A}
+.logo-sub{font-size:12px;color:#9E8E7A;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+.spin{width:28px;height:28px;border:2.5px solid #EAE0D5;border-top-color:#D4692A;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,242,234,.94);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  padding:14px 18px 12px;
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+.topbar-inner{display:flex;align-items:center;gap:10px}
+.country-btn{
+  display:flex;align-items:center;gap:5px;
+  background:#fff;border:1px solid #E8DDD0;
+  border-radius:22px;padding:6px 11px 6px 8px;
+  font-size:14px;font-weight:600;color:#1C1208;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.country-btn .flag{font-size:17px;line-height:1}
+.country-btn .chev{font-size:9px;color:#B0A090;margin-left:1px}
+.prog-wrap{flex:1;min-width:0}
+.prog-bar{height:5px;background:#E8DDD0;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#D4692A;border-radius:3px;transition:width .5s ease}
+.prog-txt{font-size:11px;color:#9E8E7A;margin-top:3px;text-align:right;font-weight:500}
+
+/* ── HOME ── */
+
+/* Featured essentials card */
+.feat-wrap{padding:14px 16px 0}
+.feat-card{
+  position:relative;border-radius:22px;overflow:hidden;
+  height:230px;cursor:pointer;
+  box-shadow:0 8px 28px rgba(0,0,0,.14);
+  transform:translateZ(0);
+}
+.feat-card img{width:100%;height:100%;object-fit:cover;display:block}
+.feat-grad{position:absolute;inset:0;background:linear-gradient(170deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.7) 100%)}
+.feat-top{position:absolute;top:13px;left:13px;right:13px;display:flex;justify-content:space-between;align-items:center}
+.feat-badge{
+  background:#D4692A;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.06em;
+  padding:5px 11px;border-radius:20px;text-transform:uppercase;
+}
+.feat-counter{
+  background:rgba(255,255,255,.18);backdrop-filter:blur(6px);
+  color:#fff;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:20px;
+}
+.feat-bottom{position:absolute;bottom:0;left:0;right:0;padding:14px 16px}
+.feat-title{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;line-height:1.1;margin-bottom:4px}
+.feat-sub{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px}
+.feat-prog{height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+.feat-prog-fill{height:100%;background:#D4692A;border-radius:2px;transition:width .5s ease}
+
+/* Section headers */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 10px}
+.sec-title{font-size:17px;font-weight:700;color:#1C1208}
+.sec-link{font-size:13px;color:#D4692A;font-weight:600}
+
+/* Collections horizontal scroll */
+.cols-scroll{
+  display:flex;gap:11px;padding:0 16px 4px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.cols-scroll::-webkit-scrollbar{display:none}
+.col-card{
+  flex-shrink:0;width:155px;height:195px;
+  border-radius:18px;overflow:hidden;position:relative;
+  cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.11);
+}
+.col-card img{width:100%;height:100%;object-fit:cover;display:block}
+.col-card-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+}
+.col-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 55%)}
+.col-content{position:absolute;bottom:0;left:0;right:0;padding:11px 12px}
+.col-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px}
+.col-count{font-size:11px;color:rgba(255,255,255,.65)}
+.col-prog{height:2px;background:rgba(255,255,255,.2);border-radius:1px;overflow:hidden;margin-top:6px}
+.col-prog-fill{height:100%;background:#D4692A;border-radius:1px}
+.col-lock{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center}
+.col-lock-icon{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px}
+.col-lock-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10px;color:rgba(255,255,255,.55);font-weight:500}
+
+/* Recent finds */
+.recent-scroll{
+  display:flex;gap:10px;padding:0 16px 4px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.recent-scroll::-webkit-scrollbar{display:none}
+.recent-item{flex-shrink:0;width:88px;cursor:pointer}
+.recent-photo{
+  width:88px;height:88px;border-radius:14px;overflow:hidden;
+  position:relative;margin-bottom:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  background:#EAE0D5;
+}
+.recent-photo img{width:100%;height:100%;object-fit:cover}
+.recent-check{
+  position:absolute;top:6px;right:6px;
+  width:20px;height:20px;border-radius:50%;
+  background:#D4692A;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;font-weight:700;
+}
+.recent-name{font-size:11px;font-weight:600;color:#1C1208;text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-coll{font-size:10px;color:#9E8E7A;text-align:center}
+
+.home-pad{height:20px}
+
+/* ── COLLECTION DETAIL ── */
+.coll-hd{
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,242,234,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:11px;
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+.back-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(0,0,0,.07);border:none;
+  font-size:17px;cursor:pointer;color:#1C1208;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.coll-hd-title{flex:1;font-size:16px;font-weight:700;color:#1C1208}
+.coll-hd-count{font-size:12px;color:#9E8E7A;font-weight:600}
+.coll-banner{position:relative;height:150px;overflow:hidden}
+.coll-banner img{width:100%;height:100%;object-fit:cover}
+.coll-banner-fade{position:absolute;inset:0;background:linear-gradient(to top,#F7F2EA 0%,transparent 55%)}
+
+/* Dish grid */
+.dish-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:14px 14px 24px}
+.dish-card{
+  border-radius:14px;overflow:hidden;background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  cursor:pointer;position:relative;
+  border:1.5px solid transparent;
+  transition:transform .15s ease;
+}
+.dish-card:active{transform:scale(.97)}
+.d-rbar{height:3px;width:100%}
+.d-photo{
+  width:100%;aspect-ratio:1;overflow:hidden;
+  background:#EAE0D5;position:relative;
+}
+.d-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.d-photo.dim img{filter:grayscale(100%);opacity:.28}
+.d-photo .no-img{
+  width:100%;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;background:#EAE0D5;
+}
+.d-rtag{
+  position:absolute;top:7px;right:7px;
+  font-size:8px;font-weight:700;
+  padding:3px 7px;border-radius:6px;
+  color:#fff;text-transform:uppercase;letter-spacing:.05em;
+}
+.d-body{padding:8px 9px 10px}
+.d-name{font-size:12px;font-weight:600;color:#1C1208;line-height:1.3;margin-bottom:5px}
+.d-name.muted{color:#A8988A}
+.d-meta{display:flex;align-items:center;justify-content:space-between}
+.d-rpill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em}
+.d-done{font-size:10px;font-weight:600;color:#2A7A2A}
+
+/* ── CARD FLIP MODAL ── */
+.modal-back{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(28,18,8,.72);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;padding:24px 20px;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.modal-back.open{opacity:1;pointer-events:all}
+.modal-close{
+  position:fixed;top:18px;right:18px;z-index:101;
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.14);border:none;
+  color:#fff;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Flip */
+.flip-wrap{width:100%;max-width:290px;perspective:1200px}
+.flip-inner{
+  display:grid;
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);
+}
+.flip-inner.flipped{transform:rotateY(180deg)}
+.f-front,.f-back{
+  grid-area:1/1;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;overflow:hidden;
+}
+.f-back{transform:rotateY(180deg)}
+
+/* Card front */
+.f-front{
+  border:2.5px solid var(--rc,#888780);
+  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.12);
+}
+.cf-photo{width:100%;aspect-ratio:3/4;overflow:hidden;position:relative;background:#1A1208}
+.cf-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.cf-photo .no-img-card{
+  width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#3D2A10,#1A1208);
+  display:flex;align-items:center;justify-content:center;font-size:64px;
+}
+.cf-topbar{position:absolute;top:0;left:0;right:0;padding:11px 11px 0;display:flex;justify-content:space-between;align-items:center}
+.cf-rar{
+  font-size:9px;font-weight:700;padding:4px 9px;border-radius:6px;
+  color:#fff;background:var(--rc);text-transform:uppercase;letter-spacing:.06em;
+}
+.cf-num{
+  font-size:11px;font-weight:600;color:rgba(255,255,255,.75);
+  background:rgba(0,0,0,.38);padding:3px 8px;border-radius:6px;
+}
+.cf-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:30px 13px 13px;
+  background:linear-gradient(to top,rgba(0,0,0,.82) 0%,transparent 100%);
+}
+.cf-name{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.15;margin-bottom:3px}
+.cf-sub{font-size:11px;color:rgba(255,255,255,.6)}
+.cf-footer{
+  background:#fff;padding:8px 13px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.cf-footer-l{font-size:10px;color:#9E8E7A}
+.cf-hint{font-size:10px;color:var(--rc);font-weight:600}
+
+/* Card back */
+.f-back{
+  background:#fff;
+  border:2.5px solid var(--rc,#888780);
+  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.12);
+  padding:16px;
+  display:flex;flex-direction:column;gap:11px;
+}
+.cb-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cb-name{font-family:'DM Serif Display',serif;font-size:18px;color:#1C1208;line-height:1.2}
+.cb-num{font-size:11px;font-weight:700;color:var(--rc)}
+.cb-div{height:1px;background:#EAE0D5}
+.cb-desc{font-size:12px;color:#7A6A5A;line-height:1.65}
+.cb-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cb-stat{background:#F7F2EA;border-radius:10px;padding:8px 10px}
+.cb-sl{font-size:9px;color:#9E8E7A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.cb-sv{font-size:12px;font-weight:700;color:#1C1208}
+.cb-btn{
+  width:100%;padding:12px;border-radius:11px;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:transform .1s ease;font-family:'DM Sans',sans-serif;
+}
+.cb-btn:active{transform:scale(.97)}
+.cb-btn.todo{background:var(--rc);color:#fff}
+.cb-btn.done{background:#E8F5E4;color:#2A7A2A;border:1.5px solid #BAE0B0}
+.cb-flip-back{text-align:center;font-size:10px;color:#C0B0A0;cursor:pointer;padding-top:2px}
+
+/* ── RARITY COLORS ── */
+:root{
+  --c-common:#888780;--cbg-common:#F1EFE8;--ct-common:#5A5955;
+  --c-uncommon:#3B6D11;--cbg-uncommon:#EAF3DE;--ct-uncommon:#245208;
+  --c-rare:#185FA5;--cbg-rare:#E6F1FB;--ct-rare:#0A4480;
+  --c-epic:#534AB7;--cbg-epic:#EEEDFE;--ct-epic:#3C3489;
+  --c-legendary:#BA7517;--cbg-legendary:#FAEEDA;--ct-legendary:#7A4A08;
+}
+
+/* ── DISH DETAIL SHEET ── */
+.detail-backdrop{
+  position:fixed;inset:0;z-index:150;
+  background:rgba(28,18,8,.65);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.detail-backdrop.open{opacity:1;pointer-events:all}
+.detail-sheet{
+  width:100%;background:#F7F2EA;
+  border-radius:24px 24px 0 0;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  max-height:92vh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.detail-backdrop.open .detail-sheet{transform:translateY(0)}
+
+.detail-hero{position:relative;height:200px;overflow:hidden;border-radius:24px 24px 0 0;background:#1A1208}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(28,18,8,.85) 0%,transparent 55%)}
+.detail-hero-close{
+  position:absolute;top:14px;right:14px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:none;
+  color:#fff;font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.detail-hero-content{position:absolute;bottom:0;left:0;right:0;padding:14px 18px}
+.detail-hero-rar{
+  display:inline-block;
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:3px 9px;border-radius:6px;color:#fff;margin-bottom:6px;
+}
+.detail-hero-name{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.1}
+
+.detail-stats{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  background:#fff;border-bottom:1px solid #EAE0D5;
+}
+.detail-stat{
+  padding:14px 8px;text-align:center;
+  border-right:1px solid #EAE0D5;
+}
+.detail-stat:last-child{border-right:none}
+.detail-stat-v{font-size:18px;font-weight:700;color:#1C1208;font-family:'DM Serif Display',serif}
+.detail-stat-l{font-size:10px;color:#9E8E7A;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+.detail-section{padding:18px 18px 0}
+.detail-sec-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+
+/* Photo grid */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:12px;overflow:hidden}
+.photo-thumb{
+  aspect-ratio:1;overflow:hidden;cursor:pointer;background:#EAE0D5;
+  position:relative;
+}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-thumb .photo-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:14px;font-weight:700;
+  opacity:0;transition:opacity .15s;
+}
+.photo-thumb:active .photo-overlay{opacity:1}
+
+/* Experience cards */
+.exp-card{
+  background:#fff;border-radius:14px;overflow:hidden;
+  border:1px solid #EAE0D5;margin-bottom:10px;
+}
+.exp-card-photo{width:100%;height:140px;overflow:hidden;background:#EAE0D5;position:relative}
+.exp-card-photo img{width:100%;height:100%;object-fit:cover}
+.exp-card-body{padding:12px 14px}
+.exp-card-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.exp-avatar{
+  width:28px;height:28px;border-radius:50%;overflow:hidden;
+  background:#EAE0D5;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#9E8E7A;
+}
+.exp-avatar img{width:100%;height:100%;object-fit:cover}
+.exp-name{font-size:13px;font-weight:600;color:#1C1208}
+.exp-date{font-size:11px;color:#B0A090;margin-left:auto}
+.exp-stars{font-size:13px;letter-spacing:1px}
+.exp-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.exp-chip{
+  font-size:11px;color:#7A6A5A;background:#F5F0EA;
+  padding:3px 9px;border-radius:20px;font-weight:500;
+}
+.exp-note{font-size:12px;color:#7A6A5A;margin-top:8px;line-height:1.5;font-style:italic}
+
+.detail-checkin-btn{
+  display:block;width:100%;margin:16px 18px;
+  width:calc(100% - 36px);
+  padding:14px;border-radius:13px;border:none;
+  background:#D4692A;color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+}
+.detail-pad{height:24px}
+
+.exp-empty{
+  text-align:center;padding:32px 20px;
+  color:#B0A090;font-size:14px;line-height:1.6;
+}
+
+/* Fullscreen photo viewer */
+.photo-viewer{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.95);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.photo-viewer.open{opacity:1;pointer-events:all}
+.photo-viewer img{max-width:100%;max-height:100%;object-fit:contain}
+.photo-viewer-close{
+  position:absolute;top:20px;right:20px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:none;
+  color:#fff;font-size:18px;cursor:pointer;
+}
+.checkin-backdrop{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(28,18,8,.6);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.checkin-backdrop.open{opacity:1;pointer-events:all}
+.checkin-sheet{
+  width:100%;background:#fff;
+  border-radius:24px 24px 0 0;
+  padding:0 0 env(safe-area-inset-bottom);
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  max-height:92vh;overflow-y:auto;
+}
+.checkin-backdrop.open .checkin-sheet{transform:translateY(0)}
+.checkin-handle{
+  width:40px;height:4px;border-radius:2px;
+  background:#E0D8D0;margin:12px auto 0;
+}
+.checkin-head{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 18px 14px;
+  border-bottom:1px solid #F0EBE4;
+}
+.checkin-dish-img{
+  width:48px;height:48px;border-radius:10px;overflow:hidden;
+  background:#F0EBE4;flex-shrink:0;
+}
+.checkin-dish-img img{width:100%;height:100%;object-fit:cover}
+.checkin-dish-name{font-size:15px;font-weight:700;color:#1C1208}
+.checkin-dish-coll{font-size:12px;color:#9E8E7A;margin-top:2px}
+.checkin-close{
+  margin-left:auto;width:30px;height:30px;border-radius:50%;
+  background:#F5F0EA;border:none;font-size:16px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  flex-shrink:0;
+}
+
+/* Photo upload */
+.ci-section{padding:16px 18px 0}
+.ci-label{font-size:11px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.ci-photo-area{
+  width:100%;aspect-ratio:16/7;border-radius:14px;overflow:hidden;
+  background:#F5F0EA;border:2px dashed #E0D8D0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;gap:6px;
+  transition:border-color .15s;
+}
+.ci-photo-area:active{border-color:#D4692A}
+.ci-photo-area img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ci-photo-icon{font-size:28px;position:relative}
+.ci-photo-txt{font-size:12px;color:#B0A090;font-weight:500;position:relative}
+.ci-photo-input{display:none}
+
+/* Stars */
+.ci-stars{display:flex;gap:6px;padding:4px 0}
+.ci-star{
+  font-size:28px;cursor:pointer;line-height:1;
+  transition:transform .1s ease;filter:grayscale(100%) opacity(.3);
+}
+.ci-star.on{filter:none;transform:scale(1.1)}
+.ci-star:active{transform:scale(.95)}
+
+/* Input fields */
+.ci-row{display:flex;gap:10px;align-items:stretch}
+.ci-field{flex:1}
+.ci-input{
+  width:100%;padding:12px 14px;
+  background:#F7F2EA;border:1.5px solid transparent;
+  border-radius:12px;font-size:14px;color:#1C1208;
+  font-family:'DM Sans',sans-serif;
+  transition:border-color .15s;outline:none;
+}
+.ci-input:focus{border-color:#D4692A;background:#fff}
+.ci-input::placeholder{color:#B8A898}
+.ci-currency{
+  width:80px;padding:12px 10px;
+  background:#F7F2EA;border:1.5px solid transparent;
+  border-radius:12px;font-size:14px;color:#1C1208;
+  font-family:'DM Sans',sans-serif;
+  outline:none;cursor:pointer;
+}
+.ci-loc-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px;border-radius:8px;
+  background:transparent;border:1px solid #E8DDD0;
+  font-size:11px;font-weight:600;color:#9E8E7A;
+  cursor:pointer;white-space:nowrap;margin-top:6px;
+  font-family:'DM Sans',sans-serif;
+}
+
+/* Buttons */
+.ci-actions{display:flex;gap:10px;padding:16px 18px 20px}
+.ci-save{
+  flex:1;padding:14px;border-radius:13px;border:none;
+  background:#D4692A;color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:transform .1s;
+}
+.ci-save:active{transform:scale(.98)}
+.ci-save:disabled{background:#E0D8D0;color:#B0A090;cursor:default}
+.ci-skip{
+  padding:14px 18px;border-radius:13px;
+  background:#F5F0EA;border:none;
+  font-size:13px;font-weight:600;color:#9E8E7A;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+.ci-uploading{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:#9E8E7A;padding:0 18px 12px;
+}
+
+/* ── BOTTOM NAV ── */
+#bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:80;
+  height:64px;background:#fff;
+  border-top:1px solid #EAE0D5;
+  display:flex;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nb{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:transparent;
+  font-size:10px;font-weight:600;color:#B0A090;cursor:pointer;
+}
+.nb.on{color:#D4692A}
+.nb svg{width:22px;height:22px;stroke-width:1.7}
+
+/* ── WELCOME HEADER ── */
+.welcome-hd{
+  padding:18px 18px 14px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.welcome-logo{
+  font-family:'DM Serif Display',serif;
+  font-size:22px;color:#1C1208;letter-spacing:-.3px;line-height:1;
+}
+.welcome-logo em{font-style:italic;color:#D4692A}
+.welcome-greet{font-size:13px;color:#9E8E7A;margin-top:3px;font-weight:500}
+.welcome-avatar{
+  width:38px;height:38px;border-radius:50%;overflow:hidden;
+  background:#EAE0D5;flex-shrink:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:2px solid #E8DDD0;
+}
+.welcome-avatar img{width:100%;height:100%;object-fit:cover}
+
+/* ── PROFILE SCREEN ── */
+.prof-screen{padding:0 0 24px}
+.prof-hero{
+  padding:32px 20px 24px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  background:linear-gradient(to bottom,#F0E8DA,#F7F2EA);
+  border-bottom:1px solid #EAE0D5;
+}
+.prof-av{
+  width:72px;height:72px;border-radius:50%;overflow:hidden;
+  background:#EAE0D5;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;border:3px solid #fff;
+  box-shadow:0 3px 12px rgba(0,0,0,.1);
+}
+.prof-av img{width:100%;height:100%;object-fit:cover}
+.prof-av.anon{background:#E0D8CC}
+.prof-name-txt{font-size:18px;font-weight:700;color:#1C1208;margin-bottom:4px}
+.prof-email{font-size:13px;color:#9E8E7A}
+.prof-stats{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:1px;background:#EAE0D5;
+  border-top:1px solid #EAE0D5;border-bottom:1px solid #EAE0D5;
+}
+.prof-stat{
+  padding:16px 8px;text-align:center;
+  background:#F7F2EA;
+}
+.prof-stat-v{font-size:22px;font-weight:700;color:#1C1208;font-family:'DM Serif Display',serif}
+.prof-stat-l{font-size:10px;color:#9E8E7A;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.prof-section{padding:20px 18px 0}
+.prof-section-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.prof-card{
+  background:#fff;border-radius:14px;overflow:hidden;
+  border:1px solid #EAE0D5;
+}
+.prof-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-bottom:1px solid #F7F2EA;
+  cursor:pointer;
+}
+.prof-row:last-child{border-bottom:none}
+.prof-row-icon{width:36px;height:36px;border-radius:10px;background:#F7F2EA;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.prof-row-txt{flex:1}
+.prof-row-label{font-size:14px;font-weight:600;color:#1C1208}
+.prof-row-sub{font-size:12px;color:#9E8E7A;margin-top:1px}
+.prof-row-chev{font-size:14px;color:#C0B0A0}
+.google-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:14px;border-radius:12px;
+  background:#fff;border:1.5px solid #EAE0D5;
+  font-size:14px;font-weight:700;color:#1C1208;
+  cursor:pointer;margin-top:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  font-family:'DM Sans',sans-serif;
+}
+.sign-out-btn{
+  display:block;width:100%;margin-top:12px;
+  padding:13px;border-radius:12px;
+  background:transparent;border:1.5px solid #EAE0D5;
+  font-size:14px;font-weight:600;color:#C05030;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+.empty{padding:40px 20px;text-align:center;color:#B0A090;font-size:14px}
+.load-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#D4692A;margin:2px;animation:blink 1.2s ease-in-out infinite}
+.load-dot:nth-child(2){animation-delay:.2s}.load-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px)}15%,75%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-4px)}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="logo-lockup">
+    <div class="logo-main">Street<em>Bite</em></div>
+    <div class="logo-sub">Eat the world</div>
+  </div>
+  <div class="spin"></div>
+</div>
+
+<!-- ── HOME SCREEN ── -->
+<div class="screen gone" id="s-home">
+
+  <!-- Welcome header -->
+  <div class="welcome-hd">
+    <div>
+      <div class="welcome-logo">Street<em>Bite</em></div>
+      <div class="welcome-greet" id="welcome-greet">Where to next?</div>
+    </div>
+    <div class="welcome-avatar" id="welcome-avatar" onclick="showTab('profile')">👤</div>
+  </div>
+
+  <!-- Country + progress bar -->
+  <div class="topbar" style="position:relative;top:auto;backdrop-filter:none;background:transparent;border:none;padding:0 18px 14px">
+    <div class="topbar-inner">
+      <button class="country-btn" onclick="openCountryPicker()">
+        <span class="flag" id="cn-flag">🇻🇳</span>
+        <span id="cn-name">Vietnam</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="tot-fill" style="width:0%"></div></div>
+        <div class="prog-txt" id="tot-txt">0 / 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured: Essentials -->
+  <div class="feat-wrap">
+    <div class="feat-card" id="feat-card" onclick="">
+      <img id="feat-img" src="" alt="Essentials" loading="lazy">
+      <div class="feat-grad"></div>
+      <div class="feat-top">
+        <span class="feat-badge">⭐ Begin hier</span>
+        <span class="feat-counter" id="feat-counter">0 / 10</span>
+      </div>
+      <div class="feat-bottom">
+        <div class="feat-title" id="feat-title">Vietnam Essentials</div>
+        <div class="feat-sub">Top 10 must-eats van Vietnam</div>
+        <div class="feat-prog"><div class="feat-prog-fill" id="feat-pfill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other collections -->
+  <div class="sec-hd">
+    <span class="sec-title">Your Collections</span>
+  </div>
+  <div class="cols-scroll" id="cols-scroll"></div>
+
+  <!-- Recent finds -->
+  <div class="sec-hd" id="recent-hd" style="display:none">
+    <span class="sec-title">Recent finds</span>
+  </div>
+  <div class="recent-scroll" id="recent-scroll"></div>
+
+  <div class="home-pad"></div>
+</div>
+
+<!-- ── COLLECTION DETAIL SCREEN ── -->
+<div class="screen gone" id="s-coll">
+  <div class="coll-hd">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="coll-hd-title" id="cd-title">Collection</span>
+    <span class="coll-hd-count" id="cd-count"></span>
+  </div>
+  <div class="coll-banner" id="cd-banner">
+    <img id="cd-img" src="" alt="">
+    <div class="coll-banner-fade"></div>
+  </div>
+  <div class="dish-grid" id="dish-grid"></div>
+</div>
+
+<!-- ── PROFILE SCREEN ── -->
+<div class="screen gone" id="s-profile">
+  <div class="prof-screen" id="prof-content">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ── CARD MODAL ── -->
+<div class="modal-back" id="card-modal" onclick="bgClick(event)">
+  <button class="modal-close" onclick="closeCard()">✕</button>
+  <div class="flip-wrap">
+    <div class="flip-inner" id="flip-inner">
+
+      <!-- FRONT -->
+      <div class="f-front" id="card-front" onclick="flipCard()">
+        <div class="cf-photo">
+          <img id="cf-img" src="" alt="" style="display:none">
+          <div id="cf-noimg" class="no-img-card" style="display:none">🍽️</div>
+        </div>
+        <div class="cf-topbar">
+          <span class="cf-rar" id="cf-rar">Common</span>
+          <span class="cf-num" id="cf-num">#001</span>
+        </div>
+        <div class="cf-overlay">
+          <div class="cf-name" id="cf-name">Dish</div>
+          <div class="cf-sub" id="cf-sub">🇻🇳 Vietnam</div>
+        </div>
+        <div class="cf-footer">
+          <span class="cf-footer-l" id="cf-coll">—</span>
+          <span class="cf-hint">Tap voor info →</span>
+        </div>
+      </div>
+
+      <!-- BACK -->
+      <div class="f-back" id="card-back">
+        <div class="cb-top">
+          <span class="cb-name" id="cb-name">Dish</span>
+          <span class="cb-num" id="cb-num">#001</span>
+        </div>
+        <div class="cb-div"></div>
+        <div class="cb-desc" id="cb-desc">—</div>
+        <div class="cb-stats" id="cb-stats"></div>
+        <button class="cb-btn todo" id="cb-btn" onclick="collectDish()">+ Ik heb dit gegeten!</button>
+        <div style="text-align:center;margin-top:6px">
+          <span onclick="openDetail()" style="font-size:11px;color:#D4692A;font-weight:600;cursor:pointer">Bekijk ervaringen & foto's →</span>
+        </div>
+        <div class="cb-flip-back" onclick="flipCard()">← Terug naar voorkant</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── DISH DETAIL SHEET ── -->
+<div class="detail-backdrop" id="detail-backdrop" onclick="detailBackdropClick(event)">
+  <div class="detail-sheet" id="detail-sheet">
+
+    <!-- Hero -->
+    <div class="detail-hero" id="detail-hero">
+      <img id="detail-hero-img" src="" alt="">
+      <div class="detail-hero-grad"></div>
+      <button class="detail-hero-close" onclick="closeDetail()">✕</button>
+      <div class="detail-hero-content">
+        <div class="detail-hero-rar" id="detail-hero-rar">Common</div>
+        <div class="detail-hero-name" id="detail-hero-name">Dish</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="detail-stats">
+      <div class="detail-stat">
+        <div class="detail-stat-v" id="ds-checkins">—</div>
+        <div class="detail-stat-l">Check-ins</div>
+      </div>
+      <div class="detail-stat">
+        <div class="detail-stat-v" id="ds-price">—</div>
+        <div class="detail-stat-l">Ø Prijs</div>
+      </div>
+      <div class="detail-stat">
+        <div class="detail-stat-v" id="ds-rating">—</div>
+        <div class="detail-stat-l">Beoordeling</div>
+      </div>
+    </div>
+
+    <!-- Photo grid (all photos) -->
+    <div id="detail-photos-section" style="display:none">
+      <div class="detail-section">
+        <div class="detail-sec-title">📸 Alle foto's</div>
+        <div class="photo-grid" id="detail-photo-grid"></div>
+      </div>
+    </div>
+
+    <!-- Experiences -->
+    <div class="detail-section" id="detail-exps-wrap">
+      <div class="detail-sec-title" id="detail-exps-title">Ervaringen</div>
+      <div id="detail-exps">
+        <div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Laden...</div>
+      </div>
+    </div>
+
+    <button class="detail-checkin-btn" onclick="closeDetail(); setTimeout(openCheckin, 300)">+ Voeg jouw check-in toe</button>
+    <div class="detail-pad"></div>
+  </div>
+</div>
+
+<!-- ── PHOTO VIEWER ── -->
+<div class="photo-viewer" id="photo-viewer" onclick="closePhotoViewer()">
+  <img id="pv-img" src="" alt="">
+  <button class="photo-viewer-close">✕</button>
+</div>
+
+<!-- ── CHECK-IN SHEET ── -->
+<div class="checkin-backdrop" id="ci-backdrop" onclick="ciBackdropClick(event)">
+  <div class="checkin-sheet" id="ci-sheet">
+    <div class="checkin-handle"></div>
+
+    <!-- Header with dish info -->
+    <div class="checkin-head">
+      <div class="checkin-dish-img">
+        <img id="ci-dish-img" src="" alt="">
+      </div>
+      <div>
+        <div class="checkin-dish-name" id="ci-dish-name">Dish</div>
+        <div class="checkin-dish-coll" id="ci-dish-coll">Collection</div>
+      </div>
+      <button class="checkin-close" onclick="closeCheckin()">✕</button>
+    </div>
+
+    <!-- Photo -->
+    <div class="ci-section">
+      <div class="ci-label">📸 Jouw foto</div>
+      <div class="ci-photo-area" id="ci-photo-area" onclick="$('ci-photo-input').click()">
+        <div class="ci-photo-icon">📷</div>
+        <div class="ci-photo-txt">Tap om foto toe te voegen</div>
+        <img id="ci-photo-preview" src="" style="display:none" alt="">
+      </div>
+      <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
+    </div>
+
+    <!-- Stars -->
+    <div class="ci-section">
+      <div class="ci-label">⭐ Beoordeling</div>
+      <div class="ci-stars" id="ci-stars">
+        <span class="ci-star" onclick="setRating(1)">⭐</span>
+        <span class="ci-star" onclick="setRating(2)">⭐</span>
+        <span class="ci-star" onclick="setRating(3)">⭐</span>
+        <span class="ci-star" onclick="setRating(4)">⭐</span>
+        <span class="ci-star" onclick="setRating(5)">⭐</span>
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="ci-section">
+      <div class="ci-label">💰 Prijs</div>
+      <div class="ci-row">
+        <div class="ci-field">
+          <input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <select class="ci-currency" id="ci-currency">
+          <option value="VND">VND</option>
+          <option value="THB">THB</option>
+          <option value="JPY">JPY</option>
+          <option value="IDR">IDR</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="ci-section">
+      <div class="ci-label">📍 Locatie</div>
+      <input class="ci-input" id="ci-location" type="text" placeholder="Naam van restaurant of straat">
+      <button class="ci-loc-btn" onclick="useGPS()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Gebruik mijn locatie
+      </button>
+    </div>
+
+    <!-- Note -->
+    <div class="ci-section">
+      <div class="ci-label">📝 Notitie (optioneel)</div>
+      <textarea class="ci-input" id="ci-note" rows="2" placeholder="Hoe was het?" style="resize:none;line-height:1.5"></textarea>
+    </div>
+
+    <!-- Uploading indicator -->
+    <div class="ci-uploading" id="ci-uploading" style="display:none">
+      <div class="spin" style="width:16px;height:16px;border-width:2px"></div>
+      <span>Foto uploaden...</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="ci-actions">
+      <button class="ci-skip" onclick="skipCheckin()">Snel aanvinken</button>
+      <button class="ci-save" id="ci-save" onclick="saveCheckin()">✓ Check-in opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav id="bnav">
+  <button class="nb on" id="nb-explore" onclick="showTab('home')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    Explore
+  </button>
+  <button class="nb" id="nb-coll" onclick="showTab('coll')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    Collections
+  </button>
+  <button class="nb" id="nb-profile" onclick="showTab('profile')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+    Profile
+  </button>
+</nav>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────
+const SB  = 'https://ztipltgnprzxxbkmsokj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aXBsdGducHJ6eHhia21zb2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTMwODMsImV4cCI6MjA5MzE4OTA4M30.bsltWzAaFFQiF07nrPIlzRsxkBZhfNsPpegE1uqQxtk';
+const sbClient = (typeof supabase !== 'undefined')
+  ? supabase.createClient(SB, KEY)
+  : null;
+
+// ── STATE ────────────────────────────────────────────
+let sbUser = null;
+let uid = null, token = null;
+let countryId = null;
+let collections = [];
+let userDishes  = new Set();
+let activeColl  = null;
+let activeDish  = null;
+let activeDishNum = 0;
+let flipped = false;
+let recentDishIds = [];
+let allDishes = [];
+
+const RARITY_COLOR = {common:'#888780',uncommon:'#3B6D11',rare:'#185FA5',epic:'#534AB7',legendary:'#BA7517'};
+const RARITY_BG    = {common:'#F1EFE8',uncommon:'#EAF3DE',rare:'#E6F1FB',epic:'#EEEDFE',legendary:'#FAEEDA'};
+const RARITY_TXT   = {common:'#5A5955',uncommon:'#245208',rare:'#0A4480',epic:'#3C3489',legendary:'#7A4A08'};
+const DESCRIPTIONS = {
+  'Phở bò':          'Het nationale symbool van Vietnam — een bouillon die uren suddert. Elke kom is een verhaal.',
+  'Bánh mì':         'De perfecte fusie van Frans stokbrood en Vietnamese smaken. Knapperig, fris, pittig.',
+  'Gỏi cuốn':        'Verse rijstpapier-rolletjes met garnalen, kruiden en vermicelli. Gezond en verfrissend.',
+  'Cơm tấm':         'Gebroken rijst met gegrild varkensvlees. Hét straatvoedsel van Saigon.',
+  'Bún chả':         'Gegrild varkensvlees met vermicelli en een smaakvolle dipsaus. Obama at het ook.',
+  'Bánh xèo':        'Knapperige sizzling crêpe met garnalen en taugé. Rol hem in slabaadjes — wow.',
+  'Chả giò':         'Knapperig gefrituurd lenterolletje. De perfecte snack bij elk uur van de dag.',
+  'Bánh cuốn':       'Ultradunne gestoomde rijstrolletjes met gehakt en paddenstoelen. Elegant en licht.',
+  'Cao lầu':         'Exclusieve Hội An specialiteit — de noedels kunnen alleen hier gemaakt worden. Zeldzaam.',
+  'Bún bò Huế':      'Pittige runderbouillon uit de oude keizerstad Huế. Complexer en krachtiger dan phở.',
+  'Balut':           'Bevruchte eendenei met embryo. Ultiem durfvoedsel — locals eten het dagelijks als snack.',
+  'Tiết canh':       'Rauw bloedpudding met kruiden. Niet voor angsthazen — een echte Vietnamese delicatesse.',
+  'Cà phê trứng':    'Eierkoffie van Hanoi — romige eidooier-crème op sterke Vietnamese koffie. Ongelofelijk lekker.',
+  'Cà phê sữa đá':   'IJskoffie met gecondenseerde melk over ijs. Sterk, zoet, onmisbaar in de hitte.',
+};
+
+const $ = id => document.getElementById(id);
+
+// ── API ──────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const t = token || KEY;
+  const hdrs = {
+    'apikey': KEY,
+    'Authorization': `Bearer ${t}`,
+    'Content-Type': 'application/json',
+    ...(opts.headers || {})
+  };
+  const r = await fetch(`${SB}/rest/v1/${path}`, {...opts, headers: hdrs});
+  if (r.status === 204) return null;
+  if (!r.ok) { const txt = await r.text(); throw new Error(`${r.status}: ${txt.slice(0,120)}`); }
+  return r.json();
+}
+
+// ── AUTH ─────────────────────────────────────────────
+async function initAuth() {
+  if (!sbClient) {
+    // Supabase not loaded - use local ID only
+    uid = localStorage.getItem('sb_uid') || crypto.randomUUID();
+    localStorage.setItem('sb_uid', uid);
+    token = KEY;
+    return;
+  }
+  // Listen for auth state changes (handles OAuth redirect)
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    const wasAnon = !sbUser || sbUser.is_anonymous;
+    sbUser = session?.user || null;
+    uid = sbUser?.id || uid;
+    token = session?.access_token || token;
+
+    if (event === 'SIGNED_IN' && wasAnon && sbUser && !sbUser.is_anonymous) {
+      await migrateLocalToCloud();
+    }
+    if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) {
+      await loadUserDishes();
+      renderHome();
+    }
+    updateWelcome();
+    if (!$('s-profile').classList.contains('gone')) renderProfile();
+  });
+
+  // Get current session
+  const { data: { session } } = await sbClient.auth.getSession();
+  if (session) {
+    sbUser = session.user;
+    uid = session.user.id;
+    token = session.access_token;
+    return;
+  }
+  // Sign in anonymously
+  try {
+    const { data, error } = await sbClient.auth.signInAnonymously();
+    if (data?.user) { sbUser = data.user; uid = data.user.id; token = data.session?.access_token; }
+  } catch(e) {
+    // Fallback local ID
+    uid = localStorage.getItem('sb_uid') || crypto.randomUUID();
+    localStorage.setItem('sb_uid', uid);
+  }
+}
+
+async function signInWithGoogle() {
+  await sbClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+}
+
+async function signOut() {
+  await sbClient.auth.signOut();
+  sbUser = null; uid = null; token = null;
+  userDishes = new Set(); recentDishIds = [];
+  collections.forEach(c => c.collected = 0);
+  renderHome();
+  renderProfile();
+  updateWelcome();
+}
+
+async function migrateLocalToCloud() {
+  if (!sbUser || sbUser.is_anonymous || userDishes.size === 0) return;
+  const rows = [...userDishes].map(dish_id => ({
+    user_id: sbUser.id, dish_id,
+    collected_at: new Date().toISOString()
+  }));
+  try {
+    await api('user_dishes', {
+      method:'POST',
+      headers:{'Authorization':`Bearer ${token||KEY}`,'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify(rows)
+    });
+  } catch(e) { console.log('migrate:', e.message); }
+}
+
+// ── WELCOME ──────────────────────────────────────────
+function updateWelcome() {
+  const hr = new Date().getHours();
+  const timeGreet = hr < 12 ? 'Goedemorgen' : hr < 18 ? 'Goedemiddag' : 'Goedenavond';
+  const name = sbUser?.user_metadata?.full_name?.split(' ')[0]
+             || sbUser?.user_metadata?.name?.split(' ')[0]
+             || null;
+  const greet = name
+    ? `${timeGreet}, ${name}! 🌏 What are we gonna eat?`
+    : `${timeGreet}! 🌏 What are we gonna eat?`;
+  $('welcome-greet').textContent = greet;
+
+  // Avatar
+  const av = $('welcome-avatar');
+  const avatarUrl = sbUser?.user_metadata?.avatar_url;
+  if (avatarUrl) {
+    av.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+  } else {
+    av.innerHTML = name
+      ? `<span style="font-size:15px;font-weight:700;color:#9E8E7A">${name[0].toUpperCase()}</span>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A090" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  }
+}
+
+// ── PROFILE RENDER ────────────────────────────────────
+function renderProfile() {
+  const isAnon = !sbUser || sbUser.is_anonymous;
+  const name = sbUser?.user_metadata?.full_name || sbUser?.user_metadata?.name || null;
+  const email = sbUser?.email || null;
+  const avatarUrl = sbUser?.user_metadata?.avatar_url || null;
+  const collected = userDishes.size;
+
+  const profEl = $('prof-content');
+  profEl.innerHTML = `
+    <div class="prof-hero">
+      <div class="prof-av ${isAnon ? 'anon' : ''}">
+        ${avatarUrl
+          ? `<img src="${avatarUrl}" alt="${name}">`
+          : isAnon
+            ? `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,.3)" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
+            : `<span style="font-size:28px;font-weight:700;color:#9E8E7A">${(name||'?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="prof-name-txt">${name || 'Anoniem'}</div>
+      ${email ? `<div class="prof-email">${email}</div>` : '<div class="prof-email">Niet ingelogd</div>'}
+    </div>
+
+    <div class="prof-stats">
+      <div class="prof-stat">
+        <div class="prof-stat-v">${collected}</div>
+        <div class="prof-stat-l">Gegeten</div>
+      </div>
+      <div class="prof-stat">
+        <div class="prof-stat-v">1</div>
+        <div class="prof-stat-l">Landen</div>
+      </div>
+      <div class="prof-stat">
+        <div class="prof-stat-v">—</div>
+        <div class="prof-stat-l">Badges</div>
+      </div>
+    </div>
+
+    ${isAnon ? `
+      <div class="prof-section">
+        <div class="prof-section-title">Bewaar je voortgang</div>
+        <div class="prof-card">
+          <div class="prof-row" style="cursor:default">
+            <div class="prof-row-icon">☁️</div>
+            <div class="prof-row-txt">
+              <div class="prof-row-label">Sync naar de cloud</div>
+              <div class="prof-row-sub">Log in om je collectie te bewaren op alle apparaten</div>
+            </div>
+          </div>
+        </div>
+        <button class="google-btn" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Doorgaan met Google
+        </button>
+      </div>
+    ` : `
+      <div class="prof-section">
+        <div class="prof-section-title">Account</div>
+        <div class="prof-card">
+          <div class="prof-row">
+            <div class="prof-row-icon">☁️</div>
+            <div class="prof-row-txt">
+              <div class="prof-row-label">Progress gesynchroniseerd</div>
+              <div class="prof-row-sub">${collected} gerechten opgeslagen</div>
+            </div>
+            <span class="prof-row-chev" style="color:#2A7A2A">✓</span>
+          </div>
+        </div>
+        <button class="sign-out-btn" onclick="signOut()">Uitloggen</button>
+      </div>
+    `}
+
+    <div class="prof-section">
+      <div class="prof-section-title">Binnenkort</div>
+      <div class="prof-card">
+        <div class="prof-row">
+          <div class="prof-row-icon">🏆</div>
+          <div class="prof-row-txt">
+            <div class="prof-row-label">Badges & achievements</div>
+            <div class="prof-row-sub">Verdien badges voor elke collectie</div>
+          </div>
+          <span class="prof-row-chev">›</span>
+        </div>
+        <div class="prof-row">
+          <div class="prof-row-icon">🗺️</div>
+          <div class="prof-row-txt">
+            <div class="prof-row-label">Passport</div>
+            <div class="prof-row-sub">Jouw foodmap van de wereld</div>
+          </div>
+          <span class="prof-row-chev">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── LOCAL BACKUP ─────────────────────────────────────
+function saveLocal() {
+  try { localStorage.setItem('sb_dishes', JSON.stringify([...userDishes])); } catch(e) {}
+}
+function loadLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('sb_dishes') || '[]');
+    d.forEach(id => userDishes.add(id));
+  } catch(e) {}
+}
+
+// ── LOAD USER DISHES ─────────────────────────────────
+async function loadUserDishes() {
+  loadLocal(); // Always restore from local first
+  if (!uid) return;
+  try {
+    const ud = await api(`user_dishes?user_id=eq.${uid}&select=dish_id,created_at&order=created_at.desc`);
+    (ud||[]).forEach(r => userDishes.add(r.dish_id));
+    recentDishIds = (ud||[]).slice(0,8).map(r => r.dish_id);
+    saveLocal();
+    collections.forEach(col => {
+      col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
+    });
+  } catch(e) { console.log('loadUserDishes:', e.message); }
+}
+
+// ── LOAD ─────────────────────────────────────────────
+async function load() {
+  // Country
+  const countries = await api('countries?select=id,name');
+  const vn = countries.find(c => c.name === 'Vietnam');
+  if (!vn) throw new Error('Vietnam not found');
+  countryId = vn.id;
+
+  // Collections
+  const cols = await api(`collections?country_id=eq.${countryId}&order=order_index&select=id,name,unlock_type,unlock_requirement,order_index`);
+  
+  // All dishes
+  const cids = cols.map(c => c.id).join(',');
+  allDishes = await api(`dishes?collection_id=in.(${cids})&select=id,collection_id,name,rarity,image_url&order=name`);
+
+  // User dishes
+  let ud = [];
+  if (uid) {
+    try { ud = await api(`user_dishes?user_id=eq.${uid}&select=dish_id,created_at&order=created_at.desc`); }
+    catch(e){ console.log('user_dishes:', e.message); }
+  }
+  userDishes = new Set((ud||[]).map(r => r.dish_id));
+  loadLocal(); // merge any locally stored dishes
+  recentDishIds = (ud||[]).slice(0,8).map(r => r.dish_id);
+
+  // Build collections with dish arrays
+  collections = cols.map(col => {
+    const dishes = allDishes.filter(d => d.collection_id === col.id);
+    const collected = dishes.filter(d => userDishes.has(d.id)).length;
+    return { ...col, dishes, collected };
+  });
+}
+
+// ── UNLOCK CHECK ─────────────────────────────────────
+function isUnlocked(col) {
+  if (col.unlock_type !== 'progress') return true;
+  const total = collections.reduce((s,c) => s + c.dishes.length, 0);
+  const pct = total > 0 ? Math.round(userDishes.size / total * 100) : 0;
+  return pct >= (col.unlock_requirement || 100);
+}
+
+// ── RENDER HOME ──────────────────────────────────────
+function renderHome() {
+  const total    = allDishes.length;
+  const collected = userDishes.size;
+  const pct = total > 0 ? Math.round(collected / total * 100) : 0;
+  $('tot-fill').style.width = pct + '%';
+  $('tot-txt').textContent = `${collected} / ${total}`;
+
+  // Featured essentials (first collection)
+  const ess = collections[0];
+  if (ess) {
+    const ePct = ess.dishes.length > 0 ? Math.round(ess.collected / ess.dishes.length * 100) : 0;
+    $('feat-counter').textContent = `${ess.collected} / ${ess.dishes.length}`;
+    $('feat-pfill').style.width = ePct + '%';
+    $('feat-title').textContent = ess.name;
+    const fi = ess.dishes.find(d => d.image_url);
+    if (fi) $('feat-img').src = fi.image_url;
+    $('feat-card').onclick = () => openColl(ess);
+  }
+
+  // Other collections
+  const scroll = $('cols-scroll');
+  scroll.innerHTML = '';
+  collections.slice(1).forEach(col => {
+    const unlocked = isUnlocked(col);
+    const cp = col.dishes.length > 0 ? Math.round(col.collected / col.dishes.length * 100) : 0;
+    const imgDish = col.dishes.find(d => d.image_url);
+    const colEmoji = {
+      'Street Classics':'🔥','Daredevil Eats':'🌶️',
+      'Drinks & Coffee':'☕','Hanoi Streets':'📍','Saigon Nights':'🌃'
+    }[col.name] || '🍽️';
+
+    const el = document.createElement('div');
+    el.className = 'col-card';
+    el.innerHTML = `
+      ${imgDish
+        ? `<img src="${imgDish.image_url}" alt="${col.name}" loading="lazy">`
+        : `<div class="col-card-placeholder" style="background:linear-gradient(135deg,#3D2510,#1A1208)">${colEmoji}</div>`}
+      <div class="col-grad"></div>
+      <div class="col-content">
+        <div class="col-name">${col.name}</div>
+        <div class="col-count">${col.collected} / ${col.dishes.length}</div>
+        <div class="col-prog"><div class="col-prog-fill" style="width:${cp}%"></div></div>
+      </div>
+      ${!unlocked ? `
+        <div class="col-lock">
+          <div class="col-lock-icon">🔒</div>
+        </div>
+        <div class="col-lock-label">Unlock op ${col.unlock_requirement}%</div>
+      ` : ''}
+    `;
+    if (unlocked) el.onclick = () => openColl(col);
+    scroll.appendChild(el);
+  });
+
+  // Recent finds
+  const rHd = $('recent-hd');
+  const rScroll = $('recent-scroll');
+  rScroll.innerHTML = '';
+  if (recentDishIds.length > 0) {
+    rHd.style.display = 'flex';
+    recentDishIds.forEach(id => {
+      const dish = allDishes.find(d => d.id === id);
+      if (!dish) return;
+      const col = collections.find(c => c.dishes.some(d => d.id === id));
+      const el = document.createElement('div');
+      el.className = 'recent-item';
+      el.innerHTML = `
+        <div class="recent-photo">
+          ${dish.image_url
+            ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">`
+            : `<div style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;font-size:28px;background:#EAE0D5">🍽️</div>`}
+          <div class="recent-check">✓</div>
+        </div>
+        <div class="recent-name">${dish.name}</div>
+        <div class="recent-coll">${col?.name?.split(' ')[0] || ''}</div>
+      `;
+      el.onclick = () => col && openColl(col);
+      rScroll.appendChild(el);
+    });
+  } else {
+    rHd.style.display = 'none';
+  }
+}
+
+// ── RENDER COLLECTION ────────────────────────────────
+function renderColl(col) {
+  activeColl = col;
+  $('cd-title').textContent = col.name;
+  $('cd-count').textContent = `${col.collected} / ${col.dishes.length}`;
+
+  const bImg = col.dishes.find(d => d.image_url);
+  const banner = $('cd-banner');
+  if (bImg) { $('cd-img').src = bImg.image_url; banner.style.display = 'block'; }
+  else banner.style.display = 'none';
+
+  // Sort: collected desc, then rarity desc
+  const order = ['legendary','epic','rare','uncommon','common'];
+  const sorted = [...col.dishes].sort((a,b) => {
+    const ac = userDishes.has(a.id) ? 0 : 1;
+    const bc = userDishes.has(b.id) ? 0 : 1;
+    if (ac !== bc) return ac - bc;
+    return order.indexOf(a.rarity) - order.indexOf(b.rarity);
+  });
+
+  const grid = $('dish-grid');
+  grid.innerHTML = '';
+  sorted.forEach((dish, i) => {
+    const done = userDishes.has(dish.id);
+    const rc   = RARITY_COLOR[dish.rarity] || '#888780';
+    const rbg  = RARITY_BG[dish.rarity]   || '#F1EFE8';
+    const rtxt = RARITY_TXT[dish.rarity]  || '#5A5955';
+    const el = document.createElement('div');
+    el.className = 'dish-card';
+    el.style.borderColor = done ? rc : 'transparent';
+    el.innerHTML = `
+      <div class="d-rbar" style="background:${rc}"></div>
+      <div class="d-photo ${done ? '' : 'dim'}">
+        ${dish.image_url
+          ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">`
+          : `<div class="no-img" style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:38px;background:#EAE0D5">🍽️</div>`}
+        <div class="d-rtag" style="background:${rc}">${dish.rarity}</div>
+      </div>
+      <div class="d-body">
+        <div class="d-name ${done ? '' : 'muted'}">${dish.name}</div>
+        <div class="d-meta">
+          <span class="d-rpill" style="background:${rbg};color:${rtxt}">${dish.rarity}</span>
+          ${done ? '<span class="d-done">✓ gegeten</span>' : ''}
+        </div>
+      </div>
+    `;
+    el.onclick = () => openCard(dish, i + 1);
+    grid.appendChild(el);
+  });
+}
+
+// ── NAVIGATION ───────────────────────────────────────
+function showScreen(id) {
+  ['s-home','s-coll','s-profile'].forEach(s => $(s).classList.add('gone'));
+  $(id).classList.remove('gone');
+}
+function showTab(tab) {
+  ['nb-explore','nb-coll','nb-profile'].forEach(b => $(b).classList.remove('on'));
+  if (tab === 'home') {
+    showScreen('s-home');
+    $('nb-explore').classList.add('on');
+  } else if (tab === 'coll') {
+    if (collections.length > 1) openColl(collections[1]);
+    else if (collections.length > 0) openColl(collections[0]);
+    $('nb-coll').classList.add('on');
+  } else if (tab === 'profile') {
+    renderProfile();
+    showScreen('s-profile');
+    $('nb-profile').classList.add('on');
+    $('s-profile').scrollTop = 0;
+  }
+}
+function openColl(col) {
+  renderColl(col);
+  showScreen('s-coll');
+  $('s-coll').scrollTop = 0;
+  $('nb-coll').classList.add('on');
+  $('nb-explore').classList.remove('on');
+}
+function goHome() {
+  renderHome();
+  showScreen('s-home');
+  $('nb-explore').classList.add('on');
+  $('nb-coll').classList.remove('on');
+}
+function openCountryPicker() { alert('Meer landen komen eraan! 🌏'); }
+
+// ── CARD MODAL ───────────────────────────────────────
+function openCard(dish, num) {
+  activeDish = dish; activeDishNum = num; flipped = false;
+  const rc = RARITY_COLOR[dish.rarity] || '#888780';
+  const done = userDishes.has(dish.id);
+
+  // Set rarity color variable
+  $('card-modal').style.setProperty('--rc', rc);
+  $('card-front').style.setProperty('--rc', rc);
+  $('card-back').style.setProperty('--rc', rc);
+
+  // Front
+  if (dish.image_url) {
+    $('cf-img').src = dish.image_url;
+    $('cf-img').style.display = 'block';
+    $('cf-noimg').style.display = 'none';
+  } else {
+    $('cf-img').style.display = 'none';
+    $('cf-noimg').style.display = 'flex';
+  }
+  $('cf-rar').textContent = dish.rarity;
+  $('cf-num').textContent = `#${String(num).padStart(3,'0')}`;
+  $('cf-name').textContent = dish.name;
+  $('cf-sub').textContent = `🇻🇳 Vietnam · ${activeColl?.name || ''}`;
+  $('cf-coll').textContent = activeColl?.name || '';
+
+  // Back
+  $('cb-name').textContent = dish.name;
+  $('cb-num').textContent  = `#${String(num).padStart(3,'0')}`;
+  $('cb-desc').textContent = DESCRIPTIONS[dish.name] || `Een authentiek gerecht uit de ${activeColl?.name || 'collectie'}. Proef het zodra je de kans krijgt!`;
+  $('cb-stats').innerHTML = `
+    <div class="cb-stat">
+      <div class="cb-sl">Rarity</div>
+      <div class="cb-sv" style="color:${rc}">${dish.rarity}</div>
+    </div>
+    <div class="cb-stat">
+      <div class="cb-sl">Collectie</div>
+      <div class="cb-sv">${(activeColl?.name||'').split(' ').slice(0,2).join(' ')}</div>
+    </div>
+    <div class="cb-stat">
+      <div class="cb-sl">Land</div>
+      <div class="cb-sv">🇻🇳 Vietnam</div>
+    </div>
+    <div class="cb-stat">
+      <div class="cb-sl">Status</div>
+      <div class="cb-sv" style="color:${done?'#2A7A2A':'#B0A090'}">${done?'✓ Gegeten':'Nog te doen'}</div>
+    </div>
+  `;
+  updateCollectBtn(done);
+
+  $('flip-inner').classList.remove('flipped');
+  $('card-modal').classList.add('open');
+}
+function flipCard() {
+  flipped = !flipped;
+  $('flip-inner').classList.toggle('flipped', flipped);
+}
+function closeCard() {
+  $('card-modal').classList.remove('open');
+  setTimeout(() => { flipped = false; $('flip-inner').classList.remove('flipped'); }, 300);
+}
+function bgClick(e) { if (e.target === $('card-modal')) closeCard(); }
+function updateCollectBtn(done) {
+  const btn = $('cb-btn');
+  btn.className = `cb-btn ${done ? 'done' : 'todo'}`;
+  btn.textContent = done ? '✓ Al gegeten!' : '+ Ik heb dit gegeten!';
+}
+
+// ── DISH DETAIL ──────────────────────────────────────
+async function openDetail() {
+  if (!activeDish) return;
+  const dish = activeDish;
+  const rc = RARITY_COLOR[dish.rarity] || '#888780';
+
+  // Hero
+  if (dish.image_url) {
+    $('detail-hero-img').src = dish.image_url;
+    $('detail-hero-img').style.display = 'block';
+  } else {
+    $('detail-hero-img').style.display = 'none';
+    $('detail-hero').style.background = '#2A1808';
+  }
+  $('detail-hero-rar').textContent = dish.rarity;
+  $('detail-hero-rar').style.background = rc;
+  $('detail-hero-name').textContent = dish.name;
+
+  // Reset stats
+  $('ds-checkins').textContent = '—';
+  $('ds-price').textContent = '—';
+  $('ds-rating').textContent = '—';
+  $('detail-exps').innerHTML = '<div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Laden...</div>';
+  $('detail-photos-section').style.display = 'none';
+
+  $('detail-backdrop').classList.add('open');
+  $('detail-sheet').scrollTop = 0;
+
+  // Load experiences
+  try {
+    const exps = await api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`);
+    renderDetailExperiences(dish, exps || []);
+  } catch(e) {
+    $('detail-exps').innerHTML = `<div class="exp-empty">Kon ervaringen niet laden.</div>`;
+  }
+}
+
+function renderDetailExperiences(dish, exps) {
+  const rc = RARITY_COLOR[dish.rarity] || '#888780';
+
+  // Stats
+  $('ds-checkins').textContent = exps.length || '0';
+
+  const withPrice = exps.filter(e => e.price && e.price > 0);
+  if (withPrice.length > 0) {
+    const avg = withPrice.reduce((s,e) => s + parseFloat(e.price), 0) / withPrice.length;
+    const currency = withPrice[0].currency || '';
+    $('ds-price').textContent = formatPrice(avg, currency);
+  }
+
+  const withRating = exps.filter(e => e.rating && e.rating > 0);
+  if (withRating.length > 0) {
+    const avg = withRating.reduce((s,e) => s + e.rating, 0) / withRating.length;
+    $('ds-rating').textContent = '★ ' + avg.toFixed(1);
+  }
+
+  // Photo grid
+  const photos = exps.filter(e => e.photo_url);
+  if (photos.length > 0) {
+    $('detail-photos-section').style.display = 'block';
+    $('detail-photo-grid').innerHTML = photos.map(e => `
+      <div class="photo-thumb" onclick="openPhotoViewer('${e.photo_url}')">
+        <img src="${e.photo_url}" alt="" loading="lazy">
+        <div class="photo-overlay">🔍</div>
+      </div>
+    `).join('');
+  }
+
+  // Separate mine vs community
+  const mine = exps.filter(e => e.user_id === uid);
+  const community = exps.filter(e => e.user_id !== uid);
+
+  let html = '';
+
+  if (mine.length > 0) {
+    html += `<div class="detail-sec-title" style="margin-bottom:10px">Jouw check-ins (${mine.length})</div>`;
+    html += mine.map(e => renderExpCard(e, true)).join('');
+  }
+
+  if (community.length > 0) {
+    html += `<div class="detail-sec-title" style="margin:${mine.length?'16px':'0'} 0 10px">Community (${community.length})</div>`;
+    html += community.map(e => renderExpCard(e, false)).join('');
+  }
+
+  if (exps.length === 0) {
+    html = `
+      <div class="exp-empty">
+        Nog geen check-ins voor dit gerecht.<br>
+        Wees de eerste! 🍽️
+      </div>
+    `;
+  }
+
+  $('detail-exps').innerHTML = html;
+  $('detail-exps-wrap').querySelector('.detail-sec-title').style.display = 'none'; // hide outer title, inner titles handle it
+}
+
+function renderExpCard(exp, isOwn) {
+  const stars = exp.rating ? '★'.repeat(exp.rating) + '☆'.repeat(5 - exp.rating) : '';
+  const date = exp.created_at ? new Date(exp.created_at).toLocaleDateString('nl-NL', {day:'numeric',month:'short',year:'numeric'}) : '';
+  const initials = (exp.user_display_name || (isOwn ? 'Jij' : '?')).charAt(0).toUpperCase();
+  const name = exp.user_display_name || (isOwn ? 'Jij' : 'Anoniem');
+
+  return `
+    <div class="exp-card">
+      ${exp.photo_url ? `
+        <div class="exp-card-photo" onclick="openPhotoViewer('${exp.photo_url}')">
+          <img src="${exp.photo_url}" alt="" loading="lazy">
+        </div>
+      ` : ''}
+      <div class="exp-card-body">
+        <div class="exp-card-top">
+          <div class="exp-avatar">
+            ${exp.user_avatar_url
+              ? `<img src="${exp.user_avatar_url}" alt="${name}">`
+              : initials}
+          </div>
+          <span class="exp-name">${name}${isOwn ? ' <span style="color:#D4692A;font-size:10px">(jij)</span>' : ''}</span>
+          <span class="exp-date">${date}</span>
+        </div>
+        ${stars ? `<div class="exp-stars">${stars}</div>` : ''}
+        <div class="exp-meta">
+          ${exp.location_text ? `<span class="exp-chip">📍 ${exp.location_text}</span>` : ''}
+          ${exp.price && exp.price > 0 ? `<span class="exp-chip">💰 ${formatPrice(exp.price, exp.currency)}</span>` : ''}
+        </div>
+        ${exp.note ? `<div class="exp-note">"${exp.note}"</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function formatPrice(price, currency) {
+  const rounded = Math.round(price);
+  if (currency === 'VND') return rounded.toLocaleString('nl') + ' ₫';
+  if (currency === 'JPY') return '¥' + rounded.toLocaleString('nl');
+  if (currency === 'IDR') return 'Rp ' + rounded.toLocaleString('nl');
+  if (currency === 'THB') return '฿' + rounded.toFixed(0);
+  if (currency === 'EUR') return '€' + price.toFixed(2);
+  return currency + ' ' + price.toFixed(2);
+}
+
+function closeDetail() {
+  $('detail-backdrop').classList.remove('open');
+}
+
+function detailBackdropClick(e) {
+  if (e.target === $('detail-backdrop')) closeDetail();
+}
+
+// ── PHOTO VIEWER ─────────────────────────────────────
+function openPhotoViewer(url) {
+  $('pv-img').src = url;
+  $('photo-viewer').classList.add('open');
+}
+
+function closePhotoViewer() {
+  $('photo-viewer').classList.remove('open');
+}
+let ciRating = 0;
+let ciPhotoFile = null;
+let ciPhotoDataUrl = null;
+
+function openCheckin() {
+  if (!activeDish) return;
+  // Pre-fill dish info
+  $('ci-dish-name').textContent = activeDish.name;
+  $('ci-dish-coll').textContent = activeColl?.name || '';
+  const img = $('ci-dish-img').querySelector('img') || $('ci-dish-img');
+  if (activeDish.image_url) {
+    $('ci-dish-img').innerHTML = `<img src="${activeDish.image_url}" alt="${activeDish.name}">`;
+  } else {
+    $('ci-dish-img').innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;background:#F0EBE4">🍽️</div>`;
+  }
+
+  // Reset form
+  ciRating = 0; ciPhotoFile = null; ciPhotoDataUrl = null;
+  $('ci-price').value = '';
+  $('ci-location').value = '';
+  $('ci-note').value = '';
+  $('ci-photo-preview').style.display = 'none';
+  $('ci-photo-preview').src = '';
+  $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'block';
+  $('ci-photo-area').querySelector('.ci-photo-txt').style.display = 'block';
+  $('ci-uploading').style.display = 'none';
+  $('ci-save').disabled = false;
+  updateStars(0);
+
+  // Set default currency based on country
+  const currencyMap = { 'Vietnam':'VND','Thailand':'THB','Japan':'JPY','Indonesia':'IDR' };
+  $('ci-currency').value = currencyMap['Vietnam'] || 'USD';
+
+  $('ci-backdrop').classList.add('open');
+}
+
+function closeCheckin() {
+  $('ci-backdrop').classList.remove('open');
+}
+
+function ciBackdropClick(e) {
+  if (e.target === $('ci-backdrop')) closeCheckin();
+}
+
+function setRating(n) {
+  ciRating = n;
+  updateStars(n);
+}
+
+function updateStars(n) {
+  $('ci-stars').querySelectorAll('.ci-star').forEach((s, i) => {
+    s.classList.toggle('on', i < n);
+  });
+}
+
+function handlePhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  ciPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    ciPhotoDataUrl = ev.target.result;
+    $('ci-photo-preview').src = ciPhotoDataUrl;
+    $('ci-photo-preview').style.display = 'block';
+    $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'none';
+    $('ci-photo-area').querySelector('.ci-photo-txt').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function useGPS() {
+  if (!navigator.geolocation) { alert('Locatie niet beschikbaar'); return; }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const { latitude, longitude } = pos.coords;
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+      const d = await r.json();
+      const loc = d.address?.road || d.address?.suburb || d.display_name?.split(',')[0] || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+      $('ci-location').value = loc;
+    } catch(e) {
+      $('ci-location').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    }
+  }, () => alert('Kon locatie niet ophalen'));
+}
+
+async function uploadPhoto() {
+  if (!ciPhotoFile || !sbClient) return null;
+  const ext = ciPhotoFile.name.split('.').pop() || 'jpg';
+  const path = `${uid}/${activeDish.id}_${Date.now()}.${ext}`;
+  const { data, error } = await sbClient.storage
+    .from('checkin-photos')
+    .upload(path, ciPhotoFile, { upsert: true, contentType: ciPhotoFile.type });
+  if (error) { console.error('Photo upload:', error); return null; }
+  const { data: urlData } = sbClient.storage.from('checkin-photos').getPublicUrl(path);
+  return urlData?.publicUrl || null;
+}
+
+async function saveCheckin() {
+  if (!activeDish) return;
+  $('ci-save').disabled = true;
+
+  let photoUrl = null;
+  if (ciPhotoFile) {
+    $('ci-uploading').style.display = 'flex';
+    photoUrl = await uploadPhoto();
+    $('ci-uploading').style.display = 'none';
+  }
+
+  // Save experience
+  const exp = {
+    dish_id: activeDish.id,
+    user_id: uid,
+    rating: ciRating || null,
+    location_text: $('ci-location').value.trim() || null,
+    note: $('ci-note').value.trim() || null,
+    price: parseFloat($('ci-price').value) || null,
+    currency: $('ci-currency').value || 'USD',
+    photo_url: photoUrl,
+    user_display_name: sbUser?.user_metadata?.full_name || sbUser?.user_metadata?.name || null,
+    user_avatar_url: sbUser?.user_metadata?.avatar_url || null,
+  };
+
+  try {
+    const result = await api('experiences', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(exp)
+    });
+    const expId = Array.isArray(result) ? result[0]?.id : result?.id;
+
+    // Mark as collected in user_dishes
+    await markCollected(activeDish.id, expId);
+  } catch(e) {
+    console.error('saveCheckin:', e.message);
+    // Still mark as collected even if experience save failed
+    await markCollected(activeDish.id, null);
+  }
+
+  closeCheckin();
+  showCollectedFeedback();
+}
+
+async function skipCheckin() {
+  // Quick collect without any details
+  closeCheckin();
+  await markCollected(activeDish.id, null);
+  showCollectedFeedback();
+}
+
+async function markCollected(dishId, expId) {
+  if (userDishes.has(dishId)) return; // already collected
+  userDishes.add(dishId);
+  saveLocal();
+
+  try {
+    const body = { user_id: uid, dish_id: dishId };
+    if (expId) body.experience_id = expId;
+    await api('user_dishes', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.error('markCollected:', e.message); }
+
+  // Update collection counts
+  if (activeColl) {
+    const col = collections.find(c => c.id === activeColl.id);
+    if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
+  }
+  // Update progress bar
+  const tot = allDishes.length;
+  const pct = tot > 0 ? Math.round(userDishes.size / tot * 100) : 0;
+  $('tot-fill').style.width = pct + '%';
+  $('tot-txt').textContent = `${userDishes.size} / ${tot}`;
+  // Refresh grid if visible
+  if (!$('s-coll').classList.contains('gone') && activeColl) renderColl(activeColl);
+}
+
+function showCollectedFeedback() {
+  // Update the card back button
+  updateCollectBtn(true);
+  updateCardStatus(true);
+  // Brief confetti-style toast
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed;top:80px;left:50%;transform:translateX(-50%);
+    background:#1C1208;color:#fff;padding:10px 20px;border-radius:30px;
+    font-size:13px;font-weight:600;z-index:300;
+    animation:fadeInOut 2s ease forwards;
+    font-family:'DM Sans',sans-serif;
+    box-shadow:0 4px 20px rgba(0,0,0,.3);
+  `;
+  toast.textContent = `✓ ${activeDish?.name} aangevinkt!`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+async function collectDish() {
+  if (!activeDish) return;
+  const isCollected = userDishes.has(activeDish.id);
+  if (isCollected) {
+    // Uncollect: remove from user_dishes
+    userDishes.delete(activeDish.id);
+    saveLocal();
+    try {
+      await api(`user_dishes?user_id=eq.${uid}&dish_id=eq.${activeDish.id}`, { method: 'DELETE' });
+    } catch(e) { console.error('uncollect:', e.message); }
+    if (activeColl) {
+      const col = collections.find(c => c.id === activeColl.id);
+      if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
+    }
+    updateCollectBtn(false);
+    updateCardStatus(false);
+    const tot = allDishes.length;
+    $('tot-fill').style.width = (tot > 0 ? Math.round(userDishes.size / tot * 100) : 0) + '%';
+    $('tot-txt').textContent = `${userDishes.size} / ${tot}`;
+    if (!$('s-coll').classList.contains('gone') && activeColl) renderColl(activeColl);
+  } else {
+    // Open check-in sheet
+    openCheckin();
+  }
+}
+
+function updateCardStatus(done) {
+  const rc = RARITY_COLOR[activeDish?.rarity] || '#888780';
+  const statsEl = $('cb-stats');
+  const statCells = statsEl?.querySelectorAll('.cb-stat');
+  if (statCells?.[3]) {
+    statCells[3].querySelector('.cb-sv').style.color = done ? '#2A7A2A' : '#B0A090';
+    statCells[3].querySelector('.cb-sv').textContent = done ? '✓ Gegeten' : 'Nog te doen';
+  }
+}
+
+// ── SWIPE TO CLOSE ───────────────────────────────────
+let _ty = 0;
+$('card-modal').addEventListener('touchstart', e => _ty = e.touches[0].clientY, {passive:true});
+$('card-modal').addEventListener('touchend', e => {
+  if (e.changedTouches[0].clientY - _ty > 80) closeCard();
+}, {passive:true});
+
+// ── INIT ─────────────────────────────────────────────
+async function init() {
+  try {
+    await initAuth();
+    await load();
+    updateWelcome();
+    renderHome();
+    showScreen('s-home');
+    $('loading').style.display = 'none';
+  } catch(e) {
+    $('loading').innerHTML = `
+      <div style="text-align:center;padding:24px;color:#7A6A5A;font-family:'DM Sans',sans-serif">
+        <div style="font-size:40px;margin-bottom:16px">⚠️</div>
+        <div style="font-size:16px;font-weight:700;color:#1C1208;margin-bottom:8px">Kon niet laden</div>
+        <div style="font-size:13px;max-width:260px;margin:0 auto;line-height:1.5">${e.message}</div>
+        <button onclick="location.reload()" style="margin-top:20px;padding:11px 22px;border-radius:10px;background:#D4692A;color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">
+          Opnieuw proberen
+        </button>
+      </div>
+    `;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
