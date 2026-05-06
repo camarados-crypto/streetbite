@@ -4,14 +4,14 @@
 .hero-bg-fallback{position:absolute;inset:0;background:linear-gradient(135deg,#1A2B22 0%,#2D6A4F 60%,#3D8A65 100%)}
 .hero-gradient{
   position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.08) 40%,rgba(0,0,0,.08) 55%,rgba(0,0,0,.75) 100%);
+  background:linear-gradient(180deg,rgba(0,0,0,.68) 0%,rgba(0,0,0,.14) 40%,rgba(0,0,0,.18) 55%,rgba(0,0,0,.82) 100%);
 }
 .hero-topbar{
   position:absolute;top:0;left:0;right:0;z-index:2;
   padding:max(env(safe-area-inset-top,14px),14px) 16px 0;
   display:flex;align-items:center;justify-content:space-between;
 }
-.hero-logo{font-family:'DM Sans',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
+.hero-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
 .hero-logo span{color:#D4692A}
 .hero-right{display:flex;align-items:center;gap:10px}
 .hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
@@ -32,14 +32,14 @@
 }
 .hero-greeting{font-size:12px;color:rgba(255,255,255,.7);font-weight:500;margin-bottom:10px}
 .hero-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;cursor:pointer}
-.hero-title{font-family:'DM Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px}
-.hero-tagline{font-size:12.5px;color:rgba(255,255,255,.68);line-height:1.45;font-weight:400}
+.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px}
+.hero-tagline{display:none}
 .hero-total-prog{margin-top:10px}
 .hero-total-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .hero-total-prog-label{font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 .hero-total-prog-frac{font-size:11px;color:rgba(255,255,255,.6);font-weight:700}
-.hero-total-prog-bar{height:3px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
-.hero-total-prog-fill{height:100%;background:rgba(255,255,255,.5);border-radius:2px;transition:width .5s ease}
+.hero-total-prog-bar{height:5px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
+.hero-total-prog-fill{height:100%;background:#D4692A;border-radius:3px;transition:width .5s ease;box-shadow:0 0 8px rgba(212,105,42,.45)}
 
 /* ── FIRST BITES LIST ── */
 .fb-list-section{background:#0D1A14;padding:20px 16px 28px}
@@ -94,9 +94,9 @@
 .unlock-moment.show .unlock-moment-card{transform:scale(1)}
 .unlock-moment-emoji{font-size:52px;margin-bottom:12px;display:block;animation:pop .45s cubic-bezier(.34,1.56,.64,1) .1s both}
 @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
-.unlock-moment-title{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:800;color:#1C1208;margin-bottom:8px;letter-spacing:-.3px}
+.unlock-moment-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#1C1208;margin-bottom:8px;letter-spacing:-.3px}
 .unlock-moment-sub{font-size:14px;color:#7A6A5A;line-height:1.5;margin-bottom:20px}
-.unlock-moment-btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;background:#1A2B22;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.unlock-moment-btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;background:#1A2B22;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
 
 /* ── COMPLETION BANNER ── */
 @keyframes completion-glow{0%,100%{box-shadow:0 0 0 0 rgba(116,198,157,0),0 8px 24px rgba(0,0,0,.12)}50%{box-shadow:0 0 0 6px rgba(116,198,157,.18),0 8px 24px rgba(0,0,0,.12)}}
@@ -110,7 +110,7 @@
 .completion-badge-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .completion-medal{width:38px;height:38px;background:#F4B942;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 12px rgba(244,185,66,.4)}
 .completion-badge-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.completion-title{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1;margin-bottom:5px}
+.completion-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1;margin-bottom:5px}
 .completion-sub{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:14px;line-height:1.4}
 .completion-done-thumbs{display:flex;gap:6px}
 .completion-done-thumb{width:46px;height:46px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;background:#2D6A4F;border:1.5px solid rgba(116,198,157,.35)}
@@ -131,11 +131,11 @@
 .next-journey-img{width:100%;height:140px;object-fit:cover;display:block;opacity:.5}
 .next-journey-content{padding:16px 18px 18px}
 .next-journey-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#74C69D;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.next-journey-title{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-.3px}
+.next-journey-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-.3px}
 .next-journey-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:16px}
 .next-journey-meta{display:flex;align-items:center;justify-content:space-between}
 .next-journey-count{font-size:13px;color:rgba(255,255,255,.5);font-weight:500}
-.next-journey-cta{background:#74C69D;color:#0D2318;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.next-journey-cta{background:#74C69D;color:#0D2318;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background .15s}
 .next-journey-cta:active{background:#5DAB85}
 
 /* ── RECENT CHECK-INS ── */
