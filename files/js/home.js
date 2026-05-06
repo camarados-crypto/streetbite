@@ -66,7 +66,7 @@ function buildRecentHtml() {
 // ── RENDER HOME ───────────────────────────────────────
 function renderHome() {
   const countryInfo = COUNTRY_DATA[currentCountry?.name] || { tagline:'Discover the flavors of the streets.', bg:'' };
-  const heroBg = currentCountry?.bg_image_url || countryInfo.bg || '';
+  const heroBg = currentCountry?.hero_image_url || countryInfo.bg || '';
 
   // Update hero
   const heroImg = $('hero-bg-img');

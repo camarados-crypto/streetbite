@@ -109,7 +109,16 @@ html,body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);colo
 .add-input::placeholder{color:var(--muted)}
 .add-country-form{background:var(--surf);border:1px dashed var(--bdr2);border-radius:16px;padding:20px;display:flex;gap:10px;align-items:center}
 
-/* URL field status */
+/* DRAG TO REORDER */
+.dish-wrap{cursor:default}
+.drag-handle{
+  width:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  color:var(--dim);cursor:grab;font-size:14px;
+  transition:color .15s;
+}
+.drag-handle:active{cursor:grabbing}
+.dish-wrap.dragging{opacity:.4;border-style:dashed}
+.dish-wrap.drag-over{border-color:var(--orange);background:rgba(255,107,53,.05)}
 .url-wrap{position:relative;flex:1.6;display:flex;align-items:center;gap:6px}
 .url-status{font-size:14px;flex-shrink:0;line-height:1}
 .btn-upload{padding:6px 10px;font-size:11px;border-radius:8px;cursor:pointer;border:1px solid var(--bdr2);background:var(--surf2);color:var(--muted);transition:all .15s;white-space:nowrap;font-family:inherit;font-weight:600}
@@ -202,9 +211,9 @@ function getEmoji(name) {
 async function init() {
   try {
     [countries, collections, dishes] = await Promise.all([
-      sbGet('countries','select=*&order=name.asc'),
+      sbGet('countries','select=id,name,hero_image_url,tagline&order=name.asc'),
       sbGet('collections','select=*&order=name.asc'),
-      sbGet('dishes','select=id,collection_id,name,name_en,image_url,rarity,description,description_long,price_range,first_bite_order&order=name.asc'),
+      sbGet('dishes','select=id,collection_id,name,name_en,image_url,rarity,description,description_long,price_range,first_bite_order,sort_order&order=sort_order.asc.nullslast,name.asc'),
     ]);
     render();
   } catch(e) {
@@ -248,23 +257,34 @@ function render() {
 
     h += `<div class="country-block">
       <div class="country-hdr" onclick="toggleCountry('${c.id}')">
-        <div>
-          <div class="country-name">${c.name}</div>
-          <div class="country-meta">${cols.length} collecties · ${countryDishes.length} gerechten${missingTexts > 0 ? ` · <span style="color:#fb923c">${missingTexts} teksten ontbreken</span>` : ' · <span style="color:var(--green)">✓ volledig</span>'}</div>
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          ${c.hero_image_url ? `<img src="${c.hero_image_url}" style="width:52px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0">` : '<div style="width:52px;height:36px;background:var(--surf3);border-radius:6px;flex-shrink:0"></div>'}
+          <div>
+            <div class="country-name">${c.name}</div>
+            <div class="country-meta">${cols.length} collecties · ${countryDishes.length} gerechten${missingTexts > 0 ? ` · <span style="color:#fb923c">${missingTexts} teksten ontbreken</span>` : ' · <span style="color:var(--green)">✓ volledig</span>'}</div>
+          </div>
         </div>
         <div class="country-arrow" id="arr-${c.id}">▾</div>
       </div>
       <div class="country-body" id="body-${c.id}">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 0 16px;border-bottom:1px solid var(--bdr);margin-bottom:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">🖼️ Hero foto</div>
-          <div class="url-wrap" style="flex:1">
-            <input class="dish-input url" id="hero-url-${c.id}" value="${esc(c.bg_image_url||'')}" placeholder="Hero foto URL"
-              onblur="saveHeroUrl('${c.id}',this.value)"
-              onkeydown="if(event.key==='Enter')this.blur()">
-            <span class="url-status" id="hero-us-${c.id}">${c.bg_image_url ? '🟢' : '⚫'}</span>
-            <input type="file" id="hero-file-${c.id}" accept="image/*,image/heic,image/webp" style="display:none" onchange="handleHeroUpload('${c.id}',this)">
-            <button class="btn-upload" onclick="document.getElementById('hero-file-${c.id}').click()">📷 Upload</button>
-            <span class="upload-progress" id="hero-up-${c.id}">Uploaden...</span>
+        <div style="display:flex;gap:10px;margin-bottom:14px;padding:14px;background:var(--bg);border-radius:10px;border:1px solid var(--bdr)">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Hero foto URL</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="dish-input url" id="hero-url-${c.id}" value="${esc(c.hero_image_url||'')}" placeholder="https://images.unsplash.com/..."
+                onblur="updateCountryField('${c.id}','hero_image_url',this.value)"
+                onkeydown="if(event.key==='Enter')this.blur()"
+                style="flex:1;font-size:12px">
+              <input type="file" id="hero-file-${c.id}" accept="image/*" style="display:none" onchange="uploadHeroImage('${c.id}',this)">
+              <button class="btn-upload" onclick="document.getElementById('hero-file-${c.id}').click()">📷 Upload</button>
+              <span id="hero-up-${c.id}" style="font-size:11px;color:var(--orange);display:none">Uploaden...</span>
+            </div>
+            ${c.hero_image_url ? `<img src="${esc(c.hero_image_url)}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-top:4px" id="hero-preview-${c.id}">` : `<div id="hero-preview-${c.id}"></div>`}
+          </div>
+          <div style="width:200px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Tagline</div>
+            <textarea class="text-input" rows="3" id="tagline-${c.id}" placeholder="Bold flavors. Fresh ingredients..."
+              onblur="updateCountryField('${c.id}','tagline',this.value)">${esc(c.tagline||'')}</textarea>
           </div>
         </div>`;
 
@@ -285,8 +305,13 @@ function render() {
         const hasDesc = !!d.description;
         const hasLong = !!d.description_long;
 
-        h += `<div class="dish-wrap" id="dw-${d.id}">
+        h += `<div class="dish-wrap" id="dw-${d.id}" draggable="true" data-dish-id="${d.id}" data-col-id="${col.id}"
+          ondragstart="dragStart(event,'${d.id}')"
+          ondragover="dragOver(event)"
+          ondragleave="dragLeave(event)"
+          ondrop="dragDrop(event,'${col.id}')">
           <div class="dish-row">
+            <div class="drag-handle" title="Verschuiven">⠿</div>
             <div class="img-preview-wrap">
               ${img ? `<img class="dish-thumb" src="${esc(img)}" id="thumb-${d.id}" onerror="this.style.display='none';document.getElementById('fb-${d.id}').style.display='flex'">` : ''}
               <div class="dish-thumb-fb" id="fb-${d.id}" style="${img?'display:none':''}">
@@ -649,52 +674,6 @@ async function handleUpload(dishId, fileInput) {
 }
 
 
-// ── HERO URL OPSLAAN ──
-async function saveHeroUrl(countryId, url) {
-  const trimmed = url.trim();
-  try {
-    setStatus('Opslaan...','saving');
-    await sbPatch('countries', countryId, { bg_image_url: trimmed || null });
-    const c = countries.find(x => x.id === countryId);
-    if (c) c.bg_image_url = trimmed || null;
-    const statusEl = document.getElementById('hero-us-'+countryId);
-    if (statusEl) statusEl.textContent = trimmed ? '🟢' : '⚫';
-    setStatus('Opgeslagen ✓','saved');
-    setTimeout(() => setStatus('',''), 2000);
-    toast('Hero foto opgeslagen ✓');
-  } catch(e) { toast('Fout: '+e.message,'err'); }
-}
-
-// ── HERO UPLOAD ──
-async function handleHeroUpload(countryId, fileInput) {
-  const file = fileInput.files[0];
-  if (!file) return;
-  const progressEl = document.getElementById('hero-up-'+countryId);
-  const statusEl   = document.getElementById('hero-us-'+countryId);
-  if (progressEl) progressEl.style.display = 'inline';
-  if (statusEl) statusEl.textContent = '⏳';
-  try {
-    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-    const path = `hero-${countryId}.${ext}`;
-    const r = await fetch(`${SB_URL}/storage/v1/object/dish-images/${path}`, {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'x-upsert': 'true' },
-      body: file,
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const publicUrl = `${SB_URL}/storage/v1/object/public/dish-images/${path}`;
-    const inp = document.getElementById('hero-url-'+countryId);
-    if (inp) inp.value = publicUrl;
-    await saveHeroUrl(countryId, publicUrl);
-  } catch(e) {
-    toast('Upload mislukt: '+e.message, 'err');
-    if (statusEl) statusEl.textContent = '🔴';
-  } finally {
-    if (progressEl) progressEl.style.display = 'none';
-    fileInput.value = '';
-  }
-}
-
 async function updateCollection(id, field, value) {
   try {
     setStatus('Opslaan...','saving');
@@ -786,6 +765,108 @@ function reopenCountry(countryId) {
   const body = document.getElementById('body-'+countryId);
   const arr  = document.getElementById('arr-'+countryId);
   if (body) { body.classList.add('open'); arr?.classList.add('open'); }
+}
+
+// ── COUNTRY FIELDS ──
+async function updateCountryField(id, field, value) {
+  const c = countries.find(x => x.id === id);
+  if (!c) return;
+  const cleaned = (value || '').trim() || null;
+  if (c[field] === cleaned) return;
+  try {
+    setStatus('Opslaan...','saving');
+    await sbPatch('countries', id, {[field]: cleaned});
+    c[field] = cleaned;
+    // Update preview image if hero_image_url changed
+    if (field === 'hero_image_url') {
+      const prev = document.getElementById('hero-preview-'+id);
+      if (prev) { prev.src = cleaned || ''; prev.style.display = cleaned ? 'block' : 'none'; }
+    }
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+}
+
+async function uploadHeroImage(countryId, fileInput) {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const progressEl = document.getElementById('hero-up-'+countryId);
+  if (progressEl) progressEl.style.display = 'inline';
+  try {
+    const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const path = `hero_${countryId}.${ext}`;
+    const r = await fetch(`${SB_URL}/storage/v1/object/dish-images/${path}`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'x-upsert': 'true' },
+      body: file,
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const publicUrl = `${SB_URL}/storage/v1/object/public/dish-images/${path}`;
+    const inp = document.getElementById('hero-url-'+countryId);
+    if (inp) inp.value = publicUrl;
+    await updateCountryField(countryId, 'hero_image_url', publicUrl);
+    toast('Hero foto geüpload ✓');
+  } catch(e) {
+    toast('Upload mislukt: '+e.message,'err');
+  } finally {
+    if (progressEl) progressEl.style.display = 'none';
+    fileInput.value = '';
+  }
+}
+
+// ── DRAG TO REORDER ──
+let draggedId = null;
+
+function dragStart(e, dishId) {
+  draggedId = dishId;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+function dragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+async function dragDrop(e, colId) {
+  e.preventDefault();
+  const target = e.currentTarget;
+  target.classList.remove('drag-over');
+  const targetId = target.dataset.dishId;
+  if (!draggedId || draggedId === targetId) { draggedId = null; return; }
+
+  // Re-order in local array
+  const colDishes = dishes.filter(d => d.collection_id === colId)
+    .sort((a,b) => (a.sort_order??999) - (b.sort_order??999));
+
+  const fromIdx = colDishes.findIndex(d => d.id === draggedId);
+  const toIdx   = colDishes.findIndex(d => d.id === targetId);
+  if (fromIdx === -1 || toIdx === -1) { draggedId = null; return; }
+
+  // Splice
+  const [moved] = colDishes.splice(fromIdx, 1);
+  colDishes.splice(toIdx, 0, moved);
+
+  // Assign new sort_order values
+  colDishes.forEach((d, i) => { d.sort_order = i + 1; });
+
+  // Save all to DB in parallel
+  setStatus('Volgorde opslaan...','saving');
+  try {
+    await Promise.all(colDishes.map(d => sbPatch('dishes', d.id, { sort_order: d.sort_order })));
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+  } catch(err) {
+    toast('Fout bij opslaan volgorde: '+err.message,'err');
+  }
+  draggedId = null;
+
+  // Re-render to show new order
+  render();
+  reopenCountryForCol(colId);
+  document.querySelectorAll('.dish-wrap.dragging').forEach(el => el.classList.remove('dragging'));
 }
 
 init();

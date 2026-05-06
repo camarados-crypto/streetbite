@@ -20,7 +20,7 @@ async function loadUserDishes() {
 
 // ── LOAD COUNTRIES + COUNTRY DATA ────────────────────
 async function load() {
-  allCountries = await api('countries?select=id,name,bg_image_url&order=name');
+  allCountries = await api('countries?select=id,name,hero_image_url,tagline&order=name');
   if (!allCountries?.length) throw new Error('No countries found');
   const savedId = localStorage.getItem('sb_country');
   const vn = allCountries.find(c => c.name === 'Vietnam');
