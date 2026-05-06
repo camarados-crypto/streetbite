@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreetBite Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --bg:#0a0a0a; --surf:#141414; --surf2:#1c1c1c; --surf3:#222;
+  --bdr:#2a2a2a; --bdr2:#333; --txt:#f0f0f0; --muted:#666; --dim:#3a3a3a;
+  --orange:#ff6b35; --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  --purple:#a78bfa;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+.app{max-width:900px;margin:0 auto;padding:0 20px 60px}
+
+/* HEADER */
+.hdr{padding:24px 0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);margin-bottom:28px}
+.logo{font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.logo em{color:var(--orange);font-style:normal}
+.logo span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-left:10px;vertical-align:middle}
+.hdr-actions{display:flex;gap:8px;align-items:center}
+.save-status{font-size:12px;font-weight:600;color:var(--muted);transition:color .3s}
+.save-status.saved{color:var(--green)}
+.save-status.saving{color:var(--orange)}
+
+/* BUTTONS */
+.btn{padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surf3);border-color:var(--bdr2)}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--orange);border-color:var(--orange);color:#000}
+.btn-primary:hover{background:#ff7d4d;border-color:#ff7d4d}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-danger{border-color:rgba(239,68,68,.3);color:var(--red);background:rgba(239,68,68,.06)}
+.btn-danger:hover{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.5)}
+.btn-success{border-color:rgba(34,197,94,.3);color:var(--green);background:rgba(34,197,94,.06)}
+.btn-success:hover{background:rgba(34,197,94,.12)}
+.btn-text{border-color:rgba(167,139,250,.25);color:var(--purple);background:rgba(167,139,250,.06);font-size:11px;padding:5px 10px}
+.btn-text:hover{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.4)}
+.btn-text.active{background:rgba(167,139,250,.15);border-color:var(--purple)}
+
+/* STATS */
+.stats-row{display:flex;gap:12px;margin-bottom:24px}
+.stat-card{flex:1;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px}
+.stat-val{font-size:22px;font-weight:900;letter-spacing:-0.5px;margin-bottom:2px}
+.stat-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+/* COUNTRY BLOCK */
+.country-block{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.country-hdr{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .15s}
+.country-hdr:hover{background:var(--surf2)}
+.country-name{font-size:16px;font-weight:800;letter-spacing:-0.3px}
+.country-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.country-arrow{font-size:14px;color:var(--muted);transition:transform .2s}
+.country-arrow.open{transform:rotate(180deg)}
+.country-body{padding:16px 18px;display:none}
+.country-body.open{display:block}
+
+/* COLLECTION BLOCK */
+.col-block{background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.col-hdr{padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bdr)}
+.col-name-input{flex:1;background:transparent;border:none;font-size:14px;font-weight:700;color:var(--txt);font-family:inherit;outline:none}
+.col-name-input:focus{color:var(--orange)}
+.col-body{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+
+/* DISH ROW */
+.dish-wrap{border:1px solid var(--bdr);border-radius:10px;overflow:hidden;background:var(--bg)}
+.dish-wrap:hover{border-color:var(--bdr2)}
+
+.dish-row{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.dish-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;cursor:pointer}
+.dish-thumb-fb{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:var(--surf2)}
+.img-preview-wrap{position:relative;flex-shrink:0}
+.img-preview-wrap .edit-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;cursor:pointer;font-size:12px}
+.img-preview-wrap:hover .edit-overlay{opacity:1}
+
+.dish-fields{flex:1;display:flex;gap:8px;min-width:0}
+.dish-input{flex:1;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:var(--txt);font-family:inherit;outline:none;min-width:0;transition:border-color .15s}
+.dish-input:focus{border-color:var(--orange)}
+.dish-input.url{font-size:11px;font-weight:400;color:var(--muted)}
+.dish-input.url:focus{color:var(--txt)}
+.rarity-sel{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:7px 8px;font-size:12px;font-weight:700;color:var(--txt);font-family:inherit;outline:none;cursor:pointer;flex-shrink:0}
+.rarity-sel:focus{border-color:var(--orange)}
+.rarity-sel option{background:var(--surf)}
+
+/* TEXT PANEL (expanded) */
+.dish-text-panel{display:none;padding:12px 14px;border-top:1px solid var(--bdr);background:var(--surf2)}
+.dish-text-panel.open{display:block}
+.text-fields-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.text-field{display:flex;flex-direction:column;gap:5px}
+.text-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:5px}
+.text-label .lbl-badge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;text-transform:uppercase}
+.badge-en{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+.badge-front{background:rgba(255,107,53,.15);color:var(--orange);border:1px solid rgba(255,107,53,.25)}
+.badge-back{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+.text-input{background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--txt);font-family:inherit;outline:none;resize:vertical;transition:border-color .15s;line-height:1.5}
+.text-input:focus{border-color:var(--orange)}
+.text-input::placeholder{color:var(--dim)}
+.char-count{font-size:10px;color:var(--muted);text-align:right;margin-top:2px}
+
+/* ADD FORMS */
+.add-dish-row{display:flex;gap:8px;margin-top:8px}
+.add-col-row{display:flex;gap:8px;margin-top:12px}
+.add-input{flex:1;background:var(--surf);border:1px dashed var(--bdr2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--txt);font-family:inherit;outline:none;transition:border-color .15s}
+.add-input:focus{border-color:var(--orange);border-style:solid}
+.add-input::placeholder{color:var(--muted)}
+.add-country-form{background:var(--surf);border:1px dashed var(--bdr2);border-radius:16px;padding:20px;display:flex;gap:10px;align-items:center}
+
+/* URL field status */
+.url-wrap{position:relative;flex:1.6;display:flex;align-items:center;gap:6px}
+.url-status{font-size:14px;flex-shrink:0;line-height:1}
+.btn-upload{padding:6px 10px;font-size:11px;border-radius:8px;cursor:pointer;border:1px solid var(--bdr2);background:var(--surf2);color:var(--muted);transition:all .15s;white-space:nowrap;font-family:inherit;font-weight:600}
+.btn-upload:hover{background:var(--surf3);color:var(--txt);border-color:var(--orange)}
+.upload-progress{font-size:11px;color:var(--orange);font-weight:600;display:none}
+
+.fill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fill-dot.filled{background:var(--green)}
+.fill-dot.empty{background:var(--dim)}
+
+/* LOADING / TOAST */
+.loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:80px 0}
+.spinner{width:32px;height:32px;border-radius:50%;border:2.5px solid var(--bdr);border-top-color:var(--orange);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--muted);font-weight:600}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surf3);border:1px solid var(--bdr2);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;color:var(--txt);z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.ok{border-color:rgba(34,197,94,.4);color:var(--green)}
+.toast.err{border-color:rgba(239,68,68,.4);color:var(--red)}
+
+/* SECTION */
+.section{margin-bottom:32px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:15px;font-weight:800;letter-spacing:-0.3px}
+.section-sub{font-size:12px;color:var(--muted);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="logo">Street<em>Bite</em> <span>Admin</span></div>
+    <div class="hdr-actions">
+      <span class="save-status" id="save-status"></span>
+      <a href="index.html" class="btn btn-sm" style="text-decoration:none">← Naar app</a>
+    </div>
+  </div>
+  <div id="main">
+    <div class="loading"><div class="spinner"></div><div class="loading-txt">Database laden...</div></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://ztipltgnprzxxbkmsokj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aXBsdGducHJ6eHhia21zb2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTMwODMsImV4cCI6MjA5MzE4OTA4M30.bsltWzAaFFQiF07nrPIlzRsxkBZhfNsPpegE1uqQxtk';
+const H = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+let countries = [], collections = [], dishes = [];
+
+// ── API ──
+async function sbGet(table, qs='') {
+  const r = await fetch(SB_URL+'/rest/v1/'+table+'?'+qs, {headers:H});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbPatch(table, id, data) {
+  const r = await fetch(SB_URL+'/rest/v1/'+table+'?id=eq.'+id, {method:'PATCH', headers:H, body:JSON.stringify(data)});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbPost(table, data) {
+  const r = await fetch(SB_URL+'/rest/v1/'+table, {method:'POST', headers:H, body:JSON.stringify(data)});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbDelete(table, id) {
+  const r = await fetch(SB_URL+'/rest/v1/'+table+'?id=eq.'+id, {method:'DELETE', headers:{...H,'Prefer':''}});
+  if(!r.ok) throw new Error(await r.text());
+}
+
+// ── UI helpers ──
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show '+type;
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+function setStatus(txt, cls='') {
+  const el = document.getElementById('save-status');
+  el.textContent = txt; el.className = 'save-status '+cls;
+}
+function esc(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function getEmoji(name) {
+  const map={'Bánh mì':'🥖','Phở bò':'🍜','Phở gà':'🍜','Bánh xèo':'🫓','Pad Thai':'🍝','Som Tam':'🥗','Mango Sticky Rice':'🥭','Takoyaki':'🐙','Yakitori':'🍢','Cà phê trứng':'☕','Khao Soi':'🍛','Onigiri':'🍙','Karaage':'🍗'};
+  return map[name]||'🍽️';
+}
+
+// ── LOAD ──
+async function init() {
+  try {
+    [countries, collections, dishes] = await Promise.all([
+      sbGet('countries','select=*&order=name.asc'),
+      sbGet('collections','select=*&order=name.asc'),
+      sbGet('dishes','select=id,collection_id,name,name_en,image_url,rarity,description,description_long,price_range,first_bite_order&order=name.asc'),
+    ]);
+    render();
+  } catch(e) {
+    document.getElementById('main').innerHTML = '<p style="color:#f87171;padding:40px">Fout: '+e.message+'</p>';
+  }
+}
+
+// ── RENDER ──
+function render() {
+  const filledEn = dishes.filter(d => d.name_en).length;
+  const filledDesc = dishes.filter(d => d.description).length;
+  const filledLong = dishes.filter(d => d.description_long).length;
+
+  let h = `
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">${countries.length}</div><div class="stat-lbl">Landen</div></div>
+    <div class="stat-card"><div class="stat-val">${collections.length}</div><div class="stat-lbl">Collecties</div></div>
+    <div class="stat-card"><div class="stat-val">${dishes.length}</div><div class="stat-lbl">Gerechten</div></div>
+    <div class="stat-card">
+      <div class="stat-val" style="font-size:14px;display:flex;flex-direction:column;gap:3px">
+        <span style="color:var(--blue)">${filledEn}/${dishes.length} <span style="font-size:10px;font-weight:600;color:var(--muted)">EN naam</span></span>
+        <span style="color:var(--orange)">${filledDesc}/${dishes.length} <span style="font-size:10px;font-weight:600;color:var(--muted)">Front</span></span>
+        <span style="color:var(--purple)">${filledLong}/${dishes.length} <span style="font-size:10px;font-weight:600;color:var(--muted)">Back</span></span>
+      </div>
+      <div class="stat-lbl">Teksten</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-hdr">
+      <div>
+        <div class="section-title">Landen & Collecties</div>
+        <div class="section-sub">Klik op een land om uit te klappen · Klik op <span style="color:var(--purple)">✎ Teksten</span> om naam/beschrijvingen te bewerken</div>
+      </div>
+    </div>`;
+
+  countries.forEach(c => {
+    const cols = collections.filter(col => col.country_id === c.id);
+    const countryDishes = dishes.filter(d => cols.some(col => col.id === d.collection_id));
+    const missingTexts = countryDishes.filter(d => !d.name_en || !d.description).length;
+
+    h += `<div class="country-block">
+      <div class="country-hdr" onclick="toggleCountry('${c.id}')">
+        <div>
+          <div class="country-name">${c.name}</div>
+          <div class="country-meta">${cols.length} collecties · ${countryDishes.length} gerechten${missingTexts > 0 ? ` · <span style="color:#fb923c">${missingTexts} teksten ontbreken</span>` : ' · <span style="color:var(--green)">✓ volledig</span>'}</div>
+        </div>
+        <div class="country-arrow" id="arr-${c.id}">▾</div>
+      </div>
+      <div class="country-body" id="body-${c.id}">`;
+
+    cols.forEach(col => {
+      const colDishes = dishes.filter(d => d.collection_id === col.id);
+      h += `<div class="col-block">
+        <div class="col-hdr">
+          <input class="col-name-input" value="${esc(col.name)}"
+            onchange="updateCollection('${col.id}','name',this.value)" title="Naam bewerken">
+          <span style="font-size:11px;color:var(--muted)">${colDishes.length} gerechten</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteCollection('${col.id}')">Verwijder</button>
+        </div>
+        <div class="col-body">`;
+
+      colDishes.forEach(d => {
+        const img = d.image_url || '';
+        const hasEn = !!d.name_en;
+        const hasDesc = !!d.description;
+        const hasLong = !!d.description_long;
+
+        h += `<div class="dish-wrap" id="dw-${d.id}">
+          <div class="dish-row">
+            <div class="img-preview-wrap">
+              ${img ? `<img class="dish-thumb" src="${esc(img)}" id="thumb-${d.id}" onerror="this.style.display='none';document.getElementById('fb-${d.id}').style.display='flex'">` : ''}
+              <div class="dish-thumb-fb" id="fb-${d.id}" style="${img?'display:none':''}">
+                ${getEmoji(d.name)}
+              </div>
+              <div class="edit-overlay" onclick="focusUrl('${d.id}')">✏️</div>
+            </div>
+            <div class="dish-fields">
+              <input class="dish-input" value="${esc(d.name)}" placeholder="Naam"
+                onblur="updateDish('${d.id}','name',this.value)" style="flex:1.2">
+            <div class="url-wrap">
+              <input class="dish-input url" id="url-${d.id}" value="${esc(img)}" placeholder="Foto URL"
+                onblur="handleUrlBlur('${d.id}',this.value)"
+                onkeydown="if(event.key==='Enter'){this.blur()}"
+                oninput="checkUrlInput('${d.id}',this.value)">
+              <span class="url-status" id="us-${d.id}">${img ? '🟢' : '⚫'}</span>
+              <input type="file" id="file-${d.id}" accept="image/*,image/heic,image/webp" style="display:none" onchange="handleUpload('${d.id}',this)">
+              <button class="btn-upload" onclick="document.getElementById('file-${d.id}').click()">📷 Upload</button>
+              <span class="upload-progress" id="up-${d.id}">Uploaden...</span>
+            </div>
+              <select class="rarity-sel" onchange="updateDish('${d.id}','rarity',this.value)">
+                ${['common','uncommon','rare','epic','legendary'].map(r =>
+                  `<option value="${r}" ${d.rarity===r?'selected':''}>${r}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <div class="fill-dot ${hasEn?'filled':'empty'}" title="EN naam"></div>
+              <div class="fill-dot ${hasDesc?'filled':'empty'}" title="Front card"></div>
+              <div class="fill-dot ${hasLong?'filled':'empty'}" title="Back card"></div>
+              <button class="btn btn-text ${hasEn&&hasDesc&&hasLong?'':'active'}" onclick="toggleTexts('${d.id}')" style="margin-left:4px">✎ Teksten</button>
+            </div>
+            <button class="btn btn-sm btn-danger" onclick="deleteDish('${d.id}')">✕</button>
+          </div>
+
+          <div class="dish-text-panel" id="tp-${d.id}">
+            <div class="text-fields-grid">
+              <div class="text-field">
+                <div class="text-label">
+                  <span class="lbl-badge badge-en">EN</span>
+                  Engelse naam
+                </div>
+                <input class="text-input" 
+                  id="en-${d.id}"
+                  value="${esc(d.name_en||'')}" 
+                  placeholder="max 3 woorden, bijv. Grilled Pork Noodles"
+                  oninput="updateCharCount('en-${d.id}','cc-en-${d.id}',30)">
+                <div class="char-count" id="cc-en-${d.id}">${(d.name_en||'').length}/30</div>
+              </div>
+              <div class="text-field">
+                <div class="text-label">
+                  <span class="lbl-badge badge-front">FRONT</span>
+                  Kaart voorkant
+                </div>
+                <textarea class="text-input" rows="3"
+                  id="desc-${d.id}"
+                  placeholder="Korte omschrijving, 1-2 zinnen."
+                  oninput="updateCharCount('desc-${d.id}','cc-desc-${d.id}',120)">${esc(d.description||'')}</textarea>
+                <div class="char-count" id="cc-desc-${d.id}">${(d.description||'').length}/120</div>
+              </div>
+              <div class="text-field">
+                <div class="text-label">
+                  <span class="lbl-badge badge-back">BACK</span>
+                  Kaart achterkant
+                </div>
+                <textarea class="text-input" rows="3"
+                  id="long-${d.id}"
+                  placeholder="Uitgebreide beschrijving: origine, smaken, tips..."
+                  oninput="updateCharCount('long-${d.id}','cc-long-${d.id}',300)">${esc(d.description_long||'')}</textarea>
+                <div class="char-count" id="cc-long-${d.id}">${(d.description_long||'').length}/300</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);flex-wrap:wrap">
+                💰 Prijs:
+                <input class="text-input" style="display:inline;width:130px;padding:4px 8px;font-size:12px" 
+                  id="price-${d.id}"
+                  value="${esc(d.price_range||'')}" placeholder="bijv. 20–50k VND">
+                First Bites #:
+                <input class="text-input" style="display:inline;width:50px;padding:4px 8px;font-size:12px;text-align:center" 
+                  id="fbo-${d.id}"
+                  type="number" min="1" max="20"
+                  value="${d.first_bite_order||''}">
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-sm" onclick="toggleTexts('${d.id}')">Annuleren</button>
+                <button class="btn btn-sm btn-primary" onclick="saveTextPanel('${d.id}')">✓ Opslaan</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      });
+
+      h += `<div class="add-dish-row">
+          <input class="add-input" id="new-dish-${col.id}" placeholder="+ Nieuw gerecht..." onkeydown="if(event.key==='Enter')addDish('${col.id}')">
+          <button class="btn btn-sm btn-success" onclick="addDish('${col.id}')">+ Toevoegen</button>
+        </div>
+        </div></div>`;
+    });
+
+    h += `<div class="add-col-row">
+        <input class="add-input" id="new-col-${c.id}" placeholder="+ Nieuwe collectie voor ${c.name}..." onkeydown="if(event.key==='Enter')addCollection('${c.id}')">
+        <button class="btn btn-sm btn-success" onclick="addCollection('${c.id}')">+ Collectie</button>
+      </div>
+      </div></div>`;
+  });
+
+  h += `</div>
+  <div class="section">
+    <div class="section-title" style="margin-bottom:12px">Land toevoegen</div>
+    <div class="add-country-form">
+      <input class="add-input" id="new-country" placeholder="Landnaam (bijv. Mexico)" style="border-style:dashed" onkeydown="if(event.key==='Enter')addCountry()">
+      <button class="btn btn-primary" onclick="addCountry()">+ Land toevoegen</button>
+    </div>
+  </div>`;
+
+  document.getElementById('main').innerHTML = h;
+}
+
+// ── TOGGLE TEXT PANEL ──
+function toggleTexts(dishId) {
+  const panel = document.getElementById('tp-'+dishId);
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if (isOpen) {
+    // Auto-focus first empty field
+    const enField = document.getElementById('en-'+dishId);
+    const descField = document.getElementById('desc-'+dishId);
+    const d = dishes.find(x => x.id === dishId);
+    if (d && !d.name_en && enField) enField.focus();
+    else if (d && !d.description && descField) descField.focus();
+  }
+}
+
+function updateCharCount(inputId, counterId, max) {
+  const el = document.getElementById(inputId);
+  const counter = document.getElementById(counterId);
+  if (!el || !counter) return;
+  const len = el.value.length;
+  counter.textContent = len + '/' + max;
+  counter.style.color = len > max ? 'var(--red)' : len > max * 0.8 ? 'var(--orange)' : 'var(--muted)';
+}
+
+function focusUrl(id) {
+  const el = document.getElementById('url-'+id);
+  if (el) { el.focus(); el.select(); }
+}
+
+function toggleCountry(id) {
+  const body = document.getElementById('body-'+id);
+  const arr  = document.getElementById('arr-'+id);
+  const open = body.classList.toggle('open');
+  arr.classList.toggle('open', open);
+}
+
+// ── SAVE TEXT PANEL (one shot, all fields) ──
+async function saveTextPanel(dishId) {
+  const d = dishes.find(x => x.id === dishId);
+  if (!d) return;
+
+  const nameEn    = (document.getElementById('en-'+dishId)?.value || '').trim() || null;
+  const desc      = (document.getElementById('desc-'+dishId)?.value || '').trim() || null;
+  const descLong  = (document.getElementById('long-'+dishId)?.value || '').trim() || null;
+  const price     = (document.getElementById('price-'+dishId)?.value || '').trim() || null;
+  const fboRaw    = document.getElementById('fbo-'+dishId)?.value;
+  const fbo       = fboRaw ? parseInt(fboRaw) : null;
+
+  const payload = {
+    name_en: nameEn,
+    description: desc,
+    description_long: descLong,
+    price_range: price,
+    first_bite_order: fbo,
+  };
+
+  // Skip if nothing actually changed
+  const changed = Object.entries(payload).some(([k,v]) => d[k] !== v);
+  if (!changed) { toggleTexts(dishId); return; }
+
+  try {
+    setStatus('Opslaan...','saving');
+    await sbPatch('dishes', dishId, payload);
+    // Update in-memory
+    Object.assign(d, payload);
+    updateFillDots(dishId);
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+    toast('✓ Opgeslagen');
+    toggleTexts(dishId);
+  } catch(e) {
+    toast('Fout: '+e.message, 'err');
+    setStatus('','');
+  }
+}
+
+function updateFillDots(dishId) {
+  const d = dishes.find(x => x.id === dishId);
+  if (!d) return;
+  const row = document.getElementById('dw-'+dishId);
+  if (!row) return;
+  const dots = row.querySelectorAll('.fill-dot');
+  if (dots[0]) dots[0].className = 'fill-dot ' + (d.name_en ? 'filled' : 'empty');
+  if (dots[1]) dots[1].className = 'fill-dot ' + (d.description ? 'filled' : 'empty');
+  if (dots[2]) dots[2].className = 'fill-dot ' + (d.description_long ? 'filled' : 'empty');
+}
+
+// ── UPDATE BASIC FIELDS ──
+async function updateDish(id, field, value) {
+  try {
+    setStatus('Opslaan...','saving');
+    await sbPatch('dishes', id, {[field]: value});
+    const d = dishes.find(x => x.id === id);
+    if (d) d[field] = value;
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+}
+
+// ── URL HANDLING ──
+function checkUrlInput(dishId, value) {
+  const status = document.getElementById('us-'+dishId);
+  if (!status) return;
+  if (!value.trim()) { status.textContent = '⚫'; return; }
+  // Check if looks like a URL
+  const looksLikeUrl = value.startsWith('http://') || value.startsWith('https://');
+  status.textContent = looksLikeUrl ? '🟡' : '🔴';
+}
+
+async function handleUrlBlur(dishId, value) {
+  const trimmed = value.trim();
+  const d = dishes.find(x => x.id === dishId);
+  if (!d) return;
+
+  // If clearing an existing image, ask for confirmation
+  if (!trimmed && d.image_url) {
+    const inp = document.getElementById('url-'+dishId);
+    if (!confirm('Foto-URL verwijderen? De afbeelding wordt verwijderd.')) {
+      // Restore original value
+      if (inp) inp.value = d.image_url;
+      const status = document.getElementById('us-'+dishId);
+      if (status) status.textContent = '🟢';
+      return;
+    }
+  }
+
+  if (!trimmed && !d.image_url) return; // Nothing to do
+
+  await updateDishImg(dishId, trimmed);
+}
+
+async function updateDishImg(dishId, url) {
+  const d = dishes.find(x => x.id === dishId);
+  if (!d) return;
+  const newUrl = url || null;
+  if (d.image_url === newUrl) return; // no change
+
+  try {
+    setStatus('Opslaan...','saving');
+    await sbPatch('dishes', dishId, { image_url: newUrl });
+    d.image_url = newUrl;
+
+    // Update DOM
+    const thumb = document.getElementById('thumb-'+dishId);
+    const fb    = document.getElementById('fb-'+dishId);
+    const inp   = document.getElementById('url-'+dishId);
+    const status = document.getElementById('us-'+dishId);
+
+    if (newUrl) {
+      if (inp) inp.value = newUrl;
+      if (status) status.textContent = '🟡'; // loading
+      if (fb) fb.style.display = 'none';
+      if (thumb) {
+        thumb.style.display = '';
+        thumb.src = newUrl;
+        thumb.onload = () => { if (status) status.textContent = '🟢'; };
+        thumb.onerror = () => {
+          if (status) status.textContent = '🔴';
+          thumb.style.display = 'none';
+          if (fb) fb.style.display = 'flex';
+          toast('Afbeelding kon niet geladen worden — URL klopt mogelijk niet', 'err');
+        };
+      } else {
+        // Create new thumb element
+        const wrap = document.querySelector(`#dw-${dishId} .img-preview-wrap`);
+        if (wrap) {
+          const img = document.createElement('img');
+          img.className = 'dish-thumb'; img.id = 'thumb-'+dishId; img.src = newUrl;
+          img.onload = () => { if (status) status.textContent = '🟢'; };
+          img.onerror = () => {
+            if (status) status.textContent = '🔴';
+            img.style.display = 'none';
+            if (fb) fb.style.display = 'flex';
+            toast('Afbeelding kon niet geladen worden', 'err');
+          };
+          wrap.insertBefore(img, wrap.firstChild);
+        }
+      }
+    } else {
+      if (inp) inp.value = '';
+      if (status) status.textContent = '⚫';
+      if (thumb) thumb.style.display = 'none';
+      if (fb) fb.style.display = 'flex';
+    }
+
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+    toast('Foto bijgewerkt ✓');
+  } catch(e) {
+    toast('Fout bij opslaan: '+e.message, 'err');
+  }
+}
+
+// ── UPLOAD ──
+async function handleUpload(dishId, fileInput) {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const progressEl = document.getElementById('up-'+dishId);
+  const statusEl   = document.getElementById('us-'+dishId);
+  if (progressEl) progressEl.style.display = 'inline';
+  if (statusEl) statusEl.textContent = '⏳';
+
+  try {
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const path = `${dishId}.${ext}`;
+
+    const formData = new FormData();
+    formData.append('', file);
+
+    // Upload via Supabase Storage REST API
+    const r = await fetch(`${SB_URL}/storage/v1/object/dish-images/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'x-upsert': 'true',
+      },
+      body: file,
+    });
+
+    if (!r.ok) {
+      const err = await r.text();
+      throw new Error(err);
+    }
+
+    const publicUrl = `${SB_URL}/storage/v1/object/public/dish-images/${path}`;
+
+    // Update URL field and save
+    const inp = document.getElementById('url-'+dishId);
+    if (inp) inp.value = publicUrl;
+    await updateDishImg(dishId, publicUrl);
+
+  } catch(e) {
+    toast('Upload mislukt: '+e.message, 'err');
+    if (statusEl) statusEl.textContent = '🔴';
+  } finally {
+    if (progressEl) progressEl.style.display = 'none';
+    fileInput.value = ''; // reset so same file can be re-uploaded
+  }
+}
+
+
+async function updateCollection(id, field, value) {
+  try {
+    setStatus('Opslaan...','saving');
+    await sbPatch('collections', id, {[field]: value});
+    const c = collections.find(x => x.id === id);
+    if (c) c[field] = value;
+    setStatus('Opgeslagen ✓','saved');
+    setTimeout(() => setStatus('',''), 2000);
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+}
+
+// ── ADD ──
+async function addDish(colId) {
+  const inp = document.getElementById('new-dish-'+colId);
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  try {
+    setStatus('Toevoegen...','saving');
+    const [newDish] = await sbPost('dishes', {collection_id: colId, name, rarity:'common'});
+    dishes.push(newDish);
+    inp.value = '';
+    toast('Gerecht toegevoegd!');
+    render();
+    reopenCountryForCol(colId);
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+  setStatus('','');
+}
+
+async function addCollection(countryId) {
+  const inp = document.getElementById('new-col-'+countryId);
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  try {
+    setStatus('Toevoegen...','saving');
+    const [newCol] = await sbPost('collections', {country_id: countryId, name});
+    collections.push(newCol);
+    inp.value = '';
+    toast('Collectie toegevoegd!');
+    render();
+    reopenCountry(countryId);
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+  setStatus('','');
+}
+
+async function addCountry() {
+  const inp = document.getElementById('new-country');
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  try {
+    setStatus('Toevoegen...','saving');
+    const [newCountry] = await sbPost('countries', {name});
+    countries.push(newCountry);
+    inp.value = '';
+    toast('Land toegevoegd!');
+    render();
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+  setStatus('','');
+}
+
+// ── DELETE ──
+async function deleteDish(id) {
+  if (!confirm('Gerecht verwijderen?')) return;
+  try {
+    await sbDelete('dishes', id);
+    dishes = dishes.filter(d => d.id !== id);
+    document.getElementById('dw-'+id)?.remove();
+    toast('Verwijderd');
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+}
+
+async function deleteCollection(id) {
+  const count = dishes.filter(d => d.collection_id === id).length;
+  if (!confirm(`Collectie verwijderen? Dit verwijdert ook ${count} gerecht(en).`)) return;
+  try {
+    await sbDelete('collections', id);
+    collections = collections.filter(c => c.id !== id);
+    dishes = dishes.filter(d => d.collection_id !== id);
+    toast('Collectie verwijderd');
+    render();
+  } catch(e) { toast('Fout: '+e.message,'err'); }
+}
+
+// ── HELPERS ──
+function reopenCountryForCol(colId) {
+  const col = collections.find(c => c.id === colId);
+  if (col) reopenCountry(col.country_id);
+}
+function reopenCountry(countryId) {
+  const body = document.getElementById('body-'+countryId);
+  const arr  = document.getElementById('arr-'+countryId);
+  if (body) { body.classList.add('open'); arr?.classList.add('open'); }
+}
+
+init();
+</script>
+</body>
+</html>

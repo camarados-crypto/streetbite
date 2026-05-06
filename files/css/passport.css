@@ -1,0 +1,55 @@
+/* ── FOOD PASSPORT ── */
+.passport-backdrop{position:fixed;inset:0;z-index:210;background:rgba(10,18,12,.75);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.passport-backdrop.open{opacity:1;pointer-events:all}
+.passport-sheet{width:100%;background:#F7F2EA;border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);padding-bottom:env(safe-area-inset-bottom);max-height:91vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.passport-backdrop.open .passport-sheet{transform:translateY(0)}
+.passport-handle{width:40px;height:4px;border-radius:2px;background:#E0D8D0;margin:12px auto 0}
+.passport-header{background:linear-gradient(135deg,#0D2318 0%,#1A4D35 100%);margin:12px 14px 0;border-radius:20px;padding:22px 20px 20px;position:relative;overflow:hidden}
+.passport-header::before{content:'';position:absolute;top:-40px;right:-30px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(116,198,157,.15) 0%,transparent 70%)}
+.passport-header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.passport-header-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(116,198,157,.7);margin-bottom:4px}
+.passport-header-title{font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1}
+.passport-header-icon{font-size:36px;opacity:.9}
+.passport-header-stats{display:flex;gap:20px}
+.passport-hstat-v{font-size:20px;font-weight:800;color:#fff}
+.passport-hstat-l{font-size:10px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.passport-section-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;padding:20px 18px 10px}
+
+/* ── STAMPS ── */
+.stamp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
+.stamp{border-radius:18px;padding:16px 14px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s ease}
+.stamp:active{transform:scale(.97)}
+.stamp.unvisited{background:#fff;border:2px dashed #E0D8D0}
+.stamp.started{background:#fff;border:2px solid #D4692A;box-shadow:0 3px 14px rgba(212,105,42,.15)}
+.stamp.halfway{background:#fff;border:2px solid #185FA5;box-shadow:0 3px 14px rgba(24,95,165,.18)}
+.stamp.complete{background:linear-gradient(135deg,#FFF8E7,#FFF3D0);border:2px solid #F4B942;animation:stamp-glow 2.5s ease-in-out infinite}
+@keyframes stamp-glow{0%,100%{box-shadow:0 4px 18px rgba(244,185,66,.28)}50%{box-shadow:0 4px 28px rgba(244,185,66,.5)}}
+.stamp-flag{font-size:36px;line-height:1;margin-bottom:6px}
+.stamp.unvisited .stamp-flag{filter:grayscale(1);opacity:.3}
+.stamp-name{font-size:13px;font-weight:700;color:#1C1208;margin-bottom:2px}
+.stamp.unvisited .stamp-name{color:#C0B0A0}
+.stamp-count{font-size:11px;font-weight:600}
+.stamp.unvisited .stamp-count{color:#D0C0B0}
+.stamp.started .stamp-count{color:#D4692A}
+.stamp.halfway .stamp-count{color:#185FA5}
+.stamp.complete .stamp-count{color:#B07800}
+.stamp-prog{width:100%;height:3px;background:#F0EBE4;border-radius:2px;overflow:hidden;margin-top:8px}
+.stamp-prog-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.stamp.started .stamp-prog-fill{background:#D4692A}
+.stamp.halfway .stamp-prog-fill{background:#185FA5}
+.stamp.complete .stamp-prog-fill{background:#F4B942}
+.stamp-badge-icon{position:absolute;top:9px;right:9px;font-size:14px}
+
+/* ── PASSPORT BADGES ── */
+.passport-badges-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 28px}
+.passport-badge-card{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid #EAE0D5;cursor:pointer;transition:transform .15s}
+.passport-badge-card:active{transform:scale(.97)}
+.passport-badge-card.earned{background:linear-gradient(135deg,#EDF5F0,#F7FAF8);border-color:#B8DBCA}
+.passport-badge-card.locked .passport-badge-icon-wrap{filter:grayscale(1);opacity:.3}
+.passport-badge-card.locked .passport-badge-name{color:#C0B0A0}
+.passport-badge-icon-wrap{font-size:28px;margin-bottom:7px}
+.passport-badge-name{font-size:12px;font-weight:700;color:#1C1208}
+.passport-badge-sub{font-size:10px;color:#9E8E7A;margin-top:2px;line-height:1.4}
+.passport-badge-status{font-size:10px;font-weight:700;margin-top:6px;padding:3px 8px;border-radius:20px}
+.passport-badge-card.earned .passport-badge-status{background:#D4F0E4;color:#1A4D35}
+.passport-badge-card.locked .passport-badge-status{background:#F0EBE4;color:#B0A090}

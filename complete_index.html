@@ -58,8 +58,6 @@ body{background:#F7F2EA;color:#1C1208}
 .prog-txt{font-size:11px;color:#9E8E7A;margin-top:3px;text-align:right;font-weight:500}
 
 /* ── HOME ── */
-
-/* Featured essentials card */
 .feat-wrap{padding:14px 16px 0}
 .feat-card{
   position:relative;border-radius:22px;overflow:hidden;
@@ -86,12 +84,10 @@ body{background:#F7F2EA;color:#1C1208}
 .feat-prog{height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
 .feat-prog-fill{height:100%;background:#D4692A;border-radius:2px;transition:width .5s ease}
 
-/* Section headers */
 .sec-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 10px}
 .sec-title{font-size:17px;font-weight:700;color:#1C1208}
 .sec-link{font-size:13px;color:#D4692A;font-weight:600}
 
-/* Collections horizontal scroll */
 .cols-scroll{
   display:flex;gap:11px;padding:0 16px 4px;
   overflow-x:auto;-webkit-overflow-scrolling:touch;
@@ -117,7 +113,6 @@ body{background:#F7F2EA;color:#1C1208}
 .col-lock-icon{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px}
 .col-lock-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10px;color:rgba(255,255,255,.55);font-weight:500}
 
-/* Recent finds */
 .recent-scroll{
   display:flex;gap:10px;padding:0 16px 4px;
   overflow-x:auto;-webkit-overflow-scrolling:touch;
@@ -139,7 +134,6 @@ body{background:#F7F2EA;color:#1C1208}
 }
 .recent-name{font-size:11px;font-weight:600;color:#1C1208;text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .recent-coll{font-size:10px;color:#9E8E7A;text-align:center}
-
 .home-pad{height:20px}
 
 /* ── COLLECTION DETAIL ── */
@@ -151,18 +145,28 @@ body{background:#F7F2EA;color:#1C1208}
   border-bottom:1px solid rgba(0,0,0,.07);
 }
 .back-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:rgba(0,0,0,.07);border:none;
-  font-size:17px;cursor:pointer;color:#1C1208;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  background:#fff;border:1.5px solid #E8DDD0;
+  border-radius:22px;padding:7px 13px 7px 10px;
+  font-size:13px;font-weight:700;color:#1C1208;
+  cursor:pointer;flex-shrink:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
-.coll-hd-title{flex:1;font-size:16px;font-weight:700;color:#1C1208}
+.coll-hd-title{flex:1;font-size:16px;font-weight:700;color:#1C1208;padding-left:4px}
 .coll-hd-count{font-size:12px;color:#9E8E7A;font-weight:600}
-.coll-banner{position:relative;height:150px;overflow:hidden}
-.coll-banner img{width:100%;height:100%;object-fit:cover}
-.coll-banner-fade{position:absolute;inset:0;background:linear-gradient(to top,#F7F2EA 0%,transparent 55%)}
+/* Collection progress bar */
+.coll-progress-wrap{
+  padding:14px 18px 16px;
+  background:#fff;
+  border-bottom:1px solid #EAE0D5;
+}
+.coll-progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.coll-progress-label{font-size:14px;font-weight:700;color:#1C1208}
+.coll-progress-frac{font-size:18px;font-weight:700;color:#D4692A;font-family:'DM Serif Display',serif}
+.coll-progress-track{height:10px;background:#EAE0D5;border-radius:5px;overflow:hidden}
+.coll-progress-fill{height:100%;background:#D4692A;border-radius:5px;transition:width .5s ease}
+.coll-progress-sub{font-size:11px;color:#9E8E7A;margin-top:6px;font-weight:500}
 
-/* Dish grid */
 .dish-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:14px 14px 24px}
 .dish-card{
   border-radius:14px;overflow:hidden;background:#fff;
@@ -200,77 +204,99 @@ body{background:#F7F2EA;color:#1C1208}
 /* ── CARD FLIP MODAL ── */
 .modal-back{
   position:fixed;inset:0;z-index:100;
-  background:rgba(28,18,8,.72);
-  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
-  display:flex;align-items:center;justify-content:center;padding:24px 20px;
+  background:rgba(28,18,8,.78);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:20px 16px;
   opacity:0;pointer-events:none;
   transition:opacity .25s ease;
 }
 .modal-back.open{opacity:1;pointer-events:all}
 .modal-close{
   position:fixed;top:18px;right:18px;z-index:101;
-  width:34px;height:34px;border-radius:50%;
-  background:rgba(255,255,255,.14);border:none;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.16);border:none;
   color:#fff;font-size:16px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
 }
-
-/* Flip */
-.flip-wrap{width:100%;max-width:290px;perspective:1200px}
+.flip-wrap{width:100%;max-width:340px;perspective:1400px}
 .flip-inner{
   display:grid;
   transform-style:preserve-3d;
-  transition:transform .55s cubic-bezier(.4,0,.2,1);
+  transition:transform .6s cubic-bezier(.4,0,.2,1);
+  height:min(520px, 72vh);
 }
 .flip-inner.flipped{transform:rotateY(180deg)}
+@keyframes cardEntrance{
+  0%   { transform: rotateY(-90deg) scale(.92); opacity:0; }
+  60%  { transform: rotateY(12deg)  scale(1.02); opacity:1; }
+  80%  { transform: rotateY(-4deg)  scale(.99); }
+  100% { transform: rotateY(0deg)   scale(1);   }
+}
+.flip-inner.entering{animation:cardEntrance .55s cubic-bezier(.4,0,.2,1) forwards}
 .f-front,.f-back{
   grid-area:1/1;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  border-radius:18px;overflow:hidden;
+  border-radius:20px;overflow:hidden;
 }
 .f-back{transform:rotateY(180deg)}
-
-/* Card front */
 .f-front{
   border:2.5px solid var(--rc,#888780);
-  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.12);
+  box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.1);
+  cursor:pointer;
+  display:flex;flex-direction:column;background:#1A1208;
+  height:100%;
 }
-.cf-photo{width:100%;aspect-ratio:3/4;overflow:hidden;position:relative;background:#1A1208}
+/* Photo = 2/3 of card */
+.cf-photo{
+  width:100%;flex:0 0 68%;
+  overflow:hidden;position:relative;background:#1A1208;
+}
 .cf-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .cf-photo .no-img-card{
-  width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#3D2A10,#1A1208);
-  display:flex;align-items:center;justify-content:center;font-size:64px;
+  width:100%;height:100%;background:linear-gradient(135deg,#3D2A10,#1A1208);
+  display:flex;align-items:center;justify-content:center;font-size:72px;
 }
-.cf-topbar{position:absolute;top:0;left:0;right:0;padding:11px 11px 0;display:flex;justify-content:space-between;align-items:center}
+.cf-topbar{position:absolute;top:0;left:0;right:0;padding:12px 12px 0;display:flex;justify-content:space-between;align-items:center}
 .cf-rar{
-  font-size:9px;font-weight:700;padding:4px 9px;border-radius:6px;
+  font-size:9px;font-weight:700;padding:4px 10px;border-radius:6px;
   color:#fff;background:var(--rc);text-transform:uppercase;letter-spacing:.06em;
 }
 .cf-num{
   font-size:11px;font-weight:600;color:rgba(255,255,255,.75);
-  background:rgba(0,0,0,.38);padding:3px 8px;border-radius:6px;
+  background:rgba(0,0,0,.42);padding:3px 9px;border-radius:6px;
 }
-.cf-overlay{
+.cf-photo-overlay{
   position:absolute;bottom:0;left:0;right:0;
-  padding:30px 13px 13px;
-  background:linear-gradient(to top,rgba(0,0,0,.82) 0%,transparent 100%);
+  padding:36px 14px 12px;
+  background:linear-gradient(to top,rgba(0,0,0,.88) 0%,transparent 100%);
 }
-.cf-name{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.15;margin-bottom:3px}
-.cf-sub{font-size:11px;color:rgba(255,255,255,.6)}
-.cf-footer{
-  background:#fff;padding:8px 13px;
-  display:flex;justify-content:space-between;align-items:center;
+.cf-name{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.1;margin-bottom:2px}
+.cf-country{font-size:11px;color:rgba(255,255,255,.55)}
+/* Bottom info strip = 1/3 */
+.cf-info{
+  flex:1;padding:12px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  background:#fff;
 }
-.cf-footer-l{font-size:10px;color:#9E8E7A}
-.cf-hint{font-size:10px;color:var(--rc);font-weight:600}
-
-/* Card back */
+.cf-desc{font-size:11.5px;color:#5A4A3A;line-height:1.5;flex:1}
+.cf-quick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cf-qitem{
+  display:flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;color:#7A6A5A;
+  background:#F7F2EA;border-radius:8px;padding:4px 9px;
+}
+.cf-tap{
+  margin-top:auto;
+  text-align:center;font-size:10px;color:var(--rc);font-weight:600;
+  opacity:.7;
+}
 .f-back{
   background:#fff;
   border:2.5px solid var(--rc,#888780);
-  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.12);
+  box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12);
   padding:16px;
   display:flex;flex-direction:column;gap:11px;
+  height:100%;overflow-y:auto;
 }
 .cb-top{display:flex;justify-content:space-between;align-items:flex-start}
 .cb-name{font-family:'DM Serif Display',serif;font-size:18px;color:#1C1208;line-height:1.2}
@@ -319,7 +345,6 @@ body{background:#F7F2EA;color:#1C1208}
   -webkit-overflow-scrolling:touch;
 }
 .detail-backdrop.open .detail-sheet{transform:translateY(0)}
-
 .detail-hero{position:relative;height:200px;overflow:hidden;border-radius:24px 24px 0 0;background:#1A1208}
 .detail-hero img{width:100%;height:100%;object-fit:cover}
 .detail-hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(28,18,8,.85) 0%,transparent 55%)}
@@ -337,7 +362,6 @@ body{background:#F7F2EA;color:#1C1208}
   padding:3px 9px;border-radius:6px;color:#fff;margin-bottom:6px;
 }
 .detail-hero-name{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1.1}
-
 .detail-stats{
   display:grid;grid-template-columns:1fr 1fr 1fr;
   background:#fff;border-bottom:1px solid #EAE0D5;
@@ -349,11 +373,8 @@ body{background:#F7F2EA;color:#1C1208}
 .detail-stat:last-child{border-right:none}
 .detail-stat-v{font-size:18px;font-weight:700;color:#1C1208;font-family:'DM Serif Display',serif}
 .detail-stat-l{font-size:10px;color:#9E8E7A;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
-
 .detail-section{padding:18px 18px 0}
 .detail-sec-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
-
-/* Photo grid */
 .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:12px;overflow:hidden}
 .photo-thumb{
   aspect-ratio:1;overflow:hidden;cursor:pointer;background:#EAE0D5;
@@ -367,8 +388,6 @@ body{background:#F7F2EA;color:#1C1208}
   opacity:0;transition:opacity .15s;
 }
 .photo-thumb:active .photo-overlay{opacity:1}
-
-/* Experience cards */
 .exp-card{
   background:#fff;border-radius:14px;overflow:hidden;
   border:1px solid #EAE0D5;margin-bottom:10px;
@@ -388,26 +407,17 @@ body{background:#F7F2EA;color:#1C1208}
 .exp-date{font-size:11px;color:#B0A090;margin-left:auto}
 .exp-stars{font-size:13px;letter-spacing:1px}
 .exp-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.exp-chip{
-  font-size:11px;color:#7A6A5A;background:#F5F0EA;
-  padding:3px 9px;border-radius:20px;font-weight:500;
-}
+.exp-chip{font-size:11px;color:#7A6A5A;background:#F5F0EA;padding:3px 9px;border-radius:20px;font-weight:500}
 .exp-note{font-size:12px;color:#7A6A5A;margin-top:8px;line-height:1.5;font-style:italic}
-
 .detail-checkin-btn{
-  display:block;width:100%;margin:16px 18px;
-  width:calc(100% - 36px);
+  display:block;width:calc(100% - 36px);margin:16px 18px;
   padding:14px;border-radius:13px;border:none;
   background:#D4692A;color:#fff;
   font-size:15px;font-weight:700;cursor:pointer;
   font-family:'DM Sans',sans-serif;
 }
 .detail-pad{height:24px}
-
-.exp-empty{
-  text-align:center;padding:32px 20px;
-  color:#B0A090;font-size:14px;line-height:1.6;
-}
+.exp-empty{text-align:center;padding:32px 20px;color:#B0A090;font-size:14px;line-height:1.6}
 
 /* Fullscreen photo viewer */
 .photo-viewer{
@@ -424,6 +434,8 @@ body{background:#F7F2EA;color:#1C1208}
   background:rgba(255,255,255,.15);border:none;
   color:#fff;font-size:18px;cursor:pointer;
 }
+
+/* ── CHECK-IN SHEET ── */
 .checkin-backdrop{
   position:fixed;inset:0;z-index:200;
   background:rgba(28,18,8,.6);
@@ -442,63 +454,45 @@ body{background:#F7F2EA;color:#1C1208}
   max-height:92vh;overflow-y:auto;
 }
 .checkin-backdrop.open .checkin-sheet{transform:translateY(0)}
-.checkin-handle{
-  width:40px;height:4px;border-radius:2px;
-  background:#E0D8D0;margin:12px auto 0;
-}
+.checkin-handle{width:40px;height:4px;border-radius:2px;background:#E0D8D0;margin:12px auto 0}
 .checkin-head{
   display:flex;align-items:center;gap:12px;
   padding:16px 18px 14px;
   border-bottom:1px solid #F0EBE4;
 }
-.checkin-dish-img{
-  width:48px;height:48px;border-radius:10px;overflow:hidden;
-  background:#F0EBE4;flex-shrink:0;
-}
+.checkin-dish-img{width:48px;height:48px;border-radius:10px;overflow:hidden;background:#F0EBE4;flex-shrink:0}
 .checkin-dish-img img{width:100%;height:100%;object-fit:cover}
 .checkin-dish-name{font-size:15px;font-weight:700;color:#1C1208}
 .checkin-dish-coll{font-size:12px;color:#9E8E7A;margin-top:2px}
 .checkin-close{
   margin-left:auto;width:30px;height:30px;border-radius:50%;
   background:#F5F0EA;border:none;font-size:16px;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
 }
-
-/* Photo upload */
 .ci-section{padding:16px 18px 0}
 .ci-label{font-size:11px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
 .ci-photo-area{
   width:100%;aspect-ratio:16/7;border-radius:14px;overflow:hidden;
   background:#F5F0EA;border:2px dashed #E0D8D0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;position:relative;gap:6px;
-  transition:border-color .15s;
+  cursor:pointer;position:relative;gap:6px;transition:border-color .15s;
 }
 .ci-photo-area:active{border-color:#D4692A}
 .ci-photo-area img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ci-photo-icon{font-size:28px;position:relative}
 .ci-photo-txt{font-size:12px;color:#B0A090;font-weight:500;position:relative}
 .ci-photo-input{display:none}
-
-/* Stars */
 .ci-stars{display:flex;gap:6px;padding:4px 0}
-.ci-star{
-  font-size:28px;cursor:pointer;line-height:1;
-  transition:transform .1s ease;filter:grayscale(100%) opacity(.3);
-}
+.ci-star{font-size:28px;cursor:pointer;line-height:1;transition:transform .1s ease;filter:grayscale(100%) opacity(.3)}
 .ci-star.on{filter:none;transform:scale(1.1)}
 .ci-star:active{transform:scale(.95)}
-
-/* Input fields */
 .ci-row{display:flex;gap:10px;align-items:stretch}
 .ci-field{flex:1}
 .ci-input{
   width:100%;padding:12px 14px;
   background:#F7F2EA;border:1.5px solid transparent;
   border-radius:12px;font-size:14px;color:#1C1208;
-  font-family:'DM Sans',sans-serif;
-  transition:border-color .15s;outline:none;
+  font-family:'DM Sans',sans-serif;transition:border-color .15s;outline:none;
 }
 .ci-input:focus{border-color:#D4692A;background:#fff}
 .ci-input::placeholder{color:#B8A898}
@@ -506,8 +500,7 @@ body{background:#F7F2EA;color:#1C1208}
   width:80px;padding:12px 10px;
   background:#F7F2EA;border:1.5px solid transparent;
   border-radius:12px;font-size:14px;color:#1C1208;
-  font-family:'DM Sans',sans-serif;
-  outline:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;
 }
 .ci-loc-btn{
   display:flex;align-items:center;gap:6px;
@@ -517,15 +510,12 @@ body{background:#F7F2EA;color:#1C1208}
   cursor:pointer;white-space:nowrap;margin-top:6px;
   font-family:'DM Sans',sans-serif;
 }
-
-/* Buttons */
 .ci-actions{display:flex;gap:10px;padding:16px 18px 20px}
 .ci-save{
   flex:1;padding:14px;border-radius:13px;border:none;
   background:#D4692A;color:#fff;
   font-size:15px;font-weight:700;cursor:pointer;
-  font-family:'DM Sans',sans-serif;
-  transition:transform .1s;
+  font-family:'DM Sans',sans-serif;transition:transform .1s;
 }
 .ci-save:active{transform:scale(.98)}
 .ci-save:disabled{background:#E0D8D0;color:#B0A090;cursor:default}
@@ -535,10 +525,36 @@ body{background:#F7F2EA;color:#1C1208}
   font-size:13px;font-weight:600;color:#9E8E7A;
   cursor:pointer;font-family:'DM Sans',sans-serif;
 }
-.ci-uploading{
-  display:flex;align-items:center;gap:8px;
-  font-size:12px;color:#9E8E7A;padding:0 18px 12px;
+.ci-uploading{display:flex;align-items:center;gap:8px;font-size:12px;color:#9E8E7A;padding:0 18px 12px}
+
+/* ── COUNTRY PICKER OVERLAY ── */
+.cp-overlay{
+  position:fixed;inset:0;z-index:250;
+  background:rgba(28,18,8,.6);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
 }
+.cp-overlay.open{opacity:1;pointer-events:all}
+.cp-sheet{
+  width:100%;background:#F7F2EA;
+  border-radius:24px 24px 0 0;
+  padding:0 0 env(safe-area-inset-bottom);
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  max-height:70vh;overflow-y:auto;
+}
+.cp-overlay.open .cp-sheet{transform:translateY(0)}
+.cp-handle{width:40px;height:4px;border-radius:2px;background:#E0D8D0;margin:12px auto 0}
+.cp-title{padding:14px 18px 10px;font-size:15px;font-weight:700;color:#1C1208;border-bottom:1px solid #EAE0D5}
+.cp-list{padding:8px 0 8px}
+.cp-item{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;transition:background .1s}
+.cp-item:active{background:#EDE5D8}
+.cp-item.active{background:#FDF5EE}
+.cp-flag{font-size:22px;line-height:1;flex-shrink:0}
+.cp-cname{flex:1;font-size:15px;font-weight:600;color:#1C1208}
+.cp-check{font-size:14px;color:#D4692A;font-weight:700}
 
 /* ── BOTTOM NAV ── */
 #bnav{
@@ -557,14 +573,8 @@ body{background:#F7F2EA;color:#1C1208}
 .nb svg{width:22px;height:22px;stroke-width:1.7}
 
 /* ── WELCOME HEADER ── */
-.welcome-hd{
-  padding:18px 18px 14px;
-  display:flex;align-items:flex-start;justify-content:space-between;
-}
-.welcome-logo{
-  font-family:'DM Serif Display',serif;
-  font-size:22px;color:#1C1208;letter-spacing:-.3px;line-height:1;
-}
+.welcome-hd{padding:18px 18px 14px;display:flex;align-items:flex-start;justify-content:space-between}
+.welcome-logo{font-family:'DM Serif Display',serif;font-size:22px;color:#1C1208;letter-spacing:-.3px;line-height:1}
 .welcome-logo em{font-style:italic;color:#D4692A}
 .welcome-greet{font-size:13px;color:#9E8E7A;margin-top:3px;font-weight:500}
 .welcome-avatar{
@@ -578,45 +588,28 @@ body{background:#F7F2EA;color:#1C1208}
 /* ── PROFILE SCREEN ── */
 .prof-screen{padding:0 0 24px}
 .prof-hero{
-  padding:32px 20px 24px;
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;
-  background:linear-gradient(to bottom,#F0E8DA,#F7F2EA);
+  padding:32px 20px 24px;display:flex;flex-direction:column;align-items:center;
+  text-align:center;background:linear-gradient(to bottom,#F0E8DA,#F7F2EA);
   border-bottom:1px solid #EAE0D5;
 }
 .prof-av{
   width:72px;height:72px;border-radius:50%;overflow:hidden;
   background:#EAE0D5;margin-bottom:14px;
   display:flex;align-items:center;justify-content:center;
-  font-size:32px;border:3px solid #fff;
-  box-shadow:0 3px 12px rgba(0,0,0,.1);
+  font-size:32px;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.1);
 }
 .prof-av img{width:100%;height:100%;object-fit:cover}
 .prof-av.anon{background:#E0D8CC}
 .prof-name-txt{font-size:18px;font-weight:700;color:#1C1208;margin-bottom:4px}
 .prof-email{font-size:13px;color:#9E8E7A}
-.prof-stats{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  gap:1px;background:#EAE0D5;
-  border-top:1px solid #EAE0D5;border-bottom:1px solid #EAE0D5;
-}
-.prof-stat{
-  padding:16px 8px;text-align:center;
-  background:#F7F2EA;
-}
+.prof-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#EAE0D5;border-top:1px solid #EAE0D5;border-bottom:1px solid #EAE0D5}
+.prof-stat{padding:16px 8px;text-align:center;background:#F7F2EA}
 .prof-stat-v{font-size:22px;font-weight:700;color:#1C1208;font-family:'DM Serif Display',serif}
 .prof-stat-l{font-size:10px;color:#9E8E7A;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 .prof-section{padding:20px 18px 0}
 .prof-section-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
-.prof-card{
-  background:#fff;border-radius:14px;overflow:hidden;
-  border:1px solid #EAE0D5;
-}
-.prof-row{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px;border-bottom:1px solid #F7F2EA;
-  cursor:pointer;
-}
+.prof-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #EAE0D5}
+.prof-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F7F2EA;cursor:pointer}
 .prof-row:last-child{border-bottom:none}
 .prof-row-icon{width:36px;height:36px;border-radius:10px;background:#F7F2EA;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .prof-row-txt{flex:1}
@@ -627,17 +620,13 @@ body{background:#F7F2EA;color:#1C1208}
   display:flex;align-items:center;justify-content:center;gap:10px;
   width:100%;padding:14px;border-radius:12px;
   background:#fff;border:1.5px solid #EAE0D5;
-  font-size:14px;font-weight:700;color:#1C1208;
-  cursor:pointer;margin-top:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,.07);
-  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;color:#1C1208;cursor:pointer;margin-top:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);font-family:'DM Sans',sans-serif;
 }
 .sign-out-btn{
-  display:block;width:100%;margin-top:12px;
-  padding:13px;border-radius:12px;
+  display:block;width:100%;margin-top:12px;padding:13px;border-radius:12px;
   background:transparent;border:1.5px solid #EAE0D5;
-  font-size:14px;font-weight:600;color:#C05030;
-  cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;color:#C05030;cursor:pointer;font-family:'DM Sans',sans-serif;
 }
 .empty{padding:40px 20px;text-align:center;color:#B0A090;font-size:14px}
 .load-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#D4692A;margin:2px;animation:blink 1.2s ease-in-out infinite}
@@ -659,8 +648,6 @@ body{background:#F7F2EA;color:#1C1208}
 
 <!-- ── HOME SCREEN ── -->
 <div class="screen gone" id="s-home">
-
-  <!-- Welcome header -->
   <div class="welcome-hd">
     <div>
       <div class="welcome-logo">Street<em>Bite</em></div>
@@ -669,12 +656,11 @@ body{background:#F7F2EA;color:#1C1208}
     <div class="welcome-avatar" id="welcome-avatar" onclick="showTab('profile')">👤</div>
   </div>
 
-  <!-- Country + progress bar -->
   <div class="topbar" style="position:relative;top:auto;backdrop-filter:none;background:transparent;border:none;padding:0 18px 14px">
     <div class="topbar-inner">
       <button class="country-btn" onclick="openCountryPicker()">
-        <span class="flag" id="cn-flag">🇻🇳</span>
-        <span id="cn-name">Vietnam</span>
+        <span class="flag" id="cn-flag">🌏</span>
+        <span id="cn-name">Laden...</span>
         <span class="chev">▾</span>
       </button>
       <div class="prog-wrap">
@@ -684,7 +670,6 @@ body{background:#F7F2EA;color:#1C1208}
     </div>
   </div>
 
-  <!-- Featured: Essentials -->
   <div class="feat-wrap">
     <div class="feat-card" id="feat-card" onclick="">
       <img id="feat-img" src="" alt="Essentials" loading="lazy">
@@ -694,47 +679,47 @@ body{background:#F7F2EA;color:#1C1208}
         <span class="feat-counter" id="feat-counter">0 / 10</span>
       </div>
       <div class="feat-bottom">
-        <div class="feat-title" id="feat-title">Vietnam Essentials</div>
-        <div class="feat-sub">Top 10 must-eats van Vietnam</div>
+        <div class="feat-title" id="feat-title">Essentials</div>
+        <div class="feat-sub" id="feat-sub">Top must-eats</div>
         <div class="feat-prog"><div class="feat-prog-fill" id="feat-pfill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Other collections -->
   <div class="sec-hd">
     <span class="sec-title">Your Collections</span>
   </div>
   <div class="cols-scroll" id="cols-scroll"></div>
 
-  <!-- Recent finds -->
   <div class="sec-hd" id="recent-hd" style="display:none">
     <span class="sec-title">Recent finds</span>
   </div>
   <div class="recent-scroll" id="recent-scroll"></div>
-
   <div class="home-pad"></div>
 </div>
 
 <!-- ── COLLECTION DETAIL SCREEN ── -->
 <div class="screen gone" id="s-coll">
   <div class="coll-hd">
-    <button class="back-btn" onclick="goHome()">←</button>
+    <button class="back-btn" onclick="goHome()">← Home</button>
     <span class="coll-hd-title" id="cd-title">Collection</span>
-    <span class="coll-hd-count" id="cd-count"></span>
   </div>
-  <div class="coll-banner" id="cd-banner">
-    <img id="cd-img" src="" alt="">
-    <div class="coll-banner-fade"></div>
+  <div class="coll-progress-wrap" id="cd-progress">
+    <div class="coll-progress-top">
+      <span class="coll-progress-label" id="cd-prog-label">Voortgang</span>
+      <span class="coll-progress-frac" id="cd-prog-frac">0 / 0</span>
+    </div>
+    <div class="coll-progress-track">
+      <div class="coll-progress-fill" id="cd-prog-fill" style="width:0%"></div>
+    </div>
+    <div class="coll-progress-sub" id="cd-prog-sub">0% voltooid</div>
   </div>
   <div class="dish-grid" id="dish-grid"></div>
 </div>
 
 <!-- ── PROFILE SCREEN ── -->
 <div class="screen gone" id="s-profile">
-  <div class="prof-screen" id="prof-content">
-    <!-- rendered by JS -->
-  </div>
+  <div class="prof-screen" id="prof-content"></div>
 </div>
 
 <!-- ── CARD MODAL ── -->
@@ -742,29 +727,29 @@ body{background:#F7F2EA;color:#1C1208}
   <button class="modal-close" onclick="closeCard()">✕</button>
   <div class="flip-wrap">
     <div class="flip-inner" id="flip-inner">
-
-      <!-- FRONT -->
       <div class="f-front" id="card-front" onclick="flipCard()">
         <div class="cf-photo">
           <img id="cf-img" src="" alt="" style="display:none">
           <div id="cf-noimg" class="no-img-card" style="display:none">🍽️</div>
+          <div class="cf-topbar">
+            <span class="cf-rar" id="cf-rar">Common</span>
+            <span class="cf-num" id="cf-num">#001</span>
+          </div>
+          <div class="cf-photo-overlay">
+            <div class="cf-name" id="cf-name">Dish</div>
+            <div class="cf-country" id="cf-country">🌏</div>
+          </div>
         </div>
-        <div class="cf-topbar">
-          <span class="cf-rar" id="cf-rar">Common</span>
-          <span class="cf-num" id="cf-num">#001</span>
-        </div>
-        <div class="cf-overlay">
-          <div class="cf-name" id="cf-name">Dish</div>
-          <div class="cf-sub" id="cf-sub">🇻🇳 Vietnam</div>
-        </div>
-        <div class="cf-footer">
-          <span class="cf-footer-l" id="cf-coll">—</span>
-          <span class="cf-hint">Tap voor info →</span>
+        <div class="cf-info">
+          <div class="cf-desc" id="cf-desc">—</div>
+          <div class="cf-quick">
+            <span class="cf-qitem" id="cf-price">💰 —</span>
+            <span class="cf-qitem" id="cf-rating">⭐ —</span>
+          </div>
+          <div class="cf-tap">Tap voor meer info →</div>
         </div>
       </div>
-
-      <!-- BACK -->
-      <div class="f-back" id="card-back">
+      <div class="f-back" id="card-back" onclick="flipCard()" style="cursor:pointer">
         <div class="cb-top">
           <span class="cb-name" id="cb-name">Dish</span>
           <span class="cb-num" id="cb-num">#001</span>
@@ -776,9 +761,8 @@ body{background:#F7F2EA;color:#1C1208}
         <div style="text-align:center;margin-top:6px">
           <span onclick="openDetail()" style="font-size:11px;color:#D4692A;font-weight:600;cursor:pointer">Bekijk ervaringen & foto's →</span>
         </div>
-        <div class="cb-flip-back" onclick="flipCard()">← Terug naar voorkant</div>
+        <div class="cb-flip-back">← Tap om terug te draaien</div>
       </div>
-
     </div>
   </div>
 </div>
@@ -786,8 +770,6 @@ body{background:#F7F2EA;color:#1C1208}
 <!-- ── DISH DETAIL SHEET ── -->
 <div class="detail-backdrop" id="detail-backdrop" onclick="detailBackdropClick(event)">
   <div class="detail-sheet" id="detail-sheet">
-
-    <!-- Hero -->
     <div class="detail-hero" id="detail-hero">
       <img id="detail-hero-img" src="" alt="">
       <div class="detail-hero-grad"></div>
@@ -797,39 +779,21 @@ body{background:#F7F2EA;color:#1C1208}
         <div class="detail-hero-name" id="detail-hero-name">Dish</div>
       </div>
     </div>
-
-    <!-- Stats -->
     <div class="detail-stats">
-      <div class="detail-stat">
-        <div class="detail-stat-v" id="ds-checkins">—</div>
-        <div class="detail-stat-l">Check-ins</div>
-      </div>
-      <div class="detail-stat">
-        <div class="detail-stat-v" id="ds-price">—</div>
-        <div class="detail-stat-l">Ø Prijs</div>
-      </div>
-      <div class="detail-stat">
-        <div class="detail-stat-v" id="ds-rating">—</div>
-        <div class="detail-stat-l">Beoordeling</div>
-      </div>
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-checkins">—</div><div class="detail-stat-l">Check-ins</div></div>
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-price">—</div><div class="detail-stat-l">Ø Prijs</div></div>
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-rating">—</div><div class="detail-stat-l">Beoordeling</div></div>
     </div>
-
-    <!-- Photo grid (all photos) -->
     <div id="detail-photos-section" style="display:none">
       <div class="detail-section">
         <div class="detail-sec-title">📸 Alle foto's</div>
         <div class="photo-grid" id="detail-photo-grid"></div>
       </div>
     </div>
-
-    <!-- Experiences -->
     <div class="detail-section" id="detail-exps-wrap">
       <div class="detail-sec-title" id="detail-exps-title">Ervaringen</div>
-      <div id="detail-exps">
-        <div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Laden...</div>
-      </div>
+      <div id="detail-exps"><div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Laden...</div></div>
     </div>
-
     <button class="detail-checkin-btn" onclick="closeDetail(); setTimeout(openCheckin, 300)">+ Voeg jouw check-in toe</button>
     <div class="detail-pad"></div>
   </div>
@@ -845,20 +809,14 @@ body{background:#F7F2EA;color:#1C1208}
 <div class="checkin-backdrop" id="ci-backdrop" onclick="ciBackdropClick(event)">
   <div class="checkin-sheet" id="ci-sheet">
     <div class="checkin-handle"></div>
-
-    <!-- Header with dish info -->
     <div class="checkin-head">
-      <div class="checkin-dish-img">
-        <img id="ci-dish-img" src="" alt="">
-      </div>
+      <div class="checkin-dish-img"><img id="ci-dish-img" src="" alt=""></div>
       <div>
         <div class="checkin-dish-name" id="ci-dish-name">Dish</div>
         <div class="checkin-dish-coll" id="ci-dish-coll">Collection</div>
       </div>
       <button class="checkin-close" onclick="closeCheckin()">✕</button>
     </div>
-
-    <!-- Photo -->
     <div class="ci-section">
       <div class="ci-label">📸 Jouw foto</div>
       <div class="ci-photo-area" id="ci-photo-area" onclick="$('ci-photo-input').click()">
@@ -868,8 +826,6 @@ body{background:#F7F2EA;color:#1C1208}
       </div>
       <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
     </div>
-
-    <!-- Stars -->
     <div class="ci-section">
       <div class="ci-label">⭐ Beoordeling</div>
       <div class="ci-stars" id="ci-stars">
@@ -880,14 +836,10 @@ body{background:#F7F2EA;color:#1C1208}
         <span class="ci-star" onclick="setRating(5)">⭐</span>
       </div>
     </div>
-
-    <!-- Price -->
     <div class="ci-section">
       <div class="ci-label">💰 Prijs</div>
       <div class="ci-row">
-        <div class="ci-field">
-          <input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01">
-        </div>
+        <div class="ci-field"><input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01"></div>
         <select class="ci-currency" id="ci-currency">
           <option value="VND">VND</option>
           <option value="THB">THB</option>
@@ -898,8 +850,6 @@ body{background:#F7F2EA;color:#1C1208}
         </select>
       </div>
     </div>
-
-    <!-- Location -->
     <div class="ci-section">
       <div class="ci-label">📍 Locatie</div>
       <input class="ci-input" id="ci-location" type="text" placeholder="Naam van restaurant of straat">
@@ -908,24 +858,27 @@ body{background:#F7F2EA;color:#1C1208}
         Gebruik mijn locatie
       </button>
     </div>
-
-    <!-- Note -->
     <div class="ci-section">
       <div class="ci-label">📝 Notitie (optioneel)</div>
       <textarea class="ci-input" id="ci-note" rows="2" placeholder="Hoe was het?" style="resize:none;line-height:1.5"></textarea>
     </div>
-
-    <!-- Uploading indicator -->
     <div class="ci-uploading" id="ci-uploading" style="display:none">
       <div class="spin" style="width:16px;height:16px;border-width:2px"></div>
       <span>Foto uploaden...</span>
     </div>
-
-    <!-- Actions -->
     <div class="ci-actions">
       <button class="ci-skip" onclick="skipCheckin()">Snel aanvinken</button>
       <button class="ci-save" id="ci-save" onclick="saveCheckin()">✓ Check-in opslaan</button>
     </div>
+  </div>
+</div>
+
+<!-- ── COUNTRY PICKER OVERLAY ── -->
+<div class="cp-overlay" id="cp-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="cp-sheet">
+    <div class="cp-handle"></div>
+    <div class="cp-title">Kies een land 🌏</div>
+    <div class="cp-list" id="cp-list"></div>
   </div>
 </div>
 
@@ -957,13 +910,26 @@ body{background:#F7F2EA;color:#1C1208}
 // ── CONFIG ───────────────────────────────────────────
 const SB  = 'https://ztipltgnprzxxbkmsokj.supabase.co';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aXBsdGducHJ6eHhia21zb2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTMwODMsImV4cCI6MjA5MzE4OTA4M30.bsltWzAaFFQiF07nrPIlzRsxkBZhfNsPpegE1uqQxtk';
-const sbClient = (typeof supabase !== 'undefined')
-  ? supabase.createClient(SB, KEY)
-  : null;
+const sbClient = (typeof supabase !== 'undefined') ? supabase.createClient(SB, KEY) : null;
+
+// ── COUNTRY / FLAG MAPS ───────────────────────────────
+const COUNTRY_FLAGS = {
+  'Vietnam':'🇻🇳','Thailand':'🇹🇭','Japan':'🇯🇵',
+  'Indonesia':'🇮🇩','Korea':'🇰🇷','India':'🇮🇳',
+  'Mexico':'🇲🇽','Italy':'🇮🇹','Netherlands':'🇳🇱',
+  'Malaysia':'🇲🇾','Singapore':'🇸🇬','Taiwan':'🇹🇼',
+};
+const COUNTRY_CURRENCY = {
+  'Vietnam':'VND','Thailand':'THB','Japan':'JPY',
+  'Indonesia':'IDR','Netherlands':'EUR','Italy':'EUR',
+  'Malaysia':'MYR','Singapore':'SGD','Taiwan':'TWD',
+};
 
 // ── STATE ────────────────────────────────────────────
 let sbUser = null;
 let uid = null, token = null;
+let allCountries = [];
+let currentCountry = null;
 let countryId = null;
 let collections = [];
 let userDishes  = new Set();
@@ -992,6 +958,12 @@ const DESCRIPTIONS = {
   'Tiết canh':       'Rauw bloedpudding met kruiden. Niet voor angsthazen — een echte Vietnamese delicatesse.',
   'Cà phê trứng':    'Eierkoffie van Hanoi — romige eidooier-crème op sterke Vietnamese koffie. Ongelofelijk lekker.',
   'Cà phê sữa đá':   'IJskoffie met gecondenseerde melk over ijs. Sterk, zoet, onmisbaar in de hitte.',
+  'Pad Thai':        'Gebakken rijstnoedels met ei, taugé en tamarindensaus. Hét paradepaardje van Thailand.',
+  'Som Tam':         'Pittige groene papajasalade met limoen en vissaus. Fris, zuur, onverslaanbaar.',
+  'Khao Soi':        'Romige currynoedels uit Chiang Mai. Eén bord en je begrijpt waarom het legendarisch is.',
+  'Mango Sticky Rice':'Kleefrijst met kokosroom en verse mango. De zoetste afsluiter van je dag.',
+  'Takoyaki':        'Ronde ballen van beslag gevuld met octopus — gegrild op straat, gegeten met mayo.',
+  'Ramen':           'Japanse noedelsoep in rijke bouillon. Elke regio heeft zijn eigen versie, elk is perfect.',
 };
 
 const $ = id => document.getElementById(id);
@@ -1014,54 +986,34 @@ async function api(path, opts = {}) {
 // ── AUTH ─────────────────────────────────────────────
 async function initAuth() {
   if (!sbClient) {
-    // Supabase not loaded - use local ID only
     uid = localStorage.getItem('sb_uid') || crypto.randomUUID();
     localStorage.setItem('sb_uid', uid);
     token = KEY;
     return;
   }
-  // Listen for auth state changes (handles OAuth redirect)
   sbClient.auth.onAuthStateChange(async (event, session) => {
     const wasAnon = !sbUser || sbUser.is_anonymous;
     sbUser = session?.user || null;
     uid = sbUser?.id || uid;
     token = session?.access_token || token;
-
-    if (event === 'SIGNED_IN' && wasAnon && sbUser && !sbUser.is_anonymous) {
-      await migrateLocalToCloud();
-    }
-    if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) {
-      await loadUserDishes();
-      renderHome();
-    }
+    if (event === 'SIGNED_IN' && wasAnon && sbUser && !sbUser.is_anonymous) await migrateLocalToCloud();
+    if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) { await loadUserDishes(); renderHome(); }
     updateWelcome();
     if (!$('s-profile').classList.contains('gone')) renderProfile();
   });
-
-  // Get current session
   const { data: { session } } = await sbClient.auth.getSession();
-  if (session) {
-    sbUser = session.user;
-    uid = session.user.id;
-    token = session.access_token;
-    return;
-  }
-  // Sign in anonymously
+  if (session) { sbUser = session.user; uid = session.user.id; token = session.access_token; return; }
   try {
     const { data, error } = await sbClient.auth.signInAnonymously();
     if (data?.user) { sbUser = data.user; uid = data.user.id; token = data.session?.access_token; }
   } catch(e) {
-    // Fallback local ID
     uid = localStorage.getItem('sb_uid') || crypto.randomUUID();
     localStorage.setItem('sb_uid', uid);
   }
 }
 
 async function signInWithGoogle() {
-  await sbClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href }
-  });
+  await sbClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
 }
 
 async function signOut() {
@@ -1069,23 +1021,14 @@ async function signOut() {
   sbUser = null; uid = null; token = null;
   userDishes = new Set(); recentDishIds = [];
   collections.forEach(c => c.collected = 0);
-  renderHome();
-  renderProfile();
-  updateWelcome();
+  renderHome(); renderProfile(); updateWelcome();
 }
 
 async function migrateLocalToCloud() {
   if (!sbUser || sbUser.is_anonymous || userDishes.size === 0) return;
-  const rows = [...userDishes].map(dish_id => ({
-    user_id: sbUser.id, dish_id,
-    collected_at: new Date().toISOString()
-  }));
+  const rows = [...userDishes].map(dish_id => ({ user_id: sbUser.id, dish_id, collected_at: new Date().toISOString() }));
   try {
-    await api('user_dishes', {
-      method:'POST',
-      headers:{'Authorization':`Bearer ${token||KEY}`,'Prefer':'resolution=merge-duplicates,return=minimal'},
-      body: JSON.stringify(rows)
-    });
+    await api('user_dishes', { method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(rows) });
   } catch(e) { console.log('migrate:', e.message); }
 }
 
@@ -1093,15 +1036,10 @@ async function migrateLocalToCloud() {
 function updateWelcome() {
   const hr = new Date().getHours();
   const timeGreet = hr < 12 ? 'Goedemorgen' : hr < 18 ? 'Goedemiddag' : 'Goedenavond';
-  const name = sbUser?.user_metadata?.full_name?.split(' ')[0]
-             || sbUser?.user_metadata?.name?.split(' ')[0]
-             || null;
-  const greet = name
+  const name = sbUser?.user_metadata?.full_name?.split(' ')[0] || sbUser?.user_metadata?.name?.split(' ')[0] || null;
+  $('welcome-greet').textContent = name
     ? `${timeGreet}, ${name}! 🌏 What are we gonna eat?`
     : `${timeGreet}! 🌏 What are we gonna eat?`;
-  $('welcome-greet').textContent = greet;
-
-  // Avatar
   const av = $('welcome-avatar');
   const avatarUrl = sbUser?.user_metadata?.avatar_url;
   if (avatarUrl) {
@@ -1113,44 +1051,28 @@ function updateWelcome() {
   }
 }
 
-// ── PROFILE RENDER ────────────────────────────────────
+// ── PROFILE ───────────────────────────────────────────
 function renderProfile() {
   const isAnon = !sbUser || sbUser.is_anonymous;
   const name = sbUser?.user_metadata?.full_name || sbUser?.user_metadata?.name || null;
   const email = sbUser?.email || null;
   const avatarUrl = sbUser?.user_metadata?.avatar_url || null;
   const collected = userDishes.size;
-
-  const profEl = $('prof-content');
-  profEl.innerHTML = `
+  $('prof-content').innerHTML = `
     <div class="prof-hero">
       <div class="prof-av ${isAnon ? 'anon' : ''}">
-        ${avatarUrl
-          ? `<img src="${avatarUrl}" alt="${name}">`
-          : isAnon
-            ? `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,.3)" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
-            : `<span style="font-size:28px;font-weight:700;color:#9E8E7A">${(name||'?')[0].toUpperCase()}</span>`
-        }
+        ${avatarUrl ? `<img src="${avatarUrl}" alt="${name}">` : isAnon
+          ? `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(28,18,8,.3)" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
+          : `<span style="font-size:28px;font-weight:700;color:#9E8E7A">${(name||'?')[0].toUpperCase()}</span>`}
       </div>
       <div class="prof-name-txt">${name || 'Anoniem'}</div>
       ${email ? `<div class="prof-email">${email}</div>` : '<div class="prof-email">Niet ingelogd</div>'}
     </div>
-
     <div class="prof-stats">
-      <div class="prof-stat">
-        <div class="prof-stat-v">${collected}</div>
-        <div class="prof-stat-l">Gegeten</div>
-      </div>
-      <div class="prof-stat">
-        <div class="prof-stat-v">1</div>
-        <div class="prof-stat-l">Landen</div>
-      </div>
-      <div class="prof-stat">
-        <div class="prof-stat-v">—</div>
-        <div class="prof-stat-l">Badges</div>
-      </div>
+      <div class="prof-stat"><div class="prof-stat-v">${collected}</div><div class="prof-stat-l">Gegeten</div></div>
+      <div class="prof-stat"><div class="prof-stat-v">${allCountries.length||1}</div><div class="prof-stat-l">Landen</div></div>
+      <div class="prof-stat"><div class="prof-stat-v">—</div><div class="prof-stat-l">Badges</div></div>
     </div>
-
     ${isAnon ? `
       <div class="prof-section">
         <div class="prof-section-title">Bewaar je voortgang</div>
@@ -1159,7 +1081,7 @@ function renderProfile() {
             <div class="prof-row-icon">☁️</div>
             <div class="prof-row-txt">
               <div class="prof-row-label">Sync naar de cloud</div>
-              <div class="prof-row-sub">Log in om je collectie te bewaren op alle apparaten</div>
+              <div class="prof-row-sub">Log in om je collectie te bewaren</div>
             </div>
           </div>
         </div>
@@ -1189,24 +1111,17 @@ function renderProfile() {
         <button class="sign-out-btn" onclick="signOut()">Uitloggen</button>
       </div>
     `}
-
     <div class="prof-section">
       <div class="prof-section-title">Binnenkort</div>
       <div class="prof-card">
         <div class="prof-row">
           <div class="prof-row-icon">🏆</div>
-          <div class="prof-row-txt">
-            <div class="prof-row-label">Badges & achievements</div>
-            <div class="prof-row-sub">Verdien badges voor elke collectie</div>
-          </div>
+          <div class="prof-row-txt"><div class="prof-row-label">Badges & achievements</div><div class="prof-row-sub">Verdien badges voor elke collectie</div></div>
           <span class="prof-row-chev">›</span>
         </div>
         <div class="prof-row">
           <div class="prof-row-icon">🗺️</div>
-          <div class="prof-row-txt">
-            <div class="prof-row-label">Passport</div>
-            <div class="prof-row-sub">Jouw foodmap van de wereld</div>
-          </div>
+          <div class="prof-row-txt"><div class="prof-row-label">Passport</div><div class="prof-row-sub">Jouw foodmap van de wereld</div></div>
           <span class="prof-row-chev">›</span>
         </div>
       </div>
@@ -1219,58 +1134,99 @@ function saveLocal() {
   try { localStorage.setItem('sb_dishes', JSON.stringify([...userDishes])); } catch(e) {}
 }
 function loadLocal() {
-  try {
-    const d = JSON.parse(localStorage.getItem('sb_dishes') || '[]');
-    d.forEach(id => userDishes.add(id));
-  } catch(e) {}
+  try { const d = JSON.parse(localStorage.getItem('sb_dishes') || '[]'); d.forEach(id => userDishes.add(id)); } catch(e) {}
 }
 
 // ── LOAD USER DISHES ─────────────────────────────────
 async function loadUserDishes() {
-  loadLocal(); // Always restore from local first
+  loadLocal();
   if (!uid) return;
   try {
     const ud = await api(`user_dishes?user_id=eq.${uid}&select=dish_id,created_at&order=created_at.desc`);
     (ud||[]).forEach(r => userDishes.add(r.dish_id));
     recentDishIds = (ud||[]).slice(0,8).map(r => r.dish_id);
     saveLocal();
-    collections.forEach(col => {
-      col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
-    });
+    collections.forEach(col => { col.collected = col.dishes.filter(d => userDishes.has(d.id)).length; });
   } catch(e) { console.log('loadUserDishes:', e.message); }
 }
 
 // ── LOAD ─────────────────────────────────────────────
 async function load() {
-  // Country
-  const countries = await api('countries?select=id,name');
-  const vn = countries.find(c => c.name === 'Vietnam');
-  if (!vn) throw new Error('Vietnam not found');
-  countryId = vn.id;
+  // Load all countries
+  allCountries = await api('countries?select=id,name&order=name');
+  if (!allCountries?.length) throw new Error('Geen landen gevonden');
 
-  // Collections
+  // Restore last selected country, default to Vietnam
+  const savedId = localStorage.getItem('sb_country');
+  const vn = allCountries.find(c => c.name === 'Vietnam');
+  currentCountry = allCountries.find(c => c.id === savedId) || vn || allCountries[0];
+  countryId = currentCountry.id;
+
+  await loadCountryData();
+}
+
+async function loadCountryData() {
+  // Update topbar flag + name
+  $('cn-flag').textContent = COUNTRY_FLAGS[currentCountry.name] || '🌏';
+  $('cn-name').textContent = currentCountry.name;
+
+  // Collections for this country
   const cols = await api(`collections?country_id=eq.${countryId}&order=order_index&select=id,name,unlock_type,unlock_requirement,order_index`);
-  
+
   // All dishes
   const cids = cols.map(c => c.id).join(',');
-  allDishes = await api(`dishes?collection_id=in.(${cids})&select=id,collection_id,name,rarity,image_url&order=name`);
+  allDishes = cids.length > 0
+    ? await api(`dishes?collection_id=in.(${cids})&select=id,collection_id,name,rarity,image_url,description,price_range&order=name`)
+    : [];
 
   // User dishes
   let ud = [];
   if (uid) {
     try { ud = await api(`user_dishes?user_id=eq.${uid}&select=dish_id,created_at&order=created_at.desc`); }
-    catch(e){ console.log('user_dishes:', e.message); }
+    catch(e) { console.log('user_dishes:', e.message); }
   }
   userDishes = new Set((ud||[]).map(r => r.dish_id));
-  loadLocal(); // merge any locally stored dishes
+  loadLocal();
   recentDishIds = (ud||[]).slice(0,8).map(r => r.dish_id);
 
-  // Build collections with dish arrays
   collections = cols.map(col => {
     const dishes = allDishes.filter(d => d.collection_id === col.id);
     const collected = dishes.filter(d => userDishes.has(d.id)).length;
     return { ...col, dishes, collected };
   });
+}
+
+// ── COUNTRY PICKER ────────────────────────────────────
+function openCountryPicker() {
+  const list = $('cp-list');
+  list.innerHTML = allCountries.map(c => {
+    const flag = COUNTRY_FLAGS[c.name] || '🌏';
+    const active = c.id === countryId;
+    return `<div class="cp-item ${active ? 'active' : ''}" onclick="selectCountry('${c.id}')">
+      <span class="cp-flag">${flag}</span>
+      <span class="cp-cname">${c.name}</span>
+      ${active ? '<span class="cp-check">✓</span>' : ''}
+    </div>`;
+  }).join('');
+  $('cp-overlay').classList.add('open');
+}
+
+async function selectCountry(id) {
+  $('cp-overlay').classList.remove('open');
+  if (id === countryId) return;
+  currentCountry = allCountries.find(c => c.id === id);
+  countryId = id;
+  localStorage.setItem('sb_country', id);
+  // Show loading in topbar
+  $('cn-flag').textContent = '⏳';
+  $('cn-name').textContent = 'Laden...';
+  try {
+    await loadCountryData();
+    renderHome();
+    showScreen('s-home');
+    $('nb-explore').classList.add('on');
+    $('nb-coll').classList.remove('on');
+  } catch(e) { console.error('selectCountry:', e.message); }
 }
 
 // ── UNLOCK CHECK ─────────────────────────────────────
@@ -1296,6 +1252,7 @@ function renderHome() {
     $('feat-counter').textContent = `${ess.collected} / ${ess.dishes.length}`;
     $('feat-pfill').style.width = ePct + '%';
     $('feat-title').textContent = ess.name;
+    $('feat-sub').textContent = `Top must-eats van ${currentCountry.name}`;
     const fi = ess.dishes.find(d => d.image_url);
     if (fi) $('feat-img').src = fi.image_url;
     $('feat-card').onclick = () => openColl(ess);
@@ -1304,21 +1261,25 @@ function renderHome() {
   // Other collections
   const scroll = $('cols-scroll');
   scroll.innerHTML = '';
+  const colEmojis = {
+    'Street Classics':'🔥','Daredevil Eats':'🌶️','Drinks & Coffee':'☕',
+    'Drinks & Snacks':'🧋','Drinks & Sweets':'🍵','Night Market Finds':'🌙',
+    'Noodle Soups':'🍜','Ramen & Noodles':'🍜','Convenience Store Gems':'🏪',
+    'Hanoi Streets':'📍','Saigon Nights':'🌃','Bangkok Nights':'🌃',
+    'Tokyo Nights':'🗼','Northern Thailand':'🏔️','Izakaya Bites':'🍻',
+    'Spicy Challenge':'🌶️',
+  };
   collections.slice(1).forEach(col => {
     const unlocked = isUnlocked(col);
     const cp = col.dishes.length > 0 ? Math.round(col.collected / col.dishes.length * 100) : 0;
     const imgDish = col.dishes.find(d => d.image_url);
-    const colEmoji = {
-      'Street Classics':'🔥','Daredevil Eats':'🌶️',
-      'Drinks & Coffee':'☕','Hanoi Streets':'📍','Saigon Nights':'🌃'
-    }[col.name] || '🍽️';
-
+    const emoji = colEmojis[col.name] || '🍽️';
     const el = document.createElement('div');
     el.className = 'col-card';
     el.innerHTML = `
       ${imgDish
         ? `<img src="${imgDish.image_url}" alt="${col.name}" loading="lazy">`
-        : `<div class="col-card-placeholder" style="background:linear-gradient(135deg,#3D2510,#1A1208)">${colEmoji}</div>`}
+        : `<div class="col-card-placeholder" style="background:linear-gradient(135deg,#3D2510,#1A1208)">${emoji}</div>`}
       <div class="col-grad"></div>
       <div class="col-content">
         <div class="col-name">${col.name}</div>
@@ -1326,9 +1287,7 @@ function renderHome() {
         <div class="col-prog"><div class="col-prog-fill" style="width:${cp}%"></div></div>
       </div>
       ${!unlocked ? `
-        <div class="col-lock">
-          <div class="col-lock-icon">🔒</div>
-        </div>
+        <div class="col-lock"><div class="col-lock-icon">🔒</div></div>
         <div class="col-lock-label">Unlock op ${col.unlock_requirement}%</div>
       ` : ''}
     `;
@@ -1370,14 +1329,14 @@ function renderHome() {
 function renderColl(col) {
   activeColl = col;
   $('cd-title').textContent = col.name;
-  $('cd-count').textContent = `${col.collected} / ${col.dishes.length}`;
 
-  const bImg = col.dishes.find(d => d.image_url);
-  const banner = $('cd-banner');
-  if (bImg) { $('cd-img').src = bImg.image_url; banner.style.display = 'block'; }
-  else banner.style.display = 'none';
+  // Progress bar
+  const pct = col.dishes.length > 0 ? Math.round(col.collected / col.dishes.length * 100) : 0;
+  $('cd-prog-label').textContent = col.name;
+  $('cd-prog-frac').textContent = `${col.collected} / ${col.dishes.length}`;
+  $('cd-prog-fill').style.width = pct + '%';
+  $('cd-prog-sub').textContent = `${pct}% voltooid`;
 
-  // Sort: collected desc, then rarity desc
   const order = ['legendary','epic','rare','uncommon','common'];
   const sorted = [...col.dishes].sort((a,b) => {
     const ac = userDishes.has(a.id) ? 0 : 1;
@@ -1425,91 +1384,82 @@ function showScreen(id) {
 function showTab(tab) {
   ['nb-explore','nb-coll','nb-profile'].forEach(b => $(b).classList.remove('on'));
   if (tab === 'home') {
-    showScreen('s-home');
-    $('nb-explore').classList.add('on');
+    showScreen('s-home'); $('nb-explore').classList.add('on');
   } else if (tab === 'coll') {
     if (collections.length > 1) openColl(collections[1]);
     else if (collections.length > 0) openColl(collections[0]);
     $('nb-coll').classList.add('on');
   } else if (tab === 'profile') {
-    renderProfile();
-    showScreen('s-profile');
-    $('nb-profile').classList.add('on');
-    $('s-profile').scrollTop = 0;
+    renderProfile(); showScreen('s-profile');
+    $('nb-profile').classList.add('on'); $('s-profile').scrollTop = 0;
   }
 }
 function openColl(col) {
-  renderColl(col);
-  showScreen('s-coll');
-  $('s-coll').scrollTop = 0;
-  $('nb-coll').classList.add('on');
-  $('nb-explore').classList.remove('on');
+  renderColl(col); showScreen('s-coll'); $('s-coll').scrollTop = 0;
+  $('nb-coll').classList.add('on'); $('nb-explore').classList.remove('on');
 }
 function goHome() {
-  renderHome();
-  showScreen('s-home');
-  $('nb-explore').classList.add('on');
-  $('nb-coll').classList.remove('on');
+  renderHome(); showScreen('s-home');
+  $('nb-explore').classList.add('on'); $('nb-coll').classList.remove('on');
 }
-function openCountryPicker() { alert('Meer landen komen eraan! 🌏'); }
 
 // ── CARD MODAL ───────────────────────────────────────
-function openCard(dish, num) {
+async function openCard(dish, num) {
   activeDish = dish; activeDishNum = num; flipped = false;
   const rc = RARITY_COLOR[dish.rarity] || '#888780';
   const done = userDishes.has(dish.id);
+  const flag = COUNTRY_FLAGS[currentCountry?.name] || '🌏';
 
-  // Set rarity color variable
   $('card-modal').style.setProperty('--rc', rc);
   $('card-front').style.setProperty('--rc', rc);
   $('card-back').style.setProperty('--rc', rc);
 
-  // Front
+  // Photo
   if (dish.image_url) {
-    $('cf-img').src = dish.image_url;
-    $('cf-img').style.display = 'block';
-    $('cf-noimg').style.display = 'none';
+    $('cf-img').src = dish.image_url; $('cf-img').style.display = 'block'; $('cf-noimg').style.display = 'none';
   } else {
-    $('cf-img').style.display = 'none';
-    $('cf-noimg').style.display = 'flex';
+    $('cf-img').style.display = 'none'; $('cf-noimg').style.display = 'flex';
   }
+
+  // Front
   $('cf-rar').textContent = dish.rarity;
   $('cf-num').textContent = `#${String(num).padStart(3,'0')}`;
   $('cf-name').textContent = dish.name;
-  $('cf-sub').textContent = `🇻🇳 Vietnam · ${activeColl?.name || ''}`;
-  $('cf-coll').textContent = activeColl?.name || '';
+  $('cf-country').textContent = `${flag} ${currentCountry?.name || ''} · ${activeColl?.name || ''}`;
+  $('cf-desc').textContent = dish.description || DESCRIPTIONS[dish.name] || 'Een authentiek straatgerecht — proef het zodra je de kans krijgt!';
+  $('cf-price').textContent = `💰 ${dish.price_range || '—'}`;
+  $('cf-rating').textContent = `⭐ —`;
 
   // Back
   $('cb-name').textContent = dish.name;
   $('cb-num').textContent  = `#${String(num).padStart(3,'0')}`;
-  $('cb-desc').textContent = DESCRIPTIONS[dish.name] || `Een authentiek gerecht uit de ${activeColl?.name || 'collectie'}. Proef het zodra je de kans krijgt!`;
+  $('cb-desc').textContent = dish.description || DESCRIPTIONS[dish.name] || `Een authentiek gerecht uit de ${activeColl?.name || 'collectie'}.`;
   $('cb-stats').innerHTML = `
-    <div class="cb-stat">
-      <div class="cb-sl">Rarity</div>
-      <div class="cb-sv" style="color:${rc}">${dish.rarity}</div>
-    </div>
-    <div class="cb-stat">
-      <div class="cb-sl">Collectie</div>
-      <div class="cb-sv">${(activeColl?.name||'').split(' ').slice(0,2).join(' ')}</div>
-    </div>
-    <div class="cb-stat">
-      <div class="cb-sl">Land</div>
-      <div class="cb-sv">🇻🇳 Vietnam</div>
-    </div>
-    <div class="cb-stat">
-      <div class="cb-sl">Status</div>
-      <div class="cb-sv" style="color:${done?'#2A7A2A':'#B0A090'}">${done?'✓ Gegeten':'Nog te doen'}</div>
-    </div>
+    <div class="cb-stat"><div class="cb-sl">Rarity</div><div class="cb-sv" style="color:${rc}">${dish.rarity}</div></div>
+    <div class="cb-stat"><div class="cb-sl">Prijs</div><div class="cb-sv" id="cb-price">${dish.price_range || '—'}</div></div>
+    <div class="cb-stat"><div class="cb-sl">Land</div><div class="cb-sv">${flag} ${currentCountry?.name||''}</div></div>
+    <div class="cb-stat"><div class="cb-sl">Status</div><div class="cb-sv" style="color:${done?'#2A7A2A':'#B0A090'}">${done?'✓ Gegeten':'Nog te doen'}</div></div>
   `;
   updateCollectBtn(done);
 
-  $('flip-inner').classList.remove('flipped');
+  // Entrance: 3x spin then land on front
+  const inner = $('flip-inner');
+  inner.classList.remove('flipped','entering');
   $('card-modal').classList.add('open');
+  requestAnimationFrame(() => requestAnimationFrame(() => inner.classList.add('entering')));
+  inner.addEventListener('animationend', () => inner.classList.remove('entering'), {once:true});
+
+  // Load avg rating async
+  try {
+    const exps = await api(`experiences?dish_id=eq.${dish.id}&rating=not.is.null&select=rating`);
+    if (exps?.length > 0) {
+      const avg = exps.reduce((s,e) => s + e.rating, 0) / exps.length;
+      const avgTxt = `⭐ ${avg.toFixed(1)}`;
+      $('cf-rating').textContent = avgTxt;
+    }
+  } catch(e) {}
 }
-function flipCard() {
-  flipped = !flipped;
-  $('flip-inner').classList.toggle('flipped', flipped);
-}
+function flipCard() { flipped = !flipped; $('flip-inner').classList.toggle('flipped', flipped); }
 function closeCard() {
   $('card-modal').classList.remove('open');
   setTimeout(() => { flipped = false; $('flip-inner').classList.remove('flipped'); }, 300);
@@ -1526,58 +1476,34 @@ async function openDetail() {
   if (!activeDish) return;
   const dish = activeDish;
   const rc = RARITY_COLOR[dish.rarity] || '#888780';
-
-  // Hero
-  if (dish.image_url) {
-    $('detail-hero-img').src = dish.image_url;
-    $('detail-hero-img').style.display = 'block';
-  } else {
-    $('detail-hero-img').style.display = 'none';
-    $('detail-hero').style.background = '#2A1808';
-  }
+  if (dish.image_url) { $('detail-hero-img').src = dish.image_url; $('detail-hero-img').style.display = 'block'; }
+  else { $('detail-hero-img').style.display = 'none'; $('detail-hero').style.background = '#2A1808'; }
   $('detail-hero-rar').textContent = dish.rarity;
   $('detail-hero-rar').style.background = rc;
   $('detail-hero-name').textContent = dish.name;
-
-  // Reset stats
-  $('ds-checkins').textContent = '—';
-  $('ds-price').textContent = '—';
-  $('ds-rating').textContent = '—';
+  $('ds-checkins').textContent = '—'; $('ds-price').textContent = '—'; $('ds-rating').textContent = '—';
   $('detail-exps').innerHTML = '<div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Laden...</div>';
   $('detail-photos-section').style.display = 'none';
-
   $('detail-backdrop').classList.add('open');
   $('detail-sheet').scrollTop = 0;
-
-  // Load experiences
   try {
     const exps = await api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`);
     renderDetailExperiences(dish, exps || []);
-  } catch(e) {
-    $('detail-exps').innerHTML = `<div class="exp-empty">Kon ervaringen niet laden.</div>`;
-  }
+  } catch(e) { $('detail-exps').innerHTML = `<div class="exp-empty">Kon ervaringen niet laden.</div>`; }
 }
 
 function renderDetailExperiences(dish, exps) {
-  const rc = RARITY_COLOR[dish.rarity] || '#888780';
-
-  // Stats
   $('ds-checkins').textContent = exps.length || '0';
-
   const withPrice = exps.filter(e => e.price && e.price > 0);
   if (withPrice.length > 0) {
     const avg = withPrice.reduce((s,e) => s + parseFloat(e.price), 0) / withPrice.length;
-    const currency = withPrice[0].currency || '';
-    $('ds-price').textContent = formatPrice(avg, currency);
+    $('ds-price').textContent = formatPrice(avg, withPrice[0].currency || '');
   }
-
   const withRating = exps.filter(e => e.rating && e.rating > 0);
   if (withRating.length > 0) {
     const avg = withRating.reduce((s,e) => s + e.rating, 0) / withRating.length;
     $('ds-rating').textContent = '★ ' + avg.toFixed(1);
   }
-
-  // Photo grid
   const photos = exps.filter(e => e.photo_url);
   if (photos.length > 0) {
     $('detail-photos-section').style.display = 'block';
@@ -1588,34 +1514,14 @@ function renderDetailExperiences(dish, exps) {
       </div>
     `).join('');
   }
-
-  // Separate mine vs community
   const mine = exps.filter(e => e.user_id === uid);
   const community = exps.filter(e => e.user_id !== uid);
-
   let html = '';
-
-  if (mine.length > 0) {
-    html += `<div class="detail-sec-title" style="margin-bottom:10px">Jouw check-ins (${mine.length})</div>`;
-    html += mine.map(e => renderExpCard(e, true)).join('');
-  }
-
-  if (community.length > 0) {
-    html += `<div class="detail-sec-title" style="margin:${mine.length?'16px':'0'} 0 10px">Community (${community.length})</div>`;
-    html += community.map(e => renderExpCard(e, false)).join('');
-  }
-
-  if (exps.length === 0) {
-    html = `
-      <div class="exp-empty">
-        Nog geen check-ins voor dit gerecht.<br>
-        Wees de eerste! 🍽️
-      </div>
-    `;
-  }
-
+  if (mine.length > 0) { html += `<div class="detail-sec-title" style="margin-bottom:10px">Jouw check-ins (${mine.length})</div>`; html += mine.map(e => renderExpCard(e, true)).join(''); }
+  if (community.length > 0) { html += `<div class="detail-sec-title" style="margin:${mine.length?'16px':'0'} 0 10px">Community (${community.length})</div>`; html += community.map(e => renderExpCard(e, false)).join(''); }
+  if (exps.length === 0) html = `<div class="exp-empty">Nog geen check-ins voor dit gerecht.<br>Wees de eerste! 🍽️</div>`;
   $('detail-exps').innerHTML = html;
-  $('detail-exps-wrap').querySelector('.detail-sec-title').style.display = 'none'; // hide outer title, inner titles handle it
+  $('detail-exps-wrap').querySelector('.detail-sec-title').style.display = 'none';
 }
 
 function renderExpCard(exp, isOwn) {
@@ -1623,21 +1529,12 @@ function renderExpCard(exp, isOwn) {
   const date = exp.created_at ? new Date(exp.created_at).toLocaleDateString('nl-NL', {day:'numeric',month:'short',year:'numeric'}) : '';
   const initials = (exp.user_display_name || (isOwn ? 'Jij' : '?')).charAt(0).toUpperCase();
   const name = exp.user_display_name || (isOwn ? 'Jij' : 'Anoniem');
-
   return `
     <div class="exp-card">
-      ${exp.photo_url ? `
-        <div class="exp-card-photo" onclick="openPhotoViewer('${exp.photo_url}')">
-          <img src="${exp.photo_url}" alt="" loading="lazy">
-        </div>
-      ` : ''}
+      ${exp.photo_url ? `<div class="exp-card-photo" onclick="openPhotoViewer('${exp.photo_url}')"><img src="${exp.photo_url}" alt="" loading="lazy"></div>` : ''}
       <div class="exp-card-body">
         <div class="exp-card-top">
-          <div class="exp-avatar">
-            ${exp.user_avatar_url
-              ? `<img src="${exp.user_avatar_url}" alt="${name}">`
-              : initials}
-          </div>
+          <div class="exp-avatar">${exp.user_avatar_url ? `<img src="${exp.user_avatar_url}" alt="${name}">` : initials}</div>
           <span class="exp-name">${name}${isOwn ? ' <span style="color:#D4692A;font-size:10px">(jij)</span>' : ''}</span>
           <span class="exp-date">${date}</span>
         </div>
@@ -1662,87 +1559,47 @@ function formatPrice(price, currency) {
   return currency + ' ' + price.toFixed(2);
 }
 
-function closeDetail() {
-  $('detail-backdrop').classList.remove('open');
-}
-
-function detailBackdropClick(e) {
-  if (e.target === $('detail-backdrop')) closeDetail();
-}
+function closeDetail() { $('detail-backdrop').classList.remove('open'); }
+function detailBackdropClick(e) { if (e.target === $('detail-backdrop')) closeDetail(); }
 
 // ── PHOTO VIEWER ─────────────────────────────────────
-function openPhotoViewer(url) {
-  $('pv-img').src = url;
-  $('photo-viewer').classList.add('open');
-}
+function openPhotoViewer(url) { $('pv-img').src = url; $('photo-viewer').classList.add('open'); }
+function closePhotoViewer() { $('photo-viewer').classList.remove('open'); }
 
-function closePhotoViewer() {
-  $('photo-viewer').classList.remove('open');
-}
-let ciRating = 0;
-let ciPhotoFile = null;
-let ciPhotoDataUrl = null;
+// ── CHECK-IN ─────────────────────────────────────────
+let ciRating = 0, ciPhotoFile = null, ciPhotoDataUrl = null;
 
 function openCheckin() {
   if (!activeDish) return;
-  // Pre-fill dish info
   $('ci-dish-name').textContent = activeDish.name;
   $('ci-dish-coll').textContent = activeColl?.name || '';
-  const img = $('ci-dish-img').querySelector('img') || $('ci-dish-img');
   if (activeDish.image_url) {
     $('ci-dish-img').innerHTML = `<img src="${activeDish.image_url}" alt="${activeDish.name}">`;
   } else {
     $('ci-dish-img').innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;background:#F0EBE4">🍽️</div>`;
   }
-
-  // Reset form
   ciRating = 0; ciPhotoFile = null; ciPhotoDataUrl = null;
-  $('ci-price').value = '';
-  $('ci-location').value = '';
-  $('ci-note').value = '';
-  $('ci-photo-preview').style.display = 'none';
-  $('ci-photo-preview').src = '';
+  $('ci-price').value = ''; $('ci-location').value = ''; $('ci-note').value = '';
+  $('ci-photo-preview').style.display = 'none'; $('ci-photo-preview').src = '';
   $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'block';
   $('ci-photo-area').querySelector('.ci-photo-txt').style.display = 'block';
-  $('ci-uploading').style.display = 'none';
-  $('ci-save').disabled = false;
+  $('ci-uploading').style.display = 'none'; $('ci-save').disabled = false;
   updateStars(0);
-
-  // Set default currency based on country
-  const currencyMap = { 'Vietnam':'VND','Thailand':'THB','Japan':'JPY','Indonesia':'IDR' };
-  $('ci-currency').value = currencyMap['Vietnam'] || 'USD';
-
+  $('ci-currency').value = COUNTRY_CURRENCY[currentCountry?.name] || 'USD';
   $('ci-backdrop').classList.add('open');
 }
-
-function closeCheckin() {
-  $('ci-backdrop').classList.remove('open');
-}
-
-function ciBackdropClick(e) {
-  if (e.target === $('ci-backdrop')) closeCheckin();
-}
-
-function setRating(n) {
-  ciRating = n;
-  updateStars(n);
-}
-
-function updateStars(n) {
-  $('ci-stars').querySelectorAll('.ci-star').forEach((s, i) => {
-    s.classList.toggle('on', i < n);
-  });
-}
+function closeCheckin() { $('ci-backdrop').classList.remove('open'); }
+function ciBackdropClick(e) { if (e.target === $('ci-backdrop')) closeCheckin(); }
+function setRating(n) { ciRating = n; updateStars(n); }
+function updateStars(n) { $('ci-stars').querySelectorAll('.ci-star').forEach((s,i) => s.classList.toggle('on', i < n)); }
 
 function handlePhotoSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  const file = e.target.files[0]; if (!file) return;
   ciPhotoFile = file;
   const reader = new FileReader();
   reader.onload = ev => {
     ciPhotoDataUrl = ev.target.result;
-    $('ci-photo-preview').src = ciPhotoDataUrl;
-    $('ci-photo-preview').style.display = 'block';
+    $('ci-photo-preview').src = ciPhotoDataUrl; $('ci-photo-preview').style.display = 'block';
     $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'none';
     $('ci-photo-area').querySelector('.ci-photo-txt').style.display = 'none';
   };
@@ -1756,11 +1613,8 @@ function useGPS() {
     try {
       const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
       const d = await r.json();
-      const loc = d.address?.road || d.address?.suburb || d.display_name?.split(',')[0] || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-      $('ci-location').value = loc;
-    } catch(e) {
-      $('ci-location').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-    }
+      $('ci-location').value = d.address?.road || d.address?.suburb || d.display_name?.split(',')[0] || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    } catch(e) { $('ci-location').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`; }
   }, () => alert('Kon locatie niet ophalen'));
 }
 
@@ -1768,9 +1622,7 @@ async function uploadPhoto() {
   if (!ciPhotoFile || !sbClient) return null;
   const ext = ciPhotoFile.name.split('.').pop() || 'jpg';
   const path = `${uid}/${activeDish.id}_${Date.now()}.${ext}`;
-  const { data, error } = await sbClient.storage
-    .from('checkin-photos')
-    .upload(path, ciPhotoFile, { upsert: true, contentType: ciPhotoFile.type });
+  const { data, error } = await sbClient.storage.from('checkin-photos').upload(path, ciPhotoFile, { upsert: true, contentType: ciPhotoFile.type });
   if (error) { console.error('Photo upload:', error); return null; }
   const { data: urlData } = sbClient.storage.from('checkin-photos').getPublicUrl(path);
   return urlData?.publicUrl || null;
@@ -1779,18 +1631,10 @@ async function uploadPhoto() {
 async function saveCheckin() {
   if (!activeDish) return;
   $('ci-save').disabled = true;
-
   let photoUrl = null;
-  if (ciPhotoFile) {
-    $('ci-uploading').style.display = 'flex';
-    photoUrl = await uploadPhoto();
-    $('ci-uploading').style.display = 'none';
-  }
-
-  // Save experience
+  if (ciPhotoFile) { $('ci-uploading').style.display = 'flex'; photoUrl = await uploadPhoto(); $('ci-uploading').style.display = 'none'; }
   const exp = {
-    dish_id: activeDish.id,
-    user_id: uid,
+    dish_id: activeDish.id, user_id: uid,
     rating: ciRating || null,
     location_text: $('ci-location').value.trim() || null,
     note: $('ci-note').value.trim() || null,
@@ -1800,77 +1644,39 @@ async function saveCheckin() {
     user_display_name: sbUser?.user_metadata?.full_name || sbUser?.user_metadata?.name || null,
     user_avatar_url: sbUser?.user_metadata?.avatar_url || null,
   };
-
   try {
-    const result = await api('experiences', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(exp)
-    });
+    const result = await api('experiences', { method: 'POST', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(exp) });
     const expId = Array.isArray(result) ? result[0]?.id : result?.id;
-
-    // Mark as collected in user_dishes
     await markCollected(activeDish.id, expId);
-  } catch(e) {
-    console.error('saveCheckin:', e.message);
-    // Still mark as collected even if experience save failed
-    await markCollected(activeDish.id, null);
-  }
-
-  closeCheckin();
-  showCollectedFeedback();
+  } catch(e) { console.error('saveCheckin:', e.message); await markCollected(activeDish.id, null); }
+  closeCheckin(); showCollectedFeedback();
 }
 
-async function skipCheckin() {
-  // Quick collect without any details
-  closeCheckin();
-  await markCollected(activeDish.id, null);
-  showCollectedFeedback();
-}
+async function skipCheckin() { closeCheckin(); await markCollected(activeDish.id, null); showCollectedFeedback(); }
 
 async function markCollected(dishId, expId) {
-  if (userDishes.has(dishId)) return; // already collected
-  userDishes.add(dishId);
-  saveLocal();
-
+  if (userDishes.has(dishId)) return;
+  userDishes.add(dishId); saveLocal();
   try {
     const body = { user_id: uid, dish_id: dishId };
     if (expId) body.experience_id = expId;
-    await api('user_dishes', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify(body)
-    });
+    await api('user_dishes', { method: 'POST', headers: { 'Prefer': 'return=minimal' }, body: JSON.stringify(body) });
   } catch(e) { console.error('markCollected:', e.message); }
-
-  // Update collection counts
   if (activeColl) {
     const col = collections.find(c => c.id === activeColl.id);
     if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
   }
-  // Update progress bar
   const tot = allDishes.length;
   const pct = tot > 0 ? Math.round(userDishes.size / tot * 100) : 0;
   $('tot-fill').style.width = pct + '%';
   $('tot-txt').textContent = `${userDishes.size} / ${tot}`;
-  // Refresh grid if visible
   if (!$('s-coll').classList.contains('gone') && activeColl) renderColl(activeColl);
 }
 
 function showCollectedFeedback() {
-  // Update the card back button
-  updateCollectBtn(true);
-  updateCardStatus(true);
-  // Brief confetti-style toast
+  updateCollectBtn(true); updateCardStatus(true);
   const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed;top:80px;left:50%;transform:translateX(-50%);
-    background:#1C1208;color:#fff;padding:10px 20px;border-radius:30px;
-    font-size:13px;font-weight:600;z-index:300;
-    animation:fadeInOut 2s ease forwards;
-    font-family:'DM Sans',sans-serif;
-    box-shadow:0 4px 20px rgba(0,0,0,.3);
-  `;
+  toast.style.cssText = `position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#1C1208;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:300;animation:fadeInOut 2s ease forwards;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.3);`;
   toast.textContent = `✓ ${activeDish?.name} aangevinkt!`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2200);
@@ -1880,44 +1686,31 @@ async function collectDish() {
   if (!activeDish) return;
   const isCollected = userDishes.has(activeDish.id);
   if (isCollected) {
-    // Uncollect: remove from user_dishes
-    userDishes.delete(activeDish.id);
-    saveLocal();
-    try {
-      await api(`user_dishes?user_id=eq.${uid}&dish_id=eq.${activeDish.id}`, { method: 'DELETE' });
-    } catch(e) { console.error('uncollect:', e.message); }
-    if (activeColl) {
-      const col = collections.find(c => c.id === activeColl.id);
-      if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
-    }
-    updateCollectBtn(false);
-    updateCardStatus(false);
+    userDishes.delete(activeDish.id); saveLocal();
+    try { await api(`user_dishes?user_id=eq.${uid}&dish_id=eq.${activeDish.id}`, { method: 'DELETE' }); } catch(e) {}
+    if (activeColl) { const col = collections.find(c => c.id === activeColl.id); if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length; }
+    updateCollectBtn(false); updateCardStatus(false);
     const tot = allDishes.length;
     $('tot-fill').style.width = (tot > 0 ? Math.round(userDishes.size / tot * 100) : 0) + '%';
     $('tot-txt').textContent = `${userDishes.size} / ${tot}`;
     if (!$('s-coll').classList.contains('gone') && activeColl) renderColl(activeColl);
   } else {
-    // Open check-in sheet
     openCheckin();
   }
 }
 
 function updateCardStatus(done) {
-  const rc = RARITY_COLOR[activeDish?.rarity] || '#888780';
-  const statsEl = $('cb-stats');
-  const statCells = statsEl?.querySelectorAll('.cb-stat');
+  const statCells = $('cb-stats')?.querySelectorAll('.cb-stat');
   if (statCells?.[3]) {
     statCells[3].querySelector('.cb-sv').style.color = done ? '#2A7A2A' : '#B0A090';
     statCells[3].querySelector('.cb-sv').textContent = done ? '✓ Gegeten' : 'Nog te doen';
   }
 }
 
-// ── SWIPE TO CLOSE ───────────────────────────────────
+// ── SWIPE TO CLOSE CARD ───────────────────────────────
 let _ty = 0;
 $('card-modal').addEventListener('touchstart', e => _ty = e.touches[0].clientY, {passive:true});
-$('card-modal').addEventListener('touchend', e => {
-  if (e.changedTouches[0].clientY - _ty > 80) closeCard();
-}, {passive:true});
+$('card-modal').addEventListener('touchend', e => { if (e.changedTouches[0].clientY - _ty > 80) closeCard(); }, {passive:true});
 
 // ── INIT ─────────────────────────────────────────────
 async function init() {

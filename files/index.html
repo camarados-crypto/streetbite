@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>StreetBite</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/hero.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/passport.css">
+<link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="logo-lockup">
+    <div class="logo-main">Street<span>Bite</span></div>
+    <div class="logo-sub">Eat the world</div>
+  </div>
+  <div class="spin"></div>
+</div>
+
+<!-- ── HOME SCREEN ── -->
+<div class="screen gone" id="s-home">
+  <div class="hero-section">
+    <div class="hero-bg-fallback"></div>
+    <img class="hero-bg" id="hero-bg-img" src="" alt="" onerror="this.style.display='none'">
+    <div class="hero-gradient"></div>
+    <div class="hero-topbar">
+      <div class="hero-logo">Street<span>Bite</span></div>
+      <div class="hero-right">
+        <div class="hero-meta">
+          <span class="hero-xp">★ <span id="h-xp">0</span> XP</span>
+          <span class="hero-streak">🔥 <span id="h-streak">1</span> day</span>
+        </div>
+        <div class="welcome-avatar" id="welcome-avatar" onclick="showTab('profile')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="hero-overlay">
+      <div class="hero-greeting" id="home-greet">Good afternoon! 🌏</div>
+      <div class="hero-label" onclick="openCountryPicker()">Country</div>
+      <h1 class="hero-title" onclick="openCountryPicker()">
+        <span id="hero-country-name">Vietnam</span>
+        <span id="hero-country-flag">🇻🇳</span>
+      </h1>
+      <p class="hero-tagline" id="hero-tagline">Bold flavors. Fresh ingredients. Unforgettable street food.</p>
+      <div class="hero-total-prog">
+        <div class="hero-total-prog-row">
+          <span class="hero-total-prog-label">Total progress</span>
+          <span class="hero-total-prog-frac" id="hero-prog-frac">0 / 0</span>
+        </div>
+        <div class="hero-total-prog-bar"><div class="hero-total-prog-fill" id="hero-prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="home-dynamic"></div>
+  <div class="home-pad"></div>
+</div>
+
+<!-- ── COLLECTION DETAIL SCREEN ── -->
+<div class="screen gone" id="s-coll">
+  <div class="coll-hd">
+    <button class="back-btn" onclick="goHome()">← Home</button>
+    <span class="coll-hd-title" id="cd-title">Collection</span>
+  </div>
+  <div class="coll-progress-wrap" id="cd-progress">
+    <div class="coll-progress-top">
+      <span class="coll-progress-label" id="cd-prog-label">Progress</span>
+      <span class="coll-progress-frac" id="cd-prog-frac">0 / 0</span>
+    </div>
+    <div class="coll-progress-track">
+      <div class="coll-progress-fill" id="cd-prog-fill" style="width:0%"></div>
+    </div>
+    <div class="coll-progress-sub" id="cd-prog-sub">0% complete</div>
+  </div>
+  <div class="dish-grid" id="dish-grid"></div>
+</div>
+
+<!-- ── PROFILE SCREEN ── -->
+<div class="screen gone" id="s-profile">
+  <div class="prof-screen" id="prof-content"></div>
+</div>
+
+<!-- ── CARD MODAL ── -->
+<div class="modal-back" id="card-modal" onclick="bgClick(event)">
+  <button class="modal-close" onclick="closeCard()">✕</button>
+  <div class="flip-wrap">
+    <div class="flip-inner" id="flip-inner">
+      <div class="f-front" id="card-front" onclick="flipCard()">
+        <div class="cf-photo">
+          <img id="cf-img" src="" alt="" style="display:none">
+          <div id="cf-noimg" class="no-img-card" style="display:none">🍽️</div>
+          <div class="cf-topbar">
+            <span class="cf-rar" id="cf-rar">Common</span>
+            <span class="cf-num" id="cf-num">#001</span>
+          </div>
+          <div class="cf-photo-overlay">
+            <div class="cf-name" id="cf-name">Dish</div>
+            <div class="cf-country" id="cf-country">🌏</div>
+          </div>
+        </div>
+        <div class="cf-info">
+          <div class="cf-desc" id="cf-desc">—</div>
+          <div class="cf-quick">
+            <span class="cf-qitem" id="cf-price">💰 —</span>
+            <span class="cf-qitem" id="cf-rating">⭐ —</span>
+          </div>
+          <div class="cf-tap">Tap for more info →</div>
+        </div>
+      </div>
+      <div class="f-back" id="card-back" onclick="flipCard()" style="cursor:pointer">
+        <div class="cb-top">
+          <span class="cb-name" id="cb-name">Dish</span>
+          <span class="cb-num" id="cb-num">#001</span>
+        </div>
+        <div class="cb-div"></div>
+        <div class="cb-desc" id="cb-desc">—</div>
+        <div class="cb-stats" id="cb-stats"></div>
+        <button class="cb-btn todo" id="cb-btn" onclick="collectDish()">+ I've tried this!</button>
+        <div style="text-align:center;margin-top:6px">
+          <span onclick="openDetail()" style="font-size:11px;color:#D4692A;font-weight:600;cursor:pointer">View experiences & photos →</span>
+        </div>
+        <div class="cb-flip-back">← Tap to flip back</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DISH DETAIL SHEET ── -->
+<div class="detail-backdrop" id="detail-backdrop" onclick="detailBackdropClick(event)">
+  <div class="detail-sheet" id="detail-sheet">
+    <div class="detail-hero" id="detail-hero">
+      <img id="detail-hero-img" src="" alt="">
+      <div class="detail-hero-grad"></div>
+      <button class="detail-hero-close" onclick="closeDetail()">✕</button>
+      <div class="detail-hero-content">
+        <div class="detail-hero-rar" id="detail-hero-rar">Common</div>
+        <div class="detail-hero-name" id="detail-hero-name">Dish</div>
+      </div>
+    </div>
+    <div class="detail-stats">
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-checkins">—</div><div class="detail-stat-l">Check-ins</div></div>
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-price">—</div><div class="detail-stat-l">Avg Price</div></div>
+      <div class="detail-stat"><div class="detail-stat-v" id="ds-rating">—</div><div class="detail-stat-l">Rating</div></div>
+    </div>
+    <div id="detail-photos-section" style="display:none">
+      <div class="detail-section">
+        <div class="detail-sec-title">📸 All photos</div>
+        <div class="photo-grid" id="detail-photo-grid"></div>
+      </div>
+    </div>
+    <div class="detail-section" id="detail-exps-wrap">
+      <div class="detail-sec-title" id="detail-exps-title">Experiences</div>
+      <div id="detail-exps"><div class="exp-empty"><div class="spin" style="margin:0 auto 10px"></div>Loading...</div></div>
+    </div>
+    <button class="detail-checkin-btn" onclick="closeDetail(); setTimeout(openCheckin, 300)">+ Add your check-in</button>
+    <div class="detail-pad"></div>
+  </div>
+</div>
+
+<!-- ── PHOTO VIEWER ── -->
+<div class="photo-viewer" id="photo-viewer" onclick="closePhotoViewer()">
+  <img id="pv-img" src="" alt="">
+  <button class="photo-viewer-close">✕</button>
+</div>
+
+<!-- ── CHECK-IN SHEET ── -->
+<div class="checkin-backdrop" id="ci-backdrop" onclick="ciBackdropClick(event)">
+  <div class="checkin-sheet" id="ci-sheet">
+    <div class="checkin-handle"></div>
+    <div class="checkin-head">
+      <div class="checkin-dish-img"><img id="ci-dish-img" src="" alt=""></div>
+      <div>
+        <div class="checkin-dish-name" id="ci-dish-name">Dish</div>
+        <div class="checkin-dish-coll" id="ci-dish-coll">Collection</div>
+      </div>
+      <button class="checkin-close" onclick="closeCheckin()">✕</button>
+    </div>
+    <div class="ci-section">
+      <div class="ci-label">📸 Your photo</div>
+      <div class="ci-photo-area" id="ci-photo-area" onclick="$('ci-photo-input').click()">
+        <div class="ci-photo-icon">📷</div>
+        <div class="ci-photo-txt">Tap to add a photo</div>
+        <img id="ci-photo-preview" src="" style="display:none" alt="">
+      </div>
+      <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
+    </div>
+    <div class="ci-section">
+      <div class="ci-label">⭐ Rating</div>
+      <div class="ci-stars" id="ci-stars">
+        <span class="ci-star" onclick="setRating(1)">⭐</span>
+        <span class="ci-star" onclick="setRating(2)">⭐</span>
+        <span class="ci-star" onclick="setRating(3)">⭐</span>
+        <span class="ci-star" onclick="setRating(4)">⭐</span>
+        <span class="ci-star" onclick="setRating(5)">⭐</span>
+      </div>
+    </div>
+    <div class="ci-section">
+      <div class="ci-label">💰 Price</div>
+      <div class="ci-row">
+        <div class="ci-field"><input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01"></div>
+        <select class="ci-currency" id="ci-currency">
+          <option value="VND">VND</option>
+          <option value="THB">THB</option>
+          <option value="JPY">JPY</option>
+          <option value="IDR">IDR</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+    <div class="ci-section">
+      <div class="ci-label">📍 Location</div>
+      <input class="ci-input" id="ci-location" type="text" placeholder="Restaurant or street name">
+      <button class="ci-loc-btn" onclick="useGPS()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Use my location
+      </button>
+    </div>
+    <div class="ci-section">
+      <div class="ci-label">📝 Note (optional)</div>
+      <textarea class="ci-input" id="ci-note" rows="2" placeholder="How was it?" style="resize:none;line-height:1.5"></textarea>
+    </div>
+    <div class="ci-uploading" id="ci-uploading" style="display:none">
+      <div class="spin" style="width:16px;height:16px;border-width:2px"></div>
+      <span>Uploading photo...</span>
+    </div>
+    <div class="ci-actions">
+      <button class="ci-skip" onclick="skipCheckin()">Quick tick</button>
+      <button class="ci-save" id="ci-save" onclick="saveCheckin()">✓ Save check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── UNLOCK MOMENT ── -->
+<div class="unlock-moment" id="unlock-moment" onclick="if(event.target===this)closeUnlockMoment()">
+  <div class="confetti-wrap" id="confetti-wrap"></div>
+  <div class="unlock-moment-card">
+    <span class="unlock-moment-emoji">🎉</span>
+    <div class="unlock-moment-title">Collections unlocked!</div>
+    <div class="unlock-moment-sub">You've tried 3 First Bites.<br>New collections are now open for you.</div>
+    <button class="unlock-moment-btn" onclick="closeUnlockMoment()">Explore what's new →</button>
+  </div>
+</div>
+
+<!-- ── BADGE SHEET ── -->
+<div class="badge-backdrop" id="badge-backdrop" onclick="if(event.target===this)closeBadgeSheet()">
+  <div class="badge-sheet" id="badge-sheet">
+    <div class="badge-sheet-handle"></div>
+    <div class="badge-sheet-inner" id="badge-sheet-inner"></div>
+  </div>
+</div>
+
+<!-- ── COUNTRY PICKER ── -->
+<div class="cp-overlay" id="cp-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="cp-sheet">
+    <div class="cp-handle"></div>
+    <div class="cp-title">Choose a country 🌏</div>
+    <div class="cp-list" id="cp-list"></div>
+  </div>
+</div>
+
+<!-- ── FOOD PASSPORT SHEET ── -->
+<div class="passport-backdrop" id="passport-backdrop" onclick="if(event.target===this)closePassport()">
+  <div class="passport-sheet" id="passport-sheet">
+    <div class="passport-handle"></div>
+    <div class="passport-header">
+      <div class="passport-header-top">
+        <div>
+          <div class="passport-header-label">StreetBite</div>
+          <div class="passport-header-title">Food Passport</div>
+        </div>
+        <div class="passport-header-icon">🗺️</div>
+      </div>
+      <div class="passport-header-stats">
+        <div class="passport-hstat"><div class="passport-hstat-v" id="pp-countries">0</div><div class="passport-hstat-l">Countries</div></div>
+        <div class="passport-hstat"><div class="passport-hstat-v" id="pp-dishes">0</div><div class="passport-hstat-l">Dishes tried</div></div>
+        <div class="passport-hstat"><div class="passport-hstat-v" id="pp-badges">0</div><div class="passport-hstat-l">Badges</div></div>
+      </div>
+    </div>
+    <div class="passport-section-title">Your stamps</div>
+    <div class="stamp-grid" id="passport-stamp-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:24px;color:#B0A090">
+        <div class="spin" style="margin:0 auto 10px"></div>Loading...
+      </div>
+    </div>
+    <div class="passport-section-title">Badges</div>
+    <div class="passport-badges-grid" id="passport-badges-grid"></div>
+  </div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav id="bnav">
+  <button class="nb on" id="nb-explore" onclick="showTab('home')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Explore
+  </button>
+  <button class="nb" id="nb-coll" onclick="showTab('coll')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+    Collections
+  </button>
+  <button class="nb" id="nb-profile" onclick="showTab('profile')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </button>
+</nav>
+
+<!-- ── SCRIPTS (volgorde belangrijk!) ── -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/badges.js"></script>
+<script src="js/home.js"></script>
+<script src="js/collections.js"></script>
+<script src="js/card.js"></script>
+<script src="js/detail.js"></script>
+<script src="js/checkin.js"></script>
+<script src="js/passport.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

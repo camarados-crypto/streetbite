@@ -1,0 +1,47 @@
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif}
+body{background:#F7F2EA;color:#1C1208}
+
+/* ── SCREENS ── */
+.screen{
+  position:absolute;top:0;left:0;right:0;bottom:64px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#F7F2EA;
+}
+.screen.gone{display:none}
+
+/* ── LOADING ── */
+#loading{
+  position:fixed;inset:0;z-index:300;
+  background:#F7F2EA;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.logo-lockup{text-align:center}
+.logo-main{font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#1C1208;letter-spacing:-.8px}
+.logo-main span{color:#D4692A}
+.logo-sub{font-size:12px;color:#9E8E7A;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+.spin{width:28px;height:28px;border:2.5px solid #EAE0D5;border-top-color:#D4692A;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── BOTTOM NAV ── */
+#bnav{position:fixed;bottom:0;left:0;right:0;z-index:80;height:64px;background:#fff;border-top:1px solid #EAE0D5;display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;font-size:10px;font-weight:600;color:#B0A090;cursor:pointer}
+.nb.on{color:#D4692A}
+.nb svg{width:22px;height:22px;stroke-width:1.7}
+
+/* ── MISC ── */
+.empty{padding:40px 20px;text-align:center;color:#B0A090;font-size:14px}
+.home-pad{height:24px}
+.load-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#D4692A;margin:2px;animation:blink 1.2s ease-in-out infinite}
+.load-dot:nth-child(2){animation-delay:.2s}.load-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px)}15%,75%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-4px)}}
+
+/* ── SCROLL REVEAL ── */
+.scroll-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1)}
+.scroll-reveal.revealed{opacity:1;transform:translateY(0)}
+
+/* ── CONFETTI ── */
+.confetti-wrap{position:fixed;inset:0;z-index:500;pointer-events:none;overflow:hidden}
+.confetti-piece{position:absolute;top:-10px;width:10px;height:10px;border-radius:2px;opacity:0;animation:confetti-fall linear forwards}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(.5)}}

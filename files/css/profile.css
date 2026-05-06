@@ -1,0 +1,38 @@
+/* ── PROFILE SCREEN ── */
+.prof-screen{padding:0 0 24px}
+.prof-hero{padding:32px 20px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;background:linear-gradient(to bottom,#F0E8DA,#F7F2EA);border-bottom:1px solid #EAE0D5}
+.prof-av{width:72px;height:72px;border-radius:50%;overflow:hidden;background:#EAE0D5;margin-bottom:14px;display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.1)}
+.prof-av img{width:100%;height:100%;object-fit:cover}
+.prof-av.anon{background:#E0D8CC}
+.prof-name-txt{font-size:18px;font-weight:700;color:#1C1208;margin-bottom:4px}
+.prof-email{font-size:13px;color:#9E8E7A}
+.prof-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#EAE0D5;border-top:1px solid #EAE0D5;border-bottom:1px solid #EAE0D5}
+.prof-stat{padding:16px 8px;text-align:center;background:#F7F2EA}
+.prof-stat-v{font-size:22px;font-weight:700;color:#1C1208;font-family:'DM Serif Display',serif}
+.prof-stat-l{font-size:10px;color:#9E8E7A;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.prof-section{padding:20px 18px 0}
+.prof-section-title{font-size:13px;font-weight:700;color:#9E8E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.prof-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #EAE0D5}
+.prof-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F7F2EA;cursor:pointer}
+.prof-row:last-child{border-bottom:none}
+.prof-row-icon{width:36px;height:36px;border-radius:10px;background:#F7F2EA;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.prof-row-txt{flex:1}
+.prof-row-label{font-size:14px;font-weight:600;color:#1C1208}
+.prof-row-sub{font-size:12px;color:#9E8E7A;margin-top:1px}
+.prof-row-chev{font-size:14px;color:#C0B0A0}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:12px;background:#fff;border:1.5px solid #EAE0D5;font-size:14px;font-weight:700;color:#1C1208;cursor:pointer;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,.07);font-family:'DM Sans',sans-serif}
+.sign-out-btn{display:block;width:100%;margin-top:12px;padding:13px;border-radius:12px;background:transparent;border:1.5px solid #EAE0D5;font-size:14px;font-weight:600;color:#C05030;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── PASSPORT PREVIEW IN PROFILE ── */
+.prof-passport-preview{margin:0 18px;background:linear-gradient(135deg,#0D2318,#1A4D35);border-radius:16px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:transform .15s}
+.prof-passport-preview:active{transform:scale(.98)}
+.prof-passport-stamps{display:flex;gap:5px;flex-shrink:0}
+.prof-passport-stamp-mini{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.1)}
+.prof-passport-stamp-mini.complete{background:rgba(244,185,66,.25)}
+.prof-passport-stamp-mini.unvisited{opacity:.35;filter:grayscale(1)}
+.prof-passport-txt{flex:1}
+.prof-passport-label{font-size:10px;font-weight:700;color:#74C69D;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.prof-passport-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.prof-passport-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
+.prof-passport-chev{font-size:18px;color:rgba(255,255,255,.35)}
+.prof-badge-chip{display:inline-flex;align-items:center;gap:5px;background:#EDF5F0;border:1px solid #B8DBCA;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:600;color:#1A4D35;cursor:pointer;margin:0 4px 8px 0}
