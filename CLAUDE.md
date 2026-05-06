@@ -6,6 +6,7 @@
 ./deploy.sh "omschrijving"
 ```
 
+- Maakt eerst een **backup** van de server naar `~/backups/streetbite/backup_TIMESTAMP`
 - Uploadt `files/` via rsync naar de server
 - Commit + push naar GitHub
 

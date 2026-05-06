@@ -185,7 +185,7 @@ function renderHome() {
     $('home-dynamic').innerHTML = `
       <div class="fb-list-section">
         <div class="fb-list-header">
-          <div class="fb-list-title">👑 Top Dishes</div>
+          <div class="fb-list-title">👑 First Bites</div>
           <div class="fb-list-viewall">${fbDone} / ${fbTotal}</div>
         </div>
         ${listRowsHtml}
