@@ -257,7 +257,6 @@ function render() {
       <div class="country-body" id="body-${c.id}">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 0 16px;border-bottom:1px solid var(--bdr);margin-bottom:14px">
           <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">🖼️ Hero foto</div>
-          ${c.bg_image_url ? `<img src="${esc(c.bg_image_url)}" style="width:72px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--bdr)">` : '<div style="width:72px;height:44px;border-radius:8px;background:var(--surf2);border:1px dashed var(--bdr2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏔️</div>'}
           <div class="url-wrap" style="flex:1">
             <input class="dish-input url" id="hero-url-${c.id}" value="${esc(c.bg_image_url||'')}" placeholder="Hero foto URL"
               onblur="saveHeroUrl('${c.id}',this.value)"
