@@ -66,10 +66,11 @@ function buildRecentHtml() {
 // ── RENDER HOME ───────────────────────────────────────
 function renderHome() {
   const countryInfo = COUNTRY_DATA[currentCountry?.name] || { tagline:'Discover the flavors of the streets.', bg:'' };
+  const heroBg = currentCountry?.bg_image_url || countryInfo.bg || '';
 
   // Update hero
   const heroImg = $('hero-bg-img');
-  if (countryInfo.bg) { heroImg.src = countryInfo.bg; heroImg.style.display = 'block'; }
+  if (heroBg) { heroImg.src = heroBg; heroImg.style.display = 'block'; }
   else { heroImg.style.display = 'none'; }
   $('hero-country-name').textContent = currentCountry?.name || '';
   $('hero-country-flag').textContent = COUNTRY_FLAGS[currentCountry?.name] || '🌏';
