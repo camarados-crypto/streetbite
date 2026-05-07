@@ -33,7 +33,7 @@ async function loadCountryData() {
   const cols = await api(`collections?country_id=eq.${countryId}&order=order_index&select=id,name,unlock_type,unlock_requirement,order_index`);
   const cids = cols.map(c => c.id).join(',');
   allDishes = cids.length > 0
-    ? await api(`dishes?collection_id=in.(${cids})&select=id,collection_id,name,name_en,rarity,image_url,description,price_range,first_bite_order&order=name`)
+    ? await api(`dishes?collection_id=in.(${cids})&select=id,collection_id,name,name_en,rarity,image_url,description,price_range,first_bite_order,sort_order&order=sort_order.asc.nullslast,name.asc`)
     : [];
   loadLocal();
   if (uid) {
