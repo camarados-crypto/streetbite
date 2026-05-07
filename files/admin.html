@@ -309,6 +309,7 @@ function render() {
         h += `<div class="dish-wrap" id="dw-${d.id}" draggable="true" data-dish-id="${d.id}" data-col-id="${col.id}"
           ondragstart="dragStart(event,'${d.id}')"
           ondragover="dragOver(event)"
+          ondragend="dragEnd(event)"
           ondragleave="dragLeave(event)"
           ondrop="dragDrop(event,'${col.id}')">
           <div class="dish-row">
@@ -820,8 +821,11 @@ let draggedId = null;
 
 function dragStart(e, dishId) {
   draggedId = dishId;
-  e.currentTarget.classList.add('dragging');
+  setTimeout(() => e.currentTarget.classList.add('dragging'), 0);
   e.dataTransfer.effectAllowed = 'move';
+}
+function dragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
 }
 function dragOver(e) {
   e.preventDefault();
@@ -833,41 +837,40 @@ function dragLeave(e) {
 }
 async function dragDrop(e, colId) {
   e.preventDefault();
-  const target = e.currentTarget;
-  target.classList.remove('drag-over');
-  const targetId = target.dataset.dishId;
+  const targetEl = e.currentTarget;
+  targetEl.classList.remove('drag-over');
+  const targetId = targetEl.dataset.dishId;
   if (!draggedId || draggedId === targetId) { draggedId = null; return; }
 
-  // Re-order in local array
-  const colDishes = dishes.filter(d => d.collection_id === colId)
-    .sort((a,b) => (a.sort_order??999) - (b.sort_order??999));
+  const draggedEl = document.getElementById('dw-' + draggedId);
+  if (!draggedEl || !targetEl) { draggedId = null; return; }
 
-  const fromIdx = colDishes.findIndex(d => d.id === draggedId);
-  const toIdx   = colDishes.findIndex(d => d.id === targetId);
-  if (fromIdx === -1 || toIdx === -1) { draggedId = null; return; }
+  // Move DOM element directly — no re-render needed
+  targetEl.parentNode.insertBefore(draggedEl, targetEl);
+  draggedEl.classList.remove('dragging');
 
-  // Splice
-  const [moved] = colDishes.splice(fromIdx, 1);
-  colDishes.splice(toIdx, 0, moved);
+  // Read new order from DOM
+  const colBody = targetEl.closest('.col-body');
+  const newOrder = [...colBody.querySelectorAll('.dish-wrap')].map(el => el.dataset.dishId);
 
-  // Assign new sort_order values
-  colDishes.forEach((d, i) => { d.sort_order = i + 1; });
+  // Update sort_order in memory
+  newOrder.forEach((id, i) => {
+    const d = dishes.find(x => x.id === id);
+    if (d) d.sort_order = i + 1;
+  });
 
-  // Save all to DB in parallel
-  setStatus('Volgorde opslaan...','saving');
+  // Save to DB in background
+  const toSave = newOrder.map(id => dishes.find(x => x.id === id)).filter(Boolean);
+  setStatus('Volgorde opslaan...', 'saving');
   try {
-    await Promise.all(colDishes.map(d => sbPatch('dishes', d.id, { sort_order: d.sort_order })));
-    setStatus('Opgeslagen ✓','saved');
-    setTimeout(() => setStatus('',''), 2000);
+    await Promise.all(toSave.map(d => sbPatch('dishes', d.id, { sort_order: d.sort_order })));
+    setStatus('Opgeslagen ✓', 'saved');
+    setTimeout(() => setStatus('', ''), 2000);
   } catch(err) {
-    toast('Fout bij opslaan volgorde: '+err.message,'err');
+    toast('Fout bij opslaan volgorde: ' + err.message, 'err');
+    setStatus('', '');
   }
   draggedId = null;
-
-  // Re-render to show new order
-  render();
-  reopenCountryForCol(colId);
-  document.querySelectorAll('.dish-wrap.dragging').forEach(el => el.classList.remove('dragging'));
 }
 
 init();
