@@ -6,6 +6,7 @@ let userDishes = new Set();
 let activeColl = null, activeDish = null, activeDishNum = 0;
 let flipped = false, recentDishIds = [];
 let unlockShown = false;
+let ciRating = 0, ciPhotoFile = null, ciPhotoDataUrl = null;
 
 // ── SWIPE TO CLOSE CARD ──────────────────────────────
 let _ty = 0;

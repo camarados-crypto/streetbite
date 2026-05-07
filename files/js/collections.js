@@ -63,13 +63,17 @@ function renderColl(col) {
     el.style.borderColor = done ? rc : 'transparent';
     el.innerHTML = `
       <div class="d-rbar" style="background:${rc}"></div>
-      <div class="d-photo ${done ? '' : 'dim'}">
+      <div class="d-photo">
         ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : `<div class="no-img">🍽️</div>`}
         <div class="d-rtag" style="background:${rc}">${dish.rarity}</div>
         <div class="d-name-overlay">${dish.name}</div>
+        ${done
+          ? `<div class="d-status-badge d-status-done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0D2318" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`
+          : `<div class="d-status-badge d-status-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`
+        }
       </div>
       <div class="d-body">
-        <div class="d-name ${done ? '' : 'muted'}">${dish.name_en || dish.name}</div>
+        <div class="d-name">${dish.name_en || dish.name}</div>
         <div class="d-meta">
           <span class="d-rpill" style="background:${rbg};color:${rtxt}">${dish.rarity}</span>
           ${done ? '<span class="d-done">✓ tried</span>' : ''}

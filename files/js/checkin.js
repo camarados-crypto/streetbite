@@ -1,14 +1,12 @@
 // ── OPEN / CLOSE ──────────────────────────────────────
 function openCheckin() {
-  const dish    = getState('ui.activeDish');
-  const coll    = getState('ui.activeColl');
-  const country = getState('app.currentCountry');
+  const dish    = activeDish;
+  const coll    = activeColl;
+  const country = currentCountry;
   if (!dish) return;
 
   // Reset checkin session state
-  setState('ui.ciRating',       0);
-  setState('ui.ciPhotoFile',    null);
-  setState('ui.ciPhotoDataUrl', null);
+  ciRating = 0; ciPhotoFile = null; ciPhotoDataUrl = null;
 
   // Populate header
   $('ci-dish-name').textContent = dish.name;
@@ -39,7 +37,7 @@ function closeCheckin()     { $('ci-backdrop').classList.remove('open'); }
 function ciBackdropClick(e) { if (e.target === $('ci-backdrop')) closeCheckin(); }
 
 function setRating(n) {
-  setState('ui.ciRating', n);
+  ciRating = n;
   updateStars(n);
 }
 function updateStars(n) {
@@ -50,10 +48,10 @@ function updateStars(n) {
 function handlePhotoSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
-  setState('ui.ciPhotoFile', file);
+  ciPhotoFile = file;
   const reader = new FileReader();
   reader.onload = ev => {
-    setState('ui.ciPhotoDataUrl', ev.target.result);
+    ciPhotoDataUrl = ev.target.result;
     $('ci-photo-preview').src = ev.target.result;
     $('ci-photo-preview').style.display = 'block';
     $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'none';
@@ -79,9 +77,8 @@ function useGPS() {
 
 // ── PHOTO UPLOAD ──────────────────────────────────────
 async function uploadPhoto() {
-  const file = getState('ui.ciPhotoFile');
-  const dish = getState('ui.activeDish');
-  const uid  = getState('auth.uid');
+  const file = ciPhotoFile;
+  const dish = activeDish;
   if (!file || !sbClient) return null;
   const ext  = file.name.split('.').pop() || 'jpg';
   const path = `${uid}/${dish.id}_${Date.now()}.${ext}`;
@@ -93,14 +90,12 @@ async function uploadPhoto() {
 
 // ── SAVE CHECK-IN ─────────────────────────────────────
 async function saveCheckin() {
-  const dish = getState('ui.activeDish');
-  const uid  = getState('auth.uid');
-  const user = getState('auth.user');
+  const dish = activeDish;
   if (!dish) return;
 
   $('ci-save').disabled = true;
   let photoUrl = null;
-  if (getState('ui.ciPhotoFile')) {
+  if (ciPhotoFile) {
     $('ci-uploading').style.display = 'flex';
     photoUrl = await uploadPhoto();
     $('ci-uploading').style.display = 'none';
@@ -109,14 +104,14 @@ async function saveCheckin() {
   const exp = {
     dish_id:           dish.id,
     user_id:           uid,
-    rating:            getState('ui.ciRating') || null,
+    rating:            ciRating || null,
     location_text:     $('ci-location').value.trim() || null,
     note:              $('ci-note').value.trim() || null,
     price:             parseFloat($('ci-price').value) || null,
     currency:          $('ci-currency').value || 'USD',
     photo_url:         photoUrl,
-    user_display_name: user?.user_metadata?.full_name || user?.user_metadata?.name || null,
-    user_avatar_url:   user?.user_metadata?.avatar_url || null,
+    user_display_name: sbUser?.user_metadata?.full_name || sbUser?.user_metadata?.name || null,
+    user_avatar_url:   sbUser?.user_metadata?.avatar_url || null,
   };
 
   try {
@@ -131,7 +126,7 @@ async function saveCheckin() {
 }
 
 async function skipCheckin() {
-  const dish = getState('ui.activeDish');
+  const dish = activeDish;
   closeCheckin();
   await markCollected(dish.id, null);
   showCollectedFeedback();
@@ -139,12 +134,6 @@ async function skipCheckin() {
 
 // ── MARK COLLECTED ────────────────────────────────────
 async function markCollected(dishId, expId) {
-  const userDishes  = getState('data.userDishes');
-  const collections = getState('data.collections');
-  const allDishes   = getState('data.allDishes');
-  const activeColl  = getState('ui.activeColl');
-  const uid         = getState('auth.uid');
-
   if (!userDishes.has(dishId)) {
     userDishes.add(dishId);
     saveLocal();
@@ -161,8 +150,7 @@ async function markCollected(dishId, expId) {
     if (col) col.collected = col.dishes.filter(d => userDishes.has(d.id)).length;
   }
 
-  // setState triggers render() — same Set reference, that's fine
-  setState('data.userDishes', userDishes);
+  render();
 
   // Unlock moment check
   const firstBites = allDishes.filter(d => d.first_bite_order != null);

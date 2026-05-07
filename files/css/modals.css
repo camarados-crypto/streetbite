@@ -26,14 +26,14 @@
 .d-rbar{height:3px;width:100%}
 .d-photo{width:100%;aspect-ratio:1;overflow:hidden;background:#EAE0D5;position:relative}
 .d-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.d-photo.dim img{filter:grayscale(100%);opacity:.28}
 .d-photo .no-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:38px;background:#EAE0D5}
 .d-rtag{position:absolute;top:7px;right:7px;font-size:8px;font-weight:700;padding:3px 7px;border-radius:6px;color:#fff;text-transform:uppercase;letter-spacing:.05em}
 .d-name-overlay{position:absolute;bottom:0;left:0;right:0;padding:18px 7px 6px;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);font-size:11px;font-weight:700;color:#fff;line-height:1.2}
-.d-photo.dim .d-name-overlay{opacity:.45}
+.d-status-badge{position:absolute;bottom:7px;right:7px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.d-status-done{background:#74C69D}
+.d-status-lock{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.2)}
 .d-body{padding:8px 9px 10px}
 .d-name{font-size:12px;font-weight:600;color:#1C1208;line-height:1.3;margin-bottom:5px}
-.d-name.muted{color:#A8988A}
 .d-meta{display:flex;align-items:center;justify-content:space-between}
 .d-rpill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em}
 .d-done{font-size:10px;font-weight:600;color:#2A7A2A}
