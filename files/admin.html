@@ -289,7 +289,8 @@ function render() {
         </div>`;
 
     cols.forEach(col => {
-      const colDishes = dishes.filter(d => d.collection_id === col.id);
+      const colDishes = dishes.filter(d => d.collection_id === col.id)
+        .sort((a,b) => (a.sort_order??9999) - (b.sort_order??9999));
       h += `<div class="col-block">
         <div class="col-hdr">
           <input class="col-name-input" value="${esc(col.name)}"
