@@ -51,12 +51,7 @@ function renderColl(col) {
   $('cd-prog-frac').textContent = `${col.collected} / ${col.dishes.length}`;
   $('cd-prog-fill').style.width = pct + '%';
   $('cd-prog-sub').textContent = `${pct}% complete`;
-  const order = ['legendary','epic','rare','uncommon','common'];
-  const sorted = [...col.dishes].sort((a,b) => {
-    const ac = userDishes.has(a.id) ? 0 : 1, bc = userDishes.has(b.id) ? 0 : 1;
-    if (ac !== bc) return ac - bc;
-    return order.indexOf(a.rarity) - order.indexOf(b.rarity);
-  });
+  const sorted = [...col.dishes].sort((a,b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999));
   const grid = $('dish-grid'); grid.innerHTML = '';
   sorted.forEach((dish, i) => {
     const done = userDishes.has(dish.id);
