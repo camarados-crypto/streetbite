@@ -18,7 +18,7 @@ async function openCard(dish, num) {
   $('cf-rating').textContent = `⭐ —`;
   $('cb-name').textContent   = dish.name;
   $('cb-num').textContent    = `#${String(num).padStart(3,'0')}`;
-  $('cb-desc').textContent   = dish.description || DESCRIPTIONS[dish.name] || `An authentic dish from the ${activeColl?.name || 'collection'}.`;
+  $('cb-desc').textContent   = dish.description_long || dish.description || DESCRIPTIONS[dish.name] || `An authentic dish from the ${activeColl?.name || 'collection'}.`;
   $('cb-stats').innerHTML = `
     <div class="cb-stat"><div class="cb-sl">Rarity</div><div class="cb-sv" style="color:${rc}">${dish.rarity}</div></div>
     <div class="cb-stat"><div class="cb-sl">Price</div><div class="cb-sv">${dish.price_range || '—'}</div></div>
