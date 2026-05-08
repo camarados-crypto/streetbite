@@ -10,7 +10,7 @@ const $ = id => document.getElementById(id);
 const COUNTRY_FLAGS = {
   'Vietnam':'🇻🇳','Thailand':'🇹🇭','Japan':'🇯🇵',
   'Indonesia':'🇮🇩','Korea':'🇰🇷','India':'🇮🇳',
-  'Mexico':'🇲🇽','Italy':'🇮🇹','Netherlands':'🇳🇱',
+  'Mexico':'🇲🇽','Italy':'🇮🇹','Netherlands':'🇳🇱','Nederland':'🇳🇱',
   'Malaysia':'🇲🇾','Singapore':'🇸🇬','Taiwan':'🇹🇼',
 };
 const COUNTRY_CURRENCY = {

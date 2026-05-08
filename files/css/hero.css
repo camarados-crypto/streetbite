@@ -14,9 +14,9 @@
 .hero-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
 .hero-logo span{color:#D4692A}
 .hero-right{display:flex;align-items:center;gap:10px}
-.hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.hero-xp{font-size:11px;font-weight:700;color:#FFD96A;text-shadow:0 1px 5px rgba(0,0,0,.5);letter-spacing:.01em}
-.hero-streak{font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.5)}
+.hero-meta{flex-direction:column;align-items:flex-end;gap:2px}
+.hero-xp{background: #272525d6; font-size:14px;font-weight:700;color:#FFD96A;text-shadow:0 1px 5px rgba(0,0,0,.5);letter-spacing:.01em; padding: 4px 8px; border-radius: 12px;}
+.hero-streak{background: #282525a3; font-size:14px;font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.5); padding: 4px 8px; border-radius: 12px;}
 .welcome-avatar{
   width:36px;height:36px;border-radius:50%;overflow:hidden;
   background:rgba(255,255,255,.18);flex-shrink:0;cursor:pointer;
@@ -42,12 +42,12 @@
 .hero-total-prog-fill{height:100%;background:#D4692A;border-radius:3px;transition:width .5s ease;box-shadow:0 0 8px rgba(212,105,42,.45)}
 
 /* ── FIRST BITES LIST ── */
-.fb-list-section{background:#0D1A14;padding:20px 16px 28px}
+.fb-list-section{background:#141514;padding:20px 20px 28px}
 .fb-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .fb-list-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#F4B942}
 .fb-list-viewall{font-size:12px;font-weight:600;color:rgba(255,255,255,.45);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 13px;cursor:pointer;transition:background .15s}
 .fb-list-viewall:active{background:rgba(255,255,255,.13)}
-.fb-list-row{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:0;overflow:hidden;margin-bottom:8px;cursor:pointer;transition:background .15s}
+.fb-list-row{display:flex;align-items:center;gap:14px;background:rgba(14,29,26,.75);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:0;overflow:hidden;margin-bottom:8px;cursor:pointer;transition:background .15s}
 .fb-list-row:last-child{margin-bottom:0}
 .fb-list-row:active{background:rgba(255,255,255,.1)}
 .fb-list-img-wrap{position:relative;width:38%;flex-shrink:0;background:#1A3028;border-radius:10px 0 0 10px;overflow:hidden;aspect-ratio:16/11}
@@ -56,9 +56,9 @@
 .fb-list-num{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);color:rgba(255,255,255,.8);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .fb-list-row.tried .fb-list-num{background:#F4B942;color:#1C1208}
 .fb-list-info{flex:1;min-width:0;padding:12px 0 12px 0}
-.fb-list-name{font-size:17px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px}
-.fb-list-en{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:5px}
-.fb-list-status{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb-list-name{font-size:21px;font-weight:700;color:#fff;line-height:1.8;margin-bottom:2px}
+.fb-list-en{font-size:15px;color:rgba(255,255,255,.65);margin-bottom:12px}
+.fb-list-status{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .fb-list-row.tried .fb-list-status{color:#74C69D}
 .fb-list-row:not(.tried) .fb-list-status{color:#D4692A}
 .fb-list-check{width:32px;height:32px;border-radius:50%;background:#74C69D;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:12px}
