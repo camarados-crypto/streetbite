@@ -58,6 +58,7 @@ async function loadFeedPage() {
     const SOFT_FOLLOWS_THRESHOLD = 3;
     const useFollowFilter = uid && myFollowing.size >= SOFT_FOLLOWS_THRESHOLD;
     let url = `experiences?select=*,dishes(name,image_url,collections(name))&order=created_at.desc&limit=${limit}&offset=${feedPage * limit}`;
+    if (uid) url += `&user_id=neq.${uid}`;
     if (useFollowFilter) {
       url += `&user_id=in.(${[...myFollowing].join(',')})`;
     }
