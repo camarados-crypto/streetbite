@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="css/modals.css">
 <link rel="stylesheet" href="css/passport.css">
 <link rel="stylesheet" href="css/profile.css">
+<link rel="stylesheet" href="css/feed.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
@@ -35,6 +37,10 @@
           <span class="hero-xp">★ <span id="h-xp">0</span> XP</span>
           <span class="hero-streak">🔥 <span id="h-streak">1</span> day</span>
         </div>
+        <div class="notif-btn" id="notif-btn" onclick="openNotifSheet()" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notif-badge" style="display:none"></span>
+        </div>
         <div class="welcome-avatar" id="welcome-avatar" onclick="showTab('profile')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
@@ -42,10 +48,11 @@
     </div>
     <div class="hero-overlay">
       <div class="hero-greeting" id="home-greet">Good afternoon! 🌏</div>
-      <div class="hero-label" onclick="openCountryPicker()">Country</div>
+      <div class="hero-label">Tap to change →</div>
       <h1 class="hero-title" onclick="openCountryPicker()">
         <span id="hero-country-name">Vietnam</span>
         <span id="hero-country-flag">🇻🇳</span>
+        <span class="hero-country-chev">⌄</span>
       </h1>
       <p class="hero-tagline" id="hero-tagline">Bold flavors. Fresh ingredients. Unforgettable street food.</p>
       <div class="hero-total-prog">
@@ -61,10 +68,20 @@
   <div class="home-pad"></div>
 </div>
 
+<!-- ── JOURNEYS OVERVIEW SCREEN ── -->
+<div class="screen gone" id="s-journeys">
+  <div class="journeys-hd">
+    <div class="journeys-hd-title">Your Journeys</div>
+    <div class="journeys-hd-sub" id="journeys-country"></div>
+  </div>
+  <div id="journeys-list"></div>
+  <div style="height:16px"></div>
+</div>
+
 <!-- ── COLLECTION DETAIL SCREEN ── -->
 <div class="screen gone" id="s-coll">
   <div class="coll-hd">
-    <button class="back-btn" onclick="goHome()">← Home</button>
+    <button class="back-btn" id="coll-back-btn" onclick="goJourneys()">← Journeys</button>
     <span class="coll-hd-title" id="cd-title">Collection</span>
   </div>
   <div class="coll-progress-wrap" id="cd-progress">
@@ -78,6 +95,17 @@
     <div class="coll-progress-sub" id="cd-prog-sub">0% complete</div>
   </div>
   <div class="dish-grid" id="dish-grid"></div>
+</div>
+
+<!-- ── FEED SCREEN ── -->
+<div class="screen gone" id="s-feed">
+  <div class="journeys-hd">
+    <div class="journeys-hd-title">Your Feed</div>
+    <div class="journeys-hd-sub">Recent check-ins from the community</div>
+  </div>
+  <div id="feed-list"></div>
+  <button id="feed-load-more" class="feed-load-btn" style="display:none" onclick="loadFeedPage()">Load more</button>
+  <div class="home-pad"></div>
 </div>
 
 <!-- ── PROFILE SCREEN ── -->
@@ -104,12 +132,17 @@
           </div>
         </div>
         <div class="cf-info">
-          <div class="cf-desc" id="cf-desc">—</div>
-          <div class="cf-quick">
-            <span class="cf-qitem" id="cf-price">💰 —</span>
-            <span class="cf-qitem" id="cf-rating">⭐ —</span>
+          <div class="cf-proof">
+            <span class="cf-proof-rating" id="cf-rating">⭐ —</span>
+            <span class="cf-proof-dot">·</span>
+            <span class="cf-proof-tried" id="cf-tried">— travelers</span>
           </div>
-          <div class="cf-tap">Tap for more info →</div>
+          <div class="cf-desc" id="cf-desc">—</div>
+          <div class="cf-actions">
+            <span class="cf-qitem" id="cf-price">💰 —</span>
+            <button class="cf-collect-btn" id="cf-collect-btn" onclick="collectFromFront(event)">+ Check in</button>
+          </div>
+          <div class="cf-tap" onclick="flipCard()">Flip for full story →</div>
         </div>
       </div>
       <div class="f-back" id="card-back" onclick="flipCard()" style="cursor:pointer">
@@ -119,10 +152,11 @@
         </div>
         <div class="cb-div"></div>
         <div class="cb-desc" id="cb-desc">—</div>
-        <div class="cb-stats" id="cb-stats"></div>
-        <button class="cb-btn todo" id="cb-btn" onclick="collectDish()">+ I've tried this!</button>
-        <div style="text-align:center;margin-top:6px">
-          <span onclick="openDetail()" style="font-size:11px;color:#D4692A;font-weight:600;cursor:pointer">View experiences & photos →</span>
+        <div class="cb-reactions" id="cb-reactions"></div>
+        <div class="cb-memory" id="cb-memory"></div>
+        <button class="cb-btn todo" id="cb-btn" onclick="collectDish();event.stopPropagation()">+ I've tried this!</button>
+        <div style="text-align:center;margin-top:5px">
+          <span onclick="openDetail();event.stopPropagation()" style="font-size:11px;color:#D4692A;font-weight:600;cursor:pointer">Experiences & photos →</span>
         </div>
         <div class="cb-flip-back">← Tap to flip back</div>
       </div>
@@ -172,25 +206,30 @@
 <div class="checkin-backdrop" id="ci-backdrop" onclick="ciBackdropClick(event)">
   <div class="checkin-sheet" id="ci-sheet">
     <div class="checkin-handle"></div>
+
+    <!-- Dish header -->
     <div class="checkin-head">
-      <div class="checkin-dish-img"><img id="ci-dish-img" src="" alt=""></div>
-      <div>
+      <div class="checkin-dish-img" id="ci-dish-img"></div>
+      <div class="checkin-dish-meta">
         <div class="checkin-dish-name" id="ci-dish-name">Dish</div>
         <div class="checkin-dish-coll" id="ci-dish-coll">Collection</div>
       </div>
       <button class="checkin-close" onclick="closeCheckin()">✕</button>
     </div>
-    <div class="ci-section">
-      <div class="ci-label">📸 Your photo</div>
-      <div class="ci-photo-area" id="ci-photo-area" onclick="$('ci-photo-input').click()">
-        <div class="ci-photo-icon">📷</div>
-        <div class="ci-photo-txt">Tap to add a photo</div>
-        <img id="ci-photo-preview" src="" style="display:none" alt="">
+
+    <!-- Foto — groot, hero -->
+    <div class="ci-photo-hero" id="ci-photo-area" onclick="$('ci-photo-input').click()">
+      <img id="ci-photo-preview" src="" style="display:none" alt="">
+      <div class="ci-photo-placeholder" id="ci-photo-placeholder">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#B0A090" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Tap to add a photo</span>
       </div>
-      <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
     </div>
-    <div class="ci-section">
-      <div class="ci-label">⭐ Rating</div>
+    <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
+
+    <!-- Rating — groot en centraal -->
+    <div class="ci-rating-wrap">
+      <div class="ci-rating-label">How was it?</div>
       <div class="ci-stars" id="ci-stars">
         <span class="ci-star" onclick="setRating(1)">⭐</span>
         <span class="ci-star" onclick="setRating(2)">⭐</span>
@@ -199,40 +238,51 @@
         <span class="ci-star" onclick="setRating(5)">⭐</span>
       </div>
     </div>
-    <div class="ci-section">
-      <div class="ci-label">💰 Price</div>
-      <div class="ci-row">
-        <div class="ci-field"><input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01"></div>
-        <select class="ci-currency" id="ci-currency">
-          <option value="VND">VND</option>
-          <option value="THB">THB</option>
-          <option value="JPY">JPY</option>
-          <option value="IDR">IDR</option>
-          <option value="EUR">EUR</option>
-          <option value="USD">USD</option>
-        </select>
-      </div>
-    </div>
-    <div class="ci-section">
-      <div class="ci-label">📍 Location</div>
-      <input class="ci-input" id="ci-location" type="text" placeholder="Restaurant or street name">
-      <button class="ci-loc-btn" onclick="useGPS()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-        Use my location
-      </button>
-    </div>
-    <div class="ci-section">
-      <div class="ci-label">📝 Note (optional)</div>
-      <textarea class="ci-input" id="ci-note" rows="2" placeholder="How was it?" style="resize:none;line-height:1.5"></textarea>
-    </div>
+
+    <!-- Acties -->
     <div class="ci-uploading" id="ci-uploading" style="display:none">
       <div class="spin" style="width:16px;height:16px;border-width:2px"></div>
-      <span>Uploading photo...</span>
+      <span>Saving…</span>
     </div>
-    <div class="ci-actions">
-      <button class="ci-skip" onclick="skipCheckin()">Quick tick</button>
+    <div class="ci-primary-actions">
       <button class="ci-save" id="ci-save" onclick="saveCheckin()">✓ Save check-in</button>
     </div>
+
+    <!-- Details toggle -->
+    <button class="ci-details-toggle" id="ci-details-toggle" onclick="ciToggleDetails()">+ Add details (price, location, note)</button>
+
+    <!-- Details sectie (verborgen) -->
+    <div id="ci-details" style="display:none">
+      <div class="ci-section">
+        <div class="ci-label">💰 Price</div>
+        <div class="ci-row">
+          <div class="ci-field"><input class="ci-input" id="ci-price" type="number" placeholder="0.00" min="0" step="0.01"></div>
+          <select class="ci-currency" id="ci-currency">
+            <option value="VND">VND</option>
+            <option value="THB">THB</option>
+            <option value="JPY">JPY</option>
+            <option value="IDR">IDR</option>
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+      <div class="ci-section">
+        <div class="ci-label">📍 Location</div>
+        <input class="ci-input" id="ci-location" type="text" placeholder="Restaurant or street name">
+        <button class="ci-loc-btn" onclick="openLocationPicker()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          Pick on map
+        </button>
+      </div>
+      <div class="ci-section">
+        <div class="ci-label">📝 Note</div>
+        <textarea class="ci-input" id="ci-note" rows="2" placeholder="How was it? Any tips?" style="resize:none;line-height:1.5"></textarea>
+      </div>
+    </div>
+
+    <button class="ci-skip-link" onclick="skipCheckin()">Skip — just tick it off</button>
+    <div style="height:16px"></div>
   </div>
 </div>
 
@@ -267,7 +317,10 @@
 <!-- ── FOOD PASSPORT SHEET ── -->
 <div class="passport-backdrop" id="passport-backdrop" onclick="if(event.target===this)closePassport()">
   <div class="passport-sheet" id="passport-sheet">
-    <div class="passport-handle"></div>
+    <div class="passport-topbar">
+      <div class="passport-handle"></div>
+      <button class="passport-close-btn" onclick="closePassport()">✕</button>
+    </div>
     <div class="passport-header">
       <div class="passport-header-top">
         <div>
@@ -293,15 +346,171 @@
   </div>
 </div>
 
+<!-- ── LOCATION PICKER ── -->
+<div class="locpicker-overlay" id="locpicker-overlay">
+  <div class="locpicker-sheet">
+    <div class="locpicker-topbar">
+      <div class="locpicker-handle"></div>
+      <div class="locpicker-titlerow">
+        <div class="locpicker-title">Pick a location</div>
+        <button class="locpicker-close-btn" onclick="closeLocationPicker()">✕</button>
+      </div>
+      <div class="locpicker-search-row">
+        <span class="locpicker-search-icon">🔍</span>
+        <input class="locpicker-search" id="locpicker-search" type="text"
+          placeholder="Search for a restaurant or street…"
+          oninput="locSearchDebounce()" autocomplete="off" autocorrect="off">
+      </div>
+      <div class="locpicker-status" id="locpicker-status">Finding your location…</div>
+    </div>
+    <div id="locpicker-map"></div>
+    <div class="locpicker-bottom" id="locpicker-bottom" style="display:none">
+      <div class="locpicker-sel-row">
+        <span class="locpicker-sel-icon">📍</span>
+        <div class="locpicker-sel-name" id="locpicker-sel-name">—</div>
+      </div>
+      <button class="locpicker-confirm-btn" onclick="confirmLocation()">Use this location →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── USERNAME MODAL ── -->
+<div class="modal-back" id="username-modal" onclick="if(event.target===this)closeUsernameModal()">
+  <div class="um-card">
+    <div class="um-icon">👤</div>
+    <div class="um-title">Choose your username</div>
+    <div class="um-sub">Your friends will find you by this name.</div>
+    <input class="um-input" id="username-input" type="text" placeholder="e.g. foodie_jan" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="none">
+    <div class="um-error" id="username-error"></div>
+    <button class="um-btn" id="username-submit" onclick="submitUsername()">Claim username</button>
+  </div>
+</div>
+
+<!-- ── FRIENDS MODAL ── -->
+<div class="modal-back" id="friends-modal" onclick="if(event.target===this)closeFriendsModal()">
+  <div class="fm-card">
+    <div class="fm-topbar">
+      <div class="fm-title">Friends</div>
+      <button class="fm-close-btn" onclick="closeFriendsModal()">✕</button>
+    </div>
+
+    <div class="fm-search-wrap">
+      <input class="fm-search-input" id="friends-search-input" type="text" placeholder="Search by username…" oninput="searchFriend()" autocomplete="off" autocorrect="off" autocapitalize="none">
+    </div>
+    <div id="friends-search-results"></div>
+
+    <div id="friends-pending-section" style="display:none">
+      <div class="fm-section-title">Friend requests</div>
+      <div id="friends-pending-list"></div>
+    </div>
+
+    <div id="friends-list-wrap"></div>
+  </div>
+</div>
+
+<!-- ── EXPERIENCE SHEET ── -->
+<div class="exp-sheet-backdrop" id="exp-sheet-backdrop" onclick="if(event.target===this)closeExpSheet()">
+  <div class="exp-sheet">
+    <div class="exp-sheet-handle"></div>
+    <div class="exp-sheet-hero" id="exp-sheet-hero">
+      <img id="exp-sheet-hero-img" src="" alt="">
+      <button class="exp-sheet-close" onclick="closeExpSheet()">✕</button>
+    </div>
+    <div class="exp-sheet-body">
+      <div class="exp-sheet-user-row">
+        <div class="exp-sheet-avatar" id="exp-sheet-avatar"></div>
+        <div>
+          <div class="exp-sheet-name" id="exp-sheet-name"></div>
+          <div class="exp-sheet-date" id="exp-sheet-date"></div>
+        </div>
+      </div>
+      <div class="exp-sheet-dish" id="exp-sheet-dish"></div>
+      <div class="exp-sheet-stars" id="exp-sheet-stars"></div>
+      <div class="exp-sheet-meta" id="exp-sheet-meta"></div>
+      <div class="exp-sheet-note" id="exp-sheet-note"></div>
+      <div class="exp-sheet-reactions" id="exp-sheet-reactions"></div>
+      <button class="exp-sheet-dish-btn" id="exp-sheet-dish-btn" onclick="expSheetOpenDish()">Open this dish →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUBMIT SHEET ── -->
+<div class="submit-backdrop" id="submit-backdrop" onclick="if(event.target===this)closeSubmitSheet()">
+  <div class="submit-sheet" id="submit-sheet">
+    <div class="submit-handle"></div>
+    <div class="submit-title">Add a dish</div>
+
+    <!-- Foto -->
+    <div class="submit-photo-area" id="submit-photo-area" onclick="$('submit-photo-input').click()">
+      <img id="submit-photo-preview" src="" style="display:none" alt="">
+      <div class="submit-photo-placeholder" id="submit-photo-placeholder">
+        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#B0A090" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Take or choose a photo</span>
+      </div>
+    </div>
+    <input type="file" id="submit-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handleSubmitPhoto(event)">
+
+    <!-- Naam -->
+    <div class="submit-name-wrap">
+      <input class="submit-name-input" id="submit-name" type="text" placeholder="What did you eat?" oninput="submitNameDebounce()" autocomplete="off" autocorrect="off">
+    </div>
+
+    <!-- Match suggesties -->
+    <div id="submit-matches"></div>
+
+    <!-- Beschrijving -->
+    <div class="submit-desc-wrap">
+      <textarea class="ci-input" id="submit-desc" rows="2" placeholder="Where did you find it? Any tips? (optional)" style="resize:none;line-height:1.5"></textarea>
+    </div>
+
+    <div class="ci-uploading" id="submit-uploading" style="display:none">
+      <div class="spin" style="width:16px;height:16px;border-width:2px"></div>
+      <span>Saving…</span>
+    </div>
+    <button class="submit-save-btn" id="submit-save-btn" onclick="saveSubmitDish()">Add dish →</button>
+  </div>
+</div>
+
+<!-- ── NOTIFICATIONS SHEET ── -->
+<div class="notif-backdrop" id="notif-backdrop" onclick="if(event.target===this)closeNotifSheet()">
+  <div class="notif-sheet" id="notif-sheet">
+    <div class="notif-handle"></div>
+    <div class="notif-header">
+      <div class="notif-title">Notifications</div>
+      <button class="notif-read-all" onclick="markAllRead()">Mark all read</button>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div style="padding:32px;text-align:center;color:#B0A090">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BUDDY PROFILE SHEET ── -->
+<div class="buddy-backdrop" id="buddy-backdrop" onclick="if(event.target===this)closeBuddyProfile()">
+  <div class="buddy-sheet" id="buddy-sheet">
+    <div class="buddy-handle"></div>
+    <div class="buddy-inner" id="buddy-inner">
+      <div style="padding:40px;text-align:center;color:#B0A090">Loading...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ── BOTTOM NAV ── -->
 <nav id="bnav">
   <button class="nb on" id="nb-explore" onclick="showTab('home')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     Explore
   </button>
+  <button class="nb" id="nb-feed" onclick="showTab('feed')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Feed
+  </button>
+  <button class="nb nb-add" onclick="openSubmitSheet()">
+    <div class="nb-add-circle">+</div>
+  </button>
   <button class="nb" id="nb-coll" onclick="showTab('coll')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-    Collections
+    Journeys
   </button>
   <button class="nb" id="nb-profile" onclick="showTab('profile')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -311,6 +520,7 @@
 
 <!-- ── SCRIPTS (volgorde belangrijk!) ── -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/config.js"></script>
 <script src="js/state.js"></script>
 <script src="js/api.js"></script>
@@ -323,7 +533,12 @@
 <script src="js/detail.js"></script>
 <script src="js/checkin.js"></script>
 <script src="js/passport.js"></script>
+<script src="js/social.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/submit.js"></script>
 <script src="js/profile.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/buddy.js"></script>
 <script src="js/app.js"></script>
 
 </body>

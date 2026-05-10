@@ -13,7 +13,7 @@ echo "→ Backup maken van huidige server versie..."
 ssh -p 18765 "$REMOTE_HOST" "mkdir -p $BACKUP_PATH && cp -r $REMOTE_PATH $BACKUP_PATH/backup_$TIMESTAMP && echo 'Backup: $BACKUP_PATH/backup_$TIMESTAMP'"
 
 echo "→ Uploaden naar SiteGround..."
-rsync -avz --delete \
+rsync -avz \
   -e "ssh -p 18765" \
   "$LOCAL_PATH/" \
   "$REMOTE_HOST:$REMOTE_PATH/"
