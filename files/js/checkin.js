@@ -1,14 +1,14 @@
 // ── OPEN / CLOSE ──────────────────────────────────────
-function openCheckin() {
+function openCheckin(preloadFile, preloadDataUrl) {
   const dish    = activeDish;
   const coll    = activeColl;
   const country = currentCountry;
   if (!dish) return;
 
-  // Reset checkin session state
-  ciRating = 0; ciPhotoFile = null; ciPhotoDataUrl = null;
+  ciRating = 0;
+  ciPhotoFile = preloadFile || null;
+  ciPhotoDataUrl = preloadDataUrl || null;
 
-  // Populate header
   $('ci-dish-name').textContent = dish.name;
   $('ci-dish-coll').textContent = coll?.name || '';
   if (dish.image_url) {
@@ -17,20 +17,35 @@ function openCheckin() {
     $('ci-dish-img').innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;background:#F0EBE4">🍽️</div>`;
   }
 
-  // Reset form fields
   $('ci-price').value    = '';
   $('ci-location').value = '';
   $('ci-note').value     = '';
-  $('ci-photo-preview').style.display = 'none';
-  $('ci-photo-preview').src = '';
-  $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'block';
-  $('ci-photo-area').querySelector('.ci-photo-txt').style.display  = 'block';
+  $('ci-details').style.display = 'none';
+  $('ci-details-toggle').textContent = '+ Add details (price, location, note)';
   $('ci-uploading').style.display = 'none';
   $('ci-save').disabled = false;
   updateStars(0);
 
+  // Foto: preloaded of leeg
+  if (ciPhotoDataUrl) {
+    $('ci-photo-preview').src = ciPhotoDataUrl;
+    $('ci-photo-preview').style.display = 'block';
+    $('ci-photo-placeholder').style.display = 'none';
+  } else {
+    $('ci-photo-preview').style.display = 'none';
+    $('ci-photo-preview').src = '';
+    $('ci-photo-placeholder').style.display = 'flex';
+  }
+
   $('ci-currency').value = COUNTRY_CURRENCY[country?.name] || 'USD';
   $('ci-backdrop').classList.add('open');
+}
+
+function ciToggleDetails() {
+  const d = $('ci-details');
+  const open = d.style.display === 'none';
+  d.style.display = open ? '' : 'none';
+  $('ci-details-toggle').textContent = open ? '− Hide details' : '+ Add details (price, location, note)';
 }
 
 function closeCheckin()     { $('ci-backdrop').classList.remove('open'); }
@@ -54,25 +69,142 @@ function handlePhotoSelect(e) {
     ciPhotoDataUrl = ev.target.result;
     $('ci-photo-preview').src = ev.target.result;
     $('ci-photo-preview').style.display = 'block';
-    $('ci-photo-area').querySelector('.ci-photo-icon').style.display = 'none';
-    $('ci-photo-area').querySelector('.ci-photo-txt').style.display  = 'none';
+    $('ci-photo-placeholder').style.display = 'none';
   };
   reader.readAsDataURL(file);
 }
 
-// ── GPS ───────────────────────────────────────────────
-function useGPS() {
-  if (!navigator.geolocation) { alert('Location not available'); return; }
-  navigator.geolocation.getCurrentPosition(async pos => {
-    const { latitude, longitude } = pos.coords;
-    try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-      const d = await r.json();
-      $('ci-location').value = d.address?.road || d.address?.suburb || d.display_name?.split(',')[0] || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-    } catch(e) {
-      $('ci-location').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-    }
-  }, () => alert('Could not get location'));
+// ── LOCATION PICKER (map) ─────────────────────────────
+let _locMap = null, _locUserMarker = null, _locMarkers = [], _locSelected = null, _locSearchTimer = null;
+
+function openLocationPicker() {
+  $('locpicker-overlay').classList.add('open');
+  _locSelected = null;
+  $('locpicker-bottom').style.display = 'none';
+  $('locpicker-search').value = '';
+  $('locpicker-status').textContent = 'Finding your location…';
+
+  // Init map once
+  if (!_locMap) {
+    _locMap = L.map('locpicker-map', { zoomControl: true, attributionControl: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(_locMap);
+    _locMap.on('click', e => _reverseGeocode(e.latlng.lat, e.latlng.lng, false));
+  }
+
+  // Invalidate after CSS transition
+  setTimeout(() => _locMap.invalidateSize(), 350);
+
+  if (!navigator.geolocation) {
+    $('locpicker-status').textContent = 'Location unavailable — search for a place above.';
+    _locMap.setView([13.75, 100.5], 14);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => _locGotPosition(pos.coords.latitude, pos.coords.longitude),
+    ()  => { $('locpicker-status').textContent = 'Location unavailable — search for a place above.'; }
+  );
+}
+
+function _locGotPosition(lat, lng) {
+  _locMap.setView([lat, lng], 16);
+  if (_locUserMarker) _locUserMarker.remove();
+  _locUserMarker = L.marker([lat, lng], {
+    icon: L.divIcon({ className:'loc-user-dot', iconSize:[18,18], iconAnchor:[9,9] }),
+    zIndexOffset: 1000
+  }).addTo(_locMap).bindTooltip('You', { permanent:true, direction:'top', offset:[0,-12], className:'loc-you-tip' });
+  $('locpicker-status').textContent = 'Loading nearby places…';
+  _loadNearbyPlaces(lat, lng);
+}
+
+async function _loadNearbyPlaces(lat, lng) {
+  _locMarkers.forEach(m => m.remove()); _locMarkers = [];
+  const q = `[out:json][timeout:15];(node["amenity"~"^(restaurant|cafe|fast_food|food_court|bar|bakery|pub|ice_cream)$"]["name"](around:600,${lat},${lng}););out body;`;
+  try {
+    const r    = await fetch('https://overpass-api.de/api/interpreter', { method:'POST', body:q });
+    const data = await r.json();
+    const els  = (data.elements || []).filter(e => e.lat && e.lon && e.tags?.name);
+    $('locpicker-status').textContent = els.length ? `${els.length} places nearby — tap to select` : 'No places found nearby. Tap the map or search.';
+    els.forEach(el => {
+      const emoji = _placeEmoji(el.tags.amenity);
+      const icon  = L.divIcon({ className:'loc-place-icon', html:emoji, iconSize:[28,28], iconAnchor:[14,14] });
+      const m     = L.marker([el.lat, el.lon], { icon })
+        .addTo(_locMap)
+        .bindTooltip(el.tags.name, { direction:'top', offset:[0,-16], className:'loc-place-tip' })
+        .on('click', () => _selectPlace(el.tags.name, m));
+      _locMarkers.push(m);
+    });
+  } catch(e) {
+    $('locpicker-status').textContent = 'Could not load places. Tap the map or search.';
+  }
+}
+
+function _placeEmoji(amenity) {
+  const map = { restaurant:'🍽️', cafe:'☕', fast_food:'🍟', food_court:'🏪', bar:'🍺', bakery:'🥐', pub:'🍺', ice_cream:'🍦' };
+  return map[amenity] || '🍽️';
+}
+
+function _selectPlace(name, marker) {
+  // Reset all markers
+  _locMarkers.forEach(m => {
+    const el = m.getElement(); if (el) el.classList.remove('selected');
+  });
+  const el = marker?.getElement(); if (el) el.classList.add('selected');
+  _locSelected = name;
+  $('locpicker-sel-name').textContent = name;
+  $('locpicker-bottom').style.display = 'flex';
+}
+
+async function _reverseGeocode(lat, lng, moveMap) {
+  if (moveMap) _locMap.setView([lat, lng], 16);
+  $('locpicker-status').textContent = 'Looking up location…';
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const d = await r.json();
+    const name = d.name || d.address?.road || d.address?.suburb || d.display_name?.split(',')[0] || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    _locSelected = name;
+    $('locpicker-sel-name').textContent = name;
+    $('locpicker-bottom').style.display = 'flex';
+    $('locpicker-status').textContent = 'Tap a place or use this location';
+    if (moveMap) _loadNearbyPlaces(lat, lng);
+  } catch(e) {
+    const name = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    _locSelected = name;
+    $('locpicker-sel-name').textContent = name;
+    $('locpicker-bottom').style.display = 'flex';
+  }
+}
+
+function locSearchDebounce() {
+  clearTimeout(_locSearchTimer);
+  _locSearchTimer = setTimeout(_doLocSearch, 600);
+}
+
+async function _doLocSearch() {
+  const q = $('locpicker-search').value.trim();
+  if (q.length < 3) return;
+  $('locpicker-status').textContent = 'Searching…';
+  try {
+    const r    = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`);
+    const data = await r.json();
+    if (!data.length) { $('locpicker-status').textContent = 'No results found.'; return; }
+    const place = data[0];
+    const lat = parseFloat(place.lat), lng = parseFloat(place.lon);
+    const name = place.name || place.display_name.split(',')[0];
+    _locMap.setView([lat, lng], 17);
+    _locSelected = name;
+    $('locpicker-sel-name').textContent = name;
+    $('locpicker-bottom').style.display = 'flex';
+    _loadNearbyPlaces(lat, lng);
+  } catch(e) { $('locpicker-status').textContent = 'Search failed.'; }
+}
+
+function confirmLocation() {
+  if (_locSelected) $('ci-location').value = _locSelected;
+  closeLocationPicker();
+}
+
+function closeLocationPicker() {
+  $('locpicker-overlay').classList.remove('open');
 }
 
 // ── PHOTO UPLOAD ──────────────────────────────────────

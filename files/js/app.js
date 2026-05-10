@@ -1,5 +1,6 @@
 // ── GLOBAL STATE ─────────────────────────────────────
 let sbUser = null, uid = null, token = null;
+let _initDone = false; // guards against auth handler firing renderHome during init
 let allCountries = [], currentCountry = null, countryId = null;
 let collections = [], allDishes = [];
 let userDishes = new Set();
@@ -22,9 +23,14 @@ async function init() {
     await load();
     updateWelcome();
     renderHome();
+    _initDone = true;
+    ensureProfile();
+    refreshFriendsActivity();
     showScreen('s-home');
     setTimeout(initScrollReveal, 100);
     $('loading').style.display = 'none';
+    loadNotifCount();
+    checkUserParam();
   } catch(e) {
     $('loading').innerHTML = `
       <div style="text-align:center;padding:24px;color:#7A6A5A;font-family:'DM Sans',sans-serif">

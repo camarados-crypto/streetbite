@@ -5,6 +5,9 @@ function loadClaimedBadges() {
 function saveBadge(id) {
   const c = loadClaimedBadges(); c.add(id);
   try { localStorage.setItem('sb_badges', JSON.stringify([...c])); } catch(e) {}
+  if (uid && sbUser && !sbUser.is_anonymous) {
+    api('user_badges', { method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify({ user_id:uid, badge_id:id }) }).catch(()=>{});
+  }
 }
 function isBadgeClaimed(id) { return loadClaimedBadges().has(id); }
 

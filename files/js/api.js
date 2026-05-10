@@ -18,7 +18,11 @@ async function initAuth() {
     const wasAnon = !sbUser || sbUser.is_anonymous;
     sbUser = session?.user || null; uid = sbUser?.id || uid; token = session?.access_token || token;
     if (event === 'SIGNED_IN' && wasAnon && sbUser && !sbUser.is_anonymous) await migrateLocalToCloud();
-    if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) { await loadUserDishes(); renderHome(); }
+    if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) {
+      await upsertProfile();
+      await loadUserDishes();
+      if (_initDone) { renderHome(); setTimeout(initScrollReveal, 100); }
+    }
     updateWelcome();
     if (!$('s-profile').classList.contains('gone')) renderProfile();
   });
@@ -34,7 +38,8 @@ async function initAuth() {
 }
 
 async function signInWithGoogle() {
-  await sbClient.auth.signInWithOAuth({ provider:'google', options:{ redirectTo:window.location.href } });
+  const redirectTo = window.location.origin + window.location.pathname;
+  await sbClient.auth.signInWithOAuth({ provider:'google', options:{ redirectTo } });
 }
 
 async function signOut() {
@@ -42,7 +47,22 @@ async function signOut() {
   sbUser = null; uid = null; token = null;
   userDishes = new Set(); recentDishIds = [];
   collections.forEach(c => c.collected = 0);
-  renderHome(); renderProfile(); updateWelcome();
+  renderHome(); setTimeout(initScrollReveal, 100); updateWelcome();
+  // Re-create anonymous session so app stays functional
+  try {
+    const { data } = await sbClient.auth.signInAnonymously();
+    if (data?.user) { sbUser = data.user; uid = data.user.id; token = data.session?.access_token; }
+  } catch(e) {}
+  renderProfile();
+}
+
+async function upsertProfile() {
+  if (!sbUser || sbUser.is_anonymous) return;
+  const display_name = sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || null;
+  const avatar_url   = sbUser.user_metadata?.avatar_url || null;
+  try {
+    await api('profiles', { method:'POST', headers:{'Prefer':'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify({ user_id:sbUser.id, display_name, avatar_url }) });
+  } catch(e) {}
 }
 
 async function migrateLocalToCloud() {
