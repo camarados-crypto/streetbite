@@ -62,16 +62,33 @@ function updateExpSheetReactions(expId) {
 }
 
 // ── STREAK ────────────────────────────────────────────
+function _saveStreakCloud(streak, date) {
+  if (!sbClient || !sbUser || sbUser.is_anonymous) return;
+  sbClient.auth.updateUser({ data: { streak, last_visit: date } }).catch(() => {});
+}
+
+function syncStreakFromCloud() {
+  if (!sbUser || sbUser.is_anonymous) return;
+  const meta = sbUser.user_metadata || {};
+  if (!meta.streak || !meta.last_visit) return;
+  const localLast = localStorage.getItem('sb_last_visit') || '';
+  if (meta.last_visit > localLast) {
+    localStorage.setItem('sb_last_visit', meta.last_visit);
+    localStorage.setItem('sb_streak', String(meta.streak));
+  }
+}
+
 function getStreak() {
   const today = new Date().toDateString();
   const last = localStorage.getItem('sb_last_visit');
   const streak = parseInt(localStorage.getItem('sb_streak') || '1');
-  if (!last) { localStorage.setItem('sb_last_visit', today); localStorage.setItem('sb_streak', '1'); return 1; }
+  if (!last) { localStorage.setItem('sb_last_visit', today); localStorage.setItem('sb_streak', '1'); _saveStreakCloud(1, today); return 1; }
   if (last === today) return streak;
   const diff = (new Date(today) - new Date(last)) / 86400000;
   localStorage.setItem('sb_last_visit', today);
   const next = diff === 1 ? streak + 1 : 1;
   localStorage.setItem('sb_streak', String(next));
+  _saveStreakCloud(next, today);
   return next;
 }
 

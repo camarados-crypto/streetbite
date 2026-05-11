@@ -153,7 +153,10 @@
 /* Foto hero */
 .ci-photo-hero{width:100%;height:200px;background:#F5F0EA;cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .ci-photo-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ci-photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:#B0A090;font-size:13px;font-weight:600;position:relative}
+.ci-photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:10px;color:#B0A090;font-size:13px;font-weight:600;position:relative}
+.ci-photo-btns{display:flex;gap:10px}
+.ci-photo-btn{padding:8px 18px;border-radius:20px;border:1.5px solid #D4C8BC;background:#fff;color:#7A6A5A;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.ci-photo-btn:active{background:#F0EBE3}
 .ci-photo-input{display:none}
 
 /* Rating */
@@ -263,7 +266,7 @@
 .fm-req-error{font-size:11px;color:#D43C2A;margin-top:4px;padding:0 16px;text-align:right}
 
 /* ── LOCATION PICKER ── */
-.locpicker-overlay{position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.locpicker-overlay{position:fixed;inset:0;z-index:210;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s ease}
 .locpicker-overlay.open{opacity:1;pointer-events:all}
 .locpicker-sheet{width:100%;height:84vh;background:#fff;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
 .locpicker-overlay.open .locpicker-sheet{transform:translateY(0)}

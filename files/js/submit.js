@@ -130,9 +130,9 @@ async function saveSubmitDish() {
     if (submitPhotoFile) {
       const ext = submitPhotoFile.name.split('.').pop() || 'jpg';
       const path = `community/${uid}_${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from('dish-images').upload(path, submitPhotoFile, { upsert: true });
+      const { error } = await sbClient.storage.from('dish-images').upload(path, submitPhotoFile, { upsert: true });
       if (!error) {
-        const { data: pub } = supabase.storage.from('dish-images').getPublicUrl(path);
+        const { data: pub } = sbClient.storage.from('dish-images').getPublicUrl(path);
         photo_url = pub.publicUrl;
       }
     }

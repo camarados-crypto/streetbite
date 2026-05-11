@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function init() {
   try {
     await initAuth();
+    syncStreakFromCloud();
     await load();
     updateWelcome();
     renderHome();

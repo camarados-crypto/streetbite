@@ -215,14 +215,18 @@
     </div>
 
     <!-- Foto — groot, hero -->
-    <div class="ci-photo-hero" id="ci-photo-area" onclick="$('ci-photo-input').click()">
+    <div class="ci-photo-hero" id="ci-photo-area">
       <img id="ci-photo-preview" src="" style="display:none" alt="">
       <div class="ci-photo-placeholder" id="ci-photo-placeholder">
         <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#B0A090" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span>Tap to add a photo</span>
+        <div class="ci-photo-btns">
+          <button class="ci-photo-btn" onclick="$('ci-photo-camera').click()">📷 Camera</button>
+          <button class="ci-photo-btn" onclick="$('ci-photo-input').click()">🖼️ Gallery</button>
+        </div>
       </div>
     </div>
-    <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handlePhotoSelect(event)">
+    <input type="file" id="ci-photo-camera" class="ci-photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelect(event)">
+    <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*" onchange="handlePhotoSelect(event)">
 
     <!-- Rating — groot en centraal -->
     <div class="ci-rating-wrap">
