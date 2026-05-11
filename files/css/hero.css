@@ -31,9 +31,9 @@
   padding:0 18px 20px;
 }
 .hero-greeting{font-size:12px;color:rgba(255,255,255,.7);font-weight:500;margin-bottom:10px}
-.hero-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;cursor:pointer}
-.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:8px 14px;display:inline-flex;backdrop-filter:blur(6px)}
-.hero-country-chev{font-size:18px;opacity:.6;margin-left:-4px}
+.hero-label{display:none}
+.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px}
+.hero-country-chev{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);font-size:15px;flex-shrink:0;margin-left:-2px}
 .hero-tagline{display:none}
 .hero-total-prog{margin-top:10px}
 .hero-total-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -57,8 +57,8 @@
 .fb-list-num{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);color:rgba(255,255,255,.8);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .fb-list-row.tried .fb-list-num{background:#F4B942;color:#1C1208}
 .fb-list-info{flex:1;min-width:0;padding:12px 0 12px 0}
-.fb-list-name{font-size:17px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px}
-.fb-list-en{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:5px}
+.fb-list-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.45);line-height:1.2;margin-bottom:2px}
+.fb-list-en{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
 .fb-list-status{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .fb-list-row.tried .fb-list-status{color:#74C69D}
 .fb-list-row:not(.tried) .fb-list-status{color:#D4692A}
