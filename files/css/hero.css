@@ -13,10 +13,10 @@
 }
 .hero-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
 .hero-logo span{color:#D4692A}
-.hero-right{display:flex;align-items:center;gap:10px}
-.hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.hero-xp{font-size:11px;font-weight:700;color:#FFD96A;text-shadow:0 1px 5px rgba(0,0,0,.5);letter-spacing:.01em}
-.hero-streak{font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.5)}
+.hero-right{display:flex;align-items:center;gap:8px}
+.hero-meta{display:flex;flex-direction:row;align-items:center;gap:10px}
+.hero-xp{font-size:13px;font-weight:700;color:#FFD96A;text-shadow:0 1px 5px rgba(0,0,0,.5);letter-spacing:.01em}
+.hero-streak{font-size:13px;font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.5)}
 .welcome-avatar{
   width:36px;height:36px;border-radius:50%;overflow:hidden;
   background:rgba(255,255,255,.18);flex-shrink:0;cursor:pointer;
