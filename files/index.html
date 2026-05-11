@@ -220,12 +220,11 @@
       <div class="ci-photo-placeholder" id="ci-photo-placeholder">
         <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#B0A090" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         <div class="ci-photo-btns">
-          <button class="ci-photo-btn" onclick="$('ci-photo-camera').click()">📷 Camera</button>
+          <button class="ci-photo-btn" onclick="openCamera('checkin')">📷 Camera</button>
           <button class="ci-photo-btn" onclick="$('ci-photo-input').click()">🖼️ Gallery</button>
         </div>
       </div>
     </div>
-    <input type="file" id="ci-photo-camera" class="ci-photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelect(event)">
     <input type="file" id="ci-photo-input" class="ci-photo-input" accept="image/*" onchange="handlePhotoSelect(event)">
 
     <!-- Rating — groot en centraal -->
@@ -442,14 +441,17 @@
     <div class="submit-title">Add a dish</div>
 
     <!-- Foto -->
-    <div class="submit-photo-area" id="submit-photo-area" onclick="$('submit-photo-input').click()">
+    <div class="submit-photo-area" id="submit-photo-area">
       <img id="submit-photo-preview" src="" style="display:none" alt="">
       <div class="submit-photo-placeholder" id="submit-photo-placeholder">
         <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#B0A090" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span>Take or choose a photo</span>
+        <div class="ci-photo-btns">
+          <button class="ci-photo-btn" onclick="openCamera('submit')">📷 Camera</button>
+          <button class="ci-photo-btn" onclick="$('submit-photo-input').click()">🖼️ Gallery</button>
+        </div>
       </div>
     </div>
-    <input type="file" id="submit-photo-input" class="ci-photo-input" accept="image/*,image/heic" onchange="handleSubmitPhoto(event)">
+    <input type="file" id="submit-photo-input" class="ci-photo-input" accept="image/*" onchange="handleSubmitPhoto(event)">
 
     <!-- Naam -->
     <div class="submit-name-wrap">
@@ -469,6 +471,15 @@
       <span>Saving…</span>
     </div>
     <button class="submit-save-btn" id="submit-save-btn" onclick="saveSubmitDish()">Add dish →</button>
+  </div>
+</div>
+
+<!-- ── CAMERA OVERLAY ── -->
+<div id="camera-overlay">
+  <video id="camera-video" autoplay playsinline muted></video>
+  <button class="camera-close-btn" onclick="closeCamera()">✕</button>
+  <div class="camera-bottom">
+    <button class="camera-capture-btn" onclick="capturePhoto()"></button>
   </div>
 </div>
 
@@ -540,6 +551,7 @@
 <script src="js/profile.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/buddy.js"></script>
+<script src="js/camera.js"></script>
 <script src="js/app.js"></script>
 
 </body>

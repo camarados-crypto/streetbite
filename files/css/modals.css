@@ -131,6 +131,15 @@
 .detail-checkin-btn{display:block;width:calc(100% - 36px);margin:16px 18px;padding:14px;border-radius:13px;border:none;background:#D4692A;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .detail-pad{height:24px}
 .exp-empty{text-align:center;padding:32px 20px;color:#B0A090;font-size:14px;line-height:1.6}
+/* ── CAMERA OVERLAY ── */
+#camera-overlay{position:fixed;inset:0;z-index:350;background:#000;display:none;flex-direction:column}
+#camera-overlay.open{display:flex}
+#camera-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.camera-close-btn{position:absolute;top:max(env(safe-area-inset-top,16px),16px);right:16px;z-index:1;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.45);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.camera-bottom{position:absolute;bottom:max(env(safe-area-inset-bottom,32px),32px);left:0;right:0;display:flex;justify-content:center;z-index:1}
+.camera-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.4);cursor:pointer;transition:transform .1s}
+.camera-capture-btn:active{transform:scale(.92)}
+
 .photo-viewer{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .photo-viewer.open{opacity:1;pointer-events:all}
 .photo-viewer img{max-width:100%;max-height:100%;object-fit:contain}
