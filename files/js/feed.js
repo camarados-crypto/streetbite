@@ -8,6 +8,7 @@ let feedAllLoaded = false;
 let feedReactions = {};   // { exp_id: { type: [uid,...] } }
 let feedMyReactions = {}; // { exp_id: reaction_type | null }
 let myFollowing   = new Set(); // user_ids ik volg
+let currentFeedTab = 'mine'; // 'mine' | 'friends'
 
 async function loadMyFollows() {
   if (!uid) return;
@@ -41,7 +42,22 @@ async function toggleFollow(event, targetUserId) {
   });
 }
 
+async function switchFeedTab(tab) {
+  currentFeedTab = tab;
+  $('tab-mine').classList.toggle('active', tab === 'mine');
+  $('tab-friends').classList.toggle('active', tab === 'friends');
+  feedPage = 0; feedAllLoaded = false; feedReactions = {}; feedMyReactions = {};
+  $('feed-list').innerHTML = `<div class="feed-loading"><div class="spin"></div></div>`;
+  $('feed-load-more').style.display = 'none';
+  $('s-feed').scrollTop = 0;
+  if (tab === 'friends' && myFollowing.size === 0) await loadMyFollows();
+  loadFeedPage();
+}
+
 async function openFeed() {
+  currentFeedTab = 'mine';
+  $('tab-mine').classList.add('active');
+  $('tab-friends').classList.remove('active');
   feedPage = 0; feedAllLoaded = false; feedReactions = {}; feedMyReactions = {};
   $('feed-list').innerHTML = `<div class="feed-loading"><div class="spin"></div></div>`;
   $('feed-load-more').style.display = 'none';
@@ -55,18 +71,33 @@ async function loadFeedPage() {
   feedLoading = true;
   const limit = 20;
   try {
-    const SOFT_FOLLOWS_THRESHOLD = 3;
-    const useFollowFilter = uid && myFollowing.size >= SOFT_FOLLOWS_THRESHOLD;
     let url = `experiences?select=*,dishes(name,image_url,collections(name))&order=created_at.desc&limit=${limit}&offset=${feedPage * limit}`;
-    if (uid) url += `&user_id=neq.${uid}`;
-    if (useFollowFilter) {
-      url += `&user_id=in.(${[...myFollowing].join(',')})`;
+
+    if (currentFeedTab === 'mine') {
+      if (!uid) {
+        $('feed-list').innerHTML = `<div class="feed-empty">Log in om je eigen check-ins te zien.</div>`;
+        return;
+      }
+      url += `&user_id=eq.${uid}`;
+    } else {
+      // Friends tab: iedereen behalve jezelf, soft follow filter
+      if (uid) url += `&user_id=neq.${uid}`;
+      const SOFT_FOLLOWS_THRESHOLD = 3;
+      if (uid && myFollowing.size >= SOFT_FOLLOWS_THRESHOLD) {
+        url += `&user_id=in.(${[...myFollowing].join(',')})`;
+      }
     }
+
     const exps = await api(url);
     if (!exps || exps.length < limit) feedAllLoaded = true;
     if (feedPage === 0) $('feed-list').innerHTML = '';
     if (!exps || exps.length === 0) {
-      if (feedPage === 0) $('feed-list').innerHTML = `<div class="feed-empty">Nog geen check-ins. Wees de eerste! 🍽️</div>`;
+      if (feedPage === 0) {
+        const emptyMsg = currentFeedTab === 'mine'
+          ? 'Nog geen check-ins. Probeer je eerste gerecht! 🍽️'
+          : 'Nog geen check-ins van anderen. Volg mensen of wees de eerste! 🌏';
+        $('feed-list').innerHTML = `<div class="feed-empty">${emptyMsg}</div>`;
+      }
       $('feed-load-more').style.display = 'none';
       return;
     }

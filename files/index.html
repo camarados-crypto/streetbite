@@ -99,9 +99,9 @@
 
 <!-- ── FEED SCREEN ── -->
 <div class="screen gone" id="s-feed">
-  <div class="journeys-hd">
-    <div class="journeys-hd-title">Your Feed</div>
-    <div class="journeys-hd-sub">Recent check-ins from the community</div>
+  <div class="feed-tabs-bar">
+    <button class="feed-tab active" id="tab-mine" onclick="switchFeedTab('mine')">My Feed</button>
+    <button class="feed-tab" id="tab-friends" onclick="switchFeedTab('friends')">Friends</button>
   </div>
   <div id="feed-list"></div>
   <button id="feed-load-more" class="feed-load-btn" style="display:none" onclick="loadFeedPage()">Load more</button>

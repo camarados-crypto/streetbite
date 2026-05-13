@@ -1,3 +1,33 @@
+/* ── FEED TABS ── */
+.feed-tabs-bar {
+  display: flex;
+  padding: 14px 16px 0;
+  gap: 6px;
+  position: sticky;
+  top: 0;
+  background: #F7F2EA;
+  z-index: 10;
+  border-bottom: 1px solid #EAE0D5;
+}
+.feed-tab {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #B0A090;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s, border-color .15s;
+}
+.feed-tab.active {
+  color: #D4692A;
+  border-bottom-color: #D4692A;
+}
+
 /* ── FEED SCREEN ── */
 .feed-header {
   padding: 20px 16px 4px;

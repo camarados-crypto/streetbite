@@ -52,7 +52,7 @@ async function runSubmitSearch(q) {
     const results = await api(
       `dishes?or=(name.ilike.*${enc}*,name_en.ilike.*${enc}*)` +
       `&select=id,name,name_en,image_url,country_id,collections(name,countries(id,name))` +
-      `&user_submitted=eq.false&limit=8`
+      `&status=neq.unverified&limit=8`
     );
     renderSubmitMatches(results || []);
   } catch(e) {}
