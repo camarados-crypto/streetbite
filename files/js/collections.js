@@ -5,30 +5,45 @@ function showScreen(id) {
 }
 function showTab(tab) {
   ['nb-explore','nb-feed','nb-coll','nb-profile'].forEach(b => $(b).classList.remove('on'));
+  const hdr = $('app-header');
   if (tab === 'home') {
+    hdr.classList.add('app-header-hidden');
+    document.body.classList.remove('with-app-header');
     showScreen('s-home'); $('nb-explore').classList.add('on');
     setTimeout(initScrollReveal, 80);
   } else if (tab === 'feed') {
+    hdr.classList.remove('app-header-hidden');
+    document.body.classList.add('with-app-header');
     showScreen('s-feed'); $('nb-feed').classList.add('on');
     openFeed();
   } else if (tab === 'coll') {
+    hdr.classList.remove('app-header-hidden');
+    document.body.classList.add('with-app-header');
     renderJourneys(); showScreen('s-journeys');
     $('nb-coll').classList.add('on');
   } else if (tab === 'profile') {
+    hdr.classList.remove('app-header-hidden');
+    document.body.classList.add('with-app-header');
     renderProfile(); showScreen('s-profile');
     $('nb-profile').classList.add('on'); $('s-profile').scrollTop = 0;
   }
 }
 function openColl(col) {
+  $('app-header').classList.remove('app-header-hidden');
+  document.body.classList.add('with-app-header');
   renderColl(col); showScreen('s-coll'); $('s-coll').scrollTop = 0;
   $('nb-coll').classList.add('on'); $('nb-explore').classList.remove('on');
 }
 function goHome() {
+  $('app-header').classList.add('app-header-hidden');
+  document.body.classList.remove('with-app-header');
   renderHome(); showScreen('s-home');
   $('nb-explore').classList.add('on'); $('nb-coll').classList.remove('on');
   setTimeout(initScrollReveal, 80);
 }
 function goJourneys() {
+  $('app-header').classList.remove('app-header-hidden');
+  document.body.classList.add('with-app-header');
   renderJourneys(); showScreen('s-journeys');
   $('nb-coll').classList.add('on'); $('nb-explore').classList.remove('on');
   setTimeout(initScrollReveal, 80);

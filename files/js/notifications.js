@@ -9,6 +9,7 @@ async function loadNotifCount() {
     _notifCount = rows?.length || 0;
     updateNotifBadge();
     $('notif-btn').style.display = 'flex';
+    $('app-notif-btn').style.display = 'flex';
   } catch(e) {}
   subscribeNotifs();
 }
@@ -26,18 +27,19 @@ function subscribeNotifs() {
       _notifCount++;
       updateNotifBadge();
       $('notif-btn').style.display = 'flex';
+      $('app-notif-btn').style.display = 'flex';
     })
     .subscribe();
 }
 
 function updateNotifBadge() {
-  const badge = $('notif-badge');
-  if (!badge) return;
-  if (_notifCount > 0) {
-    badge.textContent = _notifCount > 9 ? '9+' : (_notifCount > 1 ? _notifCount : '');
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
+  const text = _notifCount > 9 ? '9+' : (_notifCount > 1 ? _notifCount : '');
+  const show = _notifCount > 0;
+  for (const id of ['notif-badge', 'app-notif-badge']) {
+    const badge = $(id);
+    if (!badge) continue;
+    badge.textContent = text;
+    badge.style.display = show ? 'flex' : 'none';
   }
 }
 

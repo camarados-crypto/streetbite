@@ -15,6 +15,20 @@
 </head>
 <body>
 
+<!-- ── GLOBAL HEADER ── -->
+<div id="app-header" class="app-header-hidden">
+  <div class="app-header-logo" onclick="showTab('home')">Street<span>Bite</span></div>
+  <div class="app-header-right">
+    <div class="app-notif-btn" id="app-notif-btn" onclick="openNotifSheet()" style="display:none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge" id="app-notif-badge" style="display:none"></span>
+    </div>
+    <div class="app-header-avatar" id="app-header-avatar" onclick="showTab('profile')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+</div>
+
 <!-- LOADING -->
 <div id="loading">
   <div class="logo-lockup">
