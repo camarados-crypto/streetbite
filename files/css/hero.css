@@ -14,7 +14,7 @@
 .hero-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
 .hero-logo span{color:#D4692A}
 .hero-right{display:flex;align-items:center;gap:10px}
-.hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.hero-meta{display:flex;flex-direction:row;align-items:center;gap:8px}
 .hero-xp{font-size:11px;font-weight:700;color:#FFD96A;text-shadow:0 1px 5px rgba(0,0,0,.5);letter-spacing:.01em}
 .hero-streak{font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.5)}
 .welcome-avatar{
@@ -32,7 +32,7 @@
 }
 .hero-greeting{font-size:12px;color:rgba(255,255,255,.7);font-weight:500;margin-bottom:10px}
 .hero-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px;cursor:pointer}
-.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:8px 14px;display:inline-flex;backdrop-filter:blur(6px)}
+.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:10px;line-height:1;margin-bottom:6px;cursor:pointer;letter-spacing:-.5px}
 .hero-country-chev{font-size:18px;opacity:.6;margin-left:-4px}
 .hero-tagline{display:none}
 .hero-total-prog{margin-top:10px}
