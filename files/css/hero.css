@@ -275,6 +275,46 @@
 .home-jny-name{font-size:11px;font-weight:700;color:#1C1208;line-height:1.2}
 .home-jny-count{font-size:11px;font-weight:600}
 
+/* ── QUEST CARDS (Journeys) ── */
+.qc-list { padding: 0 14px 32px; display: flex; flex-direction: column; gap: 12px; }
+.qc-almost-wrap { background: rgba(240,160,48,.08); border: 1px solid rgba(240,160,48,.2); border-radius: 16px; padding: 12px 14px; margin-bottom: 2px; }
+.qc-almost-label { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: #F0A030; text-transform: uppercase; margin-bottom: 8px; }
+.qc-almost-row { display: flex; align-items: center; gap: 9px; padding: 5px 0; cursor: pointer; }
+.qc-almost-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.qc-almost-name { flex: 1; font-size: 13px; font-weight: 600; color: #1C1208; }
+.qc-almost-left { font-size: 12px; font-weight: 700; }
+.qc-card { position: relative; border-radius: 20px; overflow: hidden; background: #12100E; border: 1px solid rgba(255,255,255,.07); cursor: pointer; box-shadow: 0 6px 28px var(--glow, rgba(0,0,0,.25)); -webkit-tap-highlight-color: transparent; transition: transform .15s ease, box-shadow .15s ease; }
+.qc-card:active { transform: scale(.982); }
+.qc-card.qc-locked { opacity: .5; box-shadow: none; cursor: default; background: #0E0C0A; }
+.qc-card.qc-complete { border-color: rgba(255,255,255,.12); box-shadow: 0 6px 32px var(--glow, rgba(0,0,0,.3)); }
+.qc-accent-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 3; }
+.qc-photo-panel { position: absolute; top: 0; right: 0; width: 42%; height: 100%; z-index: 1; }
+.qc-photo-panel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.qc-photo-fade { position: absolute; inset: 0; }
+.qc-content { position: relative; z-index: 2; padding: 18px 16px 18px 18px; width: 68%; display: flex; flex-direction: column; gap: 10px; min-height: 160px; }
+.qc-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qc-rarity-pill { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; border: 1px solid; border-radius: 6px; padding: 3px 8px; }
+.qc-complete-chip { font-size: 10px; font-weight: 700; color: #74C69D; background: rgba(116,198,157,.15); border: 1px solid rgba(116,198,157,.3); border-radius: 6px; padding: 3px 8px; }
+.qc-title { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: -.3px; line-height: 1.2; }
+.qc-sub { font-size: 12px; color: rgba(255,255,255,.4); line-height: 1.4; }
+.qc-progress-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.qc-prog-bar-bg { flex: 1; height: 4px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+.qc-prog-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.qc-prog-frac { font-size: 13px; font-weight: 800; white-space: nowrap; }
+.qc-prog-frac span { font-size: 11px; font-weight: 600; opacity: .55; }
+.qc-totry-label { font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 4px; }
+.qc-totry-list { display: flex; flex-direction: column; gap: 5px; }
+.qc-totry-row { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.06); border-radius: 10px; padding: 7px 9px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.qc-totry-thumb { width: 30px; height: 30px; border-radius: 7px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.qc-totry-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.qc-totry-name { flex: 1; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.8); }
+.qc-totry-arrow { font-size: 15px; color: rgba(255,255,255,.25); }
+.qc-reward-row { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 10px; padding: 7px 10px; }
+.qc-reward-icon { font-size: 13px; }
+.qc-reward-text { font-size: 11px; color: rgba(255,255,255,.5); }
+.qc-reward-text strong { color: rgba(255,255,255,.85); font-weight: 700; }
+.qc-complete-note { font-size: 12px; font-weight: 700; }
+
 /* ── RECENT CHECK-INS ── */
 .recent-section{padding:20px 18px 10px}
 .recent-title{font-size:18px;font-weight:700;color:#1C1208}

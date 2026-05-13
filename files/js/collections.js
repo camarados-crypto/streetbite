@@ -50,30 +50,115 @@ function goJourneys() {
 }
 function openColl_byId(id) { const col = collections.find(c => c.id === id); if (col) openColl(col); }
 
-// ── JOURNEYS OVERVIEW ─────────────────────────────────
-function journeyDiscoveryNote(col) {
-  const left = col.dishes.length - col.collected;
-  if (col.dishes.length === 0) return '';
-  if (col.collected === 0) return 'Start your journey — try the first dish!';
-  if (left === 0) return `Journey complete! All ${col.dishes.length} dishes discovered. 🎉`;
-  if (left === 1) return 'Just 1 dish left in this journey.';
-  return `You've discovered ${col.collected} local ${col.collected === 1 ? 'dish' : 'dishes'}.`;
+// ── QUEST RARITY ──────────────────────────────────────
+function questRarity(col) {
+  const n = col.name.toLowerCase();
+  if (n.includes('daredevil')) return { label:'LEGENDARY', accent:'#FF4D6D', glow:'rgba(255,77,109,.35)', grade:'legendary' };
+  if (n.includes('essential')) return { label:'COMMON',    accent:'#74C69D', glow:'rgba(116,198,157,.3)', grade:'common' };
+  if (n.includes('classic') || n.includes('night market') || n.includes('streets') || n.includes('nights')) {
+    return { label:'RARE', accent:'#F0A030', glow:'rgba(240,160,48,.35)', grade:'rare' };
+  }
+  return { label:'UNCOMMON', accent:'#6EB4F0', glow:'rgba(110,180,240,.3)', grade:'uncommon' };
 }
+
+function questBadgeReward(col) {
+  const n = col.name.toLowerCase();
+  if (n.includes('essential')) return { id:'tourist_no_more', label:'Tourist No More' };
+  if (n.includes('classic'))   return { id:'street_certified', label:'Street Certified' };
+  if (n.includes('daredevil')) return { id:'fearless_eater',  label:'Fearless Eater' };
+  return null;
+}
+
+// ── RENDER JOURNEYS ────────────────────────────────────
 function renderJourneys() {
   const jc = $('journeys-country');
   if (jc) jc.textContent = currentCountry?.name || '';
   const list = $('journeys-list');
   if (!list) return;
-  const cells = collections.map(col => {
-    const info     = COL_ICONS[col.name] || { emoji:'🍽️', bg:'#F5F0EA', color:'#9E8E7A' };
+
+  const almostDone = collections.filter(c => {
+    const pct = c.dishes.length > 0 ? c.collected / c.dishes.length : 0;
+    return isUnlocked(c) && pct >= 0.6 && pct < 1;
+  }).sort((a,b) => (b.collected/b.dishes.length) - (a.collected/a.dishes.length));
+
+  const almostHtml = almostDone.length ? `
+    <div class="qc-almost-wrap">
+      <div class="qc-almost-label">⚡ Almost there</div>
+      ${almostDone.map(c => {
+        const left = c.dishes.length - c.collected;
+        const r    = questRarity(c);
+        return `<div class="qc-almost-row" onclick="openColl_byId('${c.id}')">
+          <div class="qc-almost-dot" style="background:${r.accent}"></div>
+          <div class="qc-almost-name">${c.name}</div>
+          <div class="qc-almost-left" style="color:${r.accent}">${left} left</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  const cards = collections.map(col => {
     const unlocked = isUnlocked(col);
-    return `<div class="home-jny-cell scroll-reveal${!unlocked ? ' locked' : ''}" ${unlocked ? `onclick="openColl_byId('${col.id}')"` : ''}>
-      <div class="home-jny-icon" style="background:${info.bg}">${unlocked ? info.emoji : '🔒'}</div>
-      <div class="home-jny-name">${col.name}</div>
-      <div class="home-jny-count" style="color:${info.color}">${col.collected}/${col.dishes.length}</div>
+    const pct      = col.dishes.length > 0 ? Math.round(col.collected / col.dishes.length * 100) : 0;
+    const left     = col.dishes.length - col.collected;
+    const complete  = left === 0 && col.dishes.length > 0;
+    const r        = questRarity(col);
+    const badge    = questBadgeReward(col);
+    const info     = COL_ICONS[col.name] || { emoji:'🍽️' };
+    const desc     = COL_DESCRIPTIONS?.[col.name] || '';
+    const heroImg  = (col.dishes || []).find(d => d.image_url)?.image_url || '';
+    const toTry    = (col.dishes || []).filter(d => !userDishes.has(d.id)).slice(0, 2);
+
+    const toTryHtml = !complete && toTry.length ? `
+      <div class="qc-totry-label">Still to discover</div>
+      <div class="qc-totry-list">
+        ${toTry.map(d => `
+          <div class="qc-totry-row" onclick="event.stopPropagation();openCardFromHome('${d.id}')">
+            <div class="qc-totry-thumb">${d.image_url ? `<img src="${d.image_url}" alt="">` : '🍽️'}</div>
+            <div class="qc-totry-name">${d.name_en || d.name}</div>
+            <div class="qc-totry-arrow">›</div>
+          </div>`).join('')}
+      </div>` : '';
+
+    if (!unlocked) {
+      return `<div class="qc-card qc-locked">
+        <div class="qc-content">
+          <div class="qc-rarity-pill" style="color:#9E8E7A;border-color:rgba(158,142,122,.3)">🔒 LOCKED</div>
+          <div class="qc-title" style="color:rgba(255,255,255,.35)">${col.name}</div>
+          <div class="qc-sub">Complete more dishes to unlock</div>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="qc-card${complete ? ' qc-complete' : ''}" onclick="openColl_byId('${col.id}')" style="--accent:${r.accent};--glow:${r.glow}">
+      <div class="qc-accent-bar" style="background:linear-gradient(90deg,${r.accent},${r.accent}88)"></div>
+      ${heroImg ? `<div class="qc-photo-panel">
+        <img src="${heroImg}" alt="" loading="lazy">
+        <div class="qc-photo-fade" style="background:linear-gradient(to right,#12100E 30%,transparent 100%)"></div>
+      </div>` : ''}
+      <div class="qc-content">
+        <div class="qc-header">
+          <div class="qc-rarity-pill" style="color:${r.accent};border-color:${r.accent}50;background:${r.accent}18">${r.label}</div>
+          ${complete ? `<div class="qc-complete-chip">✓ Complete</div>` : ''}
+        </div>
+        <div class="qc-title">${info.emoji} ${col.name}</div>
+        ${desc ? `<div class="qc-sub">${desc}</div>` : ''}
+        <div class="qc-progress-row">
+          <div class="qc-prog-bar-bg">
+            <div class="qc-prog-bar-fill" style="width:${pct}%;background:${r.accent};box-shadow:0 0 8px ${r.accent}80"></div>
+          </div>
+          <div class="qc-prog-frac" style="color:${r.accent}">${col.collected}<span>/${col.dishes.length}</span></div>
+        </div>
+        ${toTryHtml}
+        ${badge && !isBadgeClaimed(badge.id) ? `
+          <div class="qc-reward-row">
+            <span class="qc-reward-icon">🏆</span>
+            <span class="qc-reward-text">Unlock: <strong>${badge.label}</strong></span>
+          </div>` : ''}
+        ${complete ? `<div class="qc-complete-note" style="color:${r.accent}">🎉 All dishes discovered!</div>` : ''}
+      </div>
     </div>`;
   }).join('');
-  list.innerHTML = `<div class="home-jny-grid" style="padding:14px 14px 8px">${cells}</div>`;
+
+  list.innerHTML = `<div class="qc-list">${almostHtml}${cards}</div>`;
   setTimeout(initScrollReveal, 80);
 }
 function toggleJourney() {} // kept for backwards compat
