@@ -209,39 +209,131 @@
   margin-bottom: 10px;
 }
 
-/* ── REACTIONS ── */
-.feed-reactions {
+/* ── LIKE + COMMENT BAR ── */
+.feed-actions {
   display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
+  gap: 4px;
   margin-top: 6px;
   padding-top: 8px;
   border-top: 1px solid #F0EAE0;
 }
-.feed-react {
+.feed-like-btn, .feed-comment-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: 1.5px solid #EAE0D5;
-  background: transparent;
-  font-size: 15px;
+  gap: 5px;
+  padding: 8px 12px 8px 0;
+  background: none;
+  border: none;
   cursor: pointer;
-  color: #7A6A5A;
-  transition: border-color .15s, background .15s;
+  color: #9E8E7A;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
 }
-.feed-react span {
-  font-size: 12px;
-  font-weight: 700;
+.feed-like-btn span, .feed-comment-btn span {
+  font-size: 13px;
+  font-weight: 600;
   color: #7A6A5A;
 }
-.feed-react.active {
-  border-color: #D4692A;
-  background: rgba(212,105,42,.08);
+.feed-like-btn.liked { color: #E8445A; }
+.feed-like-btn.liked span { color: #E8445A; }
+.feed-like-btn svg, .feed-comment-btn svg { flex-shrink: 0; }
+
+/* ── COMMENT SHEET ── */
+.comment-backdrop {
+  position: fixed; inset: 0; z-index: 220;
+  background: rgba(28,18,8,.6);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
 }
-.feed-react.active span { color: #D4692A; }
+.comment-backdrop.open { opacity: 1; pointer-events: all; }
+.comment-sheet {
+  width: 100%;
+  background: #F7F2EA;
+  border-radius: 24px 24px 0 0;
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.comment-backdrop.open .comment-sheet { transform: translateY(0); }
+.comment-handle {
+  width: 36px; height: 4px;
+  background: #D0C8BE; border-radius: 2px;
+  margin: 12px auto 0; flex-shrink: 0;
+}
+.comment-header {
+  display: flex; align-items: center;
+  padding: 12px 18px 10px; flex-shrink: 0;
+  border-bottom: 1px solid #EAE0D5;
+}
+.comment-title {
+  flex: 1;
+  font-size: 16px; font-weight: 800; color: #1C1208;
+  font-family: 'DM Serif Display', serif;
+}
+.comment-close-btn {
+  background: none; border: none;
+  font-size: 16px; color: #B0A090;
+  cursor: pointer; padding: 4px 8px;
+}
+.comment-list {
+  flex: 1; overflow-y: auto;
+  padding: 12px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.comment-loading, .comment-empty {
+  text-align: center; padding: 32px 0;
+  color: #B0A090; font-size: 13px;
+}
+.comment-row {
+  display: flex; gap: 10px;
+  margin-bottom: 14px;
+}
+.comment-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #D4692A; color: #fff;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.comment-body { flex: 1; min-width: 0; }
+.comment-name {
+  font-size: 12px; font-weight: 700; color: #1C1208; margin-bottom: 3px;
+}
+.comment-date {
+  font-size: 11px; font-weight: 400; color: #B0A090; margin-left: 6px;
+}
+.comment-text { font-size: 13px; color: #3A2A1A; line-height: 1.5; }
+.comment-input-row {
+  display: flex; gap: 10px;
+  padding: 10px 16px 20px; flex-shrink: 0;
+  border-top: 1px solid #EAE0D5;
+}
+.comment-input {
+  flex: 1;
+  border: 1.5px solid #EAE0D5;
+  border-radius: 20px;
+  background: #fff;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1C1208;
+  outline: none;
+}
+.comment-input::placeholder { color: #C0B0A0; }
+.comment-send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #1A2B22; border: none;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.comment-send-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── EXPERIENCE DETAIL SHEET ── */
 .exp-sheet-backdrop{position:fixed;inset:0;z-index:180;background:rgba(28,18,8,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s ease}
