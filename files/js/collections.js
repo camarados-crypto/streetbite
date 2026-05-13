@@ -200,8 +200,8 @@ function renderColl(col) {
         <div class="fb-list-num">${i + 1}</div>
       </div>
       <div class="fb-list-info">
-        <div class="fb-list-name">${dish.name}</div>
-        ${dish.name_en ? `<div class="fb-list-en">${dish.name_en}</div>` : ''}
+        <div class="fb-list-name">${dish.name_en || dish.name}</div>
+        ${dish.name_en ? `<div class="fb-list-en">${dish.name}</div>` : ''}
         <div class="fb-list-status">${done ? 'Collected' : 'Not collected'}</div>
       </div>
       ${done ? checkIcon : lockIcon}
