@@ -10,14 +10,6 @@ function openExpSheet(expId) {
   const date    = exp.created_at ? new Date(exp.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '';
   const stars   = exp.rating ? '★'.repeat(exp.rating) + `<span style="opacity:.25">${'★'.repeat(5 - exp.rating)}</span>` : '';
 
-  const EMOJIS = { thumbs_up:'👍', love:'😍', fire:'🔥', sick:'🤢', shocked:'😱' };
-  const TYPES  = ['thumbs_up','love','fire','sick','shocked'];
-  const reactions = TYPES.map(type => {
-    const count = (feedReactions[expId]?.[type] || []).length;
-    const mine  = feedMyReactions[expId] === type;
-    return `<button class="exp-sheet-react${mine ? ' active' : ''}" onclick="toggleReaction(event,'${expId}','${type}');updateExpSheetReactions('${expId}')">${EMOJIS[type]}${count > 0 ? `<span>${count}</span>` : ''}</button>`;
-  }).join('');
-
   $('exp-sheet-hero').style.display   = heroImg ? 'block' : 'none';
   if (heroImg) $('exp-sheet-hero-img').src = heroImg;
   $('exp-sheet-avatar').innerHTML     = exp.user_avatar_url ? `<img src="${exp.user_avatar_url}" alt="">` : initials;
@@ -34,7 +26,7 @@ function openExpSheet(expId) {
   $('exp-sheet-meta').style.display   = meta ? 'flex' : 'none';
   $('exp-sheet-note').textContent     = exp.note ? `"${exp.note}"` : '';
   $('exp-sheet-note').style.display   = exp.note ? 'block' : 'none';
-  $('exp-sheet-reactions').innerHTML  = reactions;
+  $('exp-sheet-reactions').innerHTML  = renderActionBar(expId);
   $('exp-sheet-dish-btn').dataset.dishId = exp.dish_id || '';
   $('exp-sheet-backdrop').dataset.expId  = expId;
   $('exp-sheet-backdrop').classList.add('open');
@@ -47,18 +39,6 @@ function closeExpSheet() {
 function expSheetOpenDish() {
   const dishId = $('exp-sheet-dish-btn').dataset.dishId;
   if (dishId) { closeExpSheet(); setTimeout(() => openDishFromFeed(dishId), 200); }
-}
-
-function updateExpSheetReactions(expId) {
-  const el = $('exp-sheet-reactions'); if (!el) return;
-  const EMOJIS = { thumbs_up:'👍', love:'😍', fire:'🔥', sick:'🤢', shocked:'😱' };
-  el.innerHTML = ['thumbs_up','love','fire','sick','shocked'].map(type => {
-    const count = (feedReactions[expId]?.[type] || []).length;
-    const mine  = feedMyReactions[expId] === type;
-    return `<button class="exp-sheet-react${mine ? ' active' : ''}" onclick="toggleReaction(event,'${expId}','${type}');updateExpSheetReactions('${expId}')">${EMOJIS[type]}${count > 0 ? `<span>${count}</span>` : ''}</button>`;
-  }).join('');
-  // ook compact card updaten
-  updateCardReactions(expId);
 }
 
 // ── STREAK ────────────────────────────────────────────
@@ -215,7 +195,9 @@ async function refreshFriendsActivity() {
       setTimeout(initScrollReveal, 80);
       return;
     }
-    await loadReactionsForIds(exps.map(e => e.id));
+    const ids2 = exps.map(e => e.id);
+    await loadLikesForIds(ids2);
+    await loadCommentCountsForIds(ids2);
     exps.forEach(e => { faExps[e.id] = e; });
     const cards = exps.map(e => renderFeedCardCompact(e)).join('');
     wrap.innerHTML = `
@@ -246,12 +228,6 @@ function renderFeedCardCompact(exp) {
   const date     = exp.created_at ? _timeAgo(exp.created_at) : '';
   const initials = (exp.user_display_name || '?').charAt(0).toUpperCase();
   const name     = exp.user_display_name || 'Anonymous';
-  const reactions = (typeof REACTION_TYPES !== 'undefined' ? REACTION_TYPES : ['thumbs_up','love','fire','sick','shocked']).map(type => {
-    const count = (feedReactions[exp.id]?.[type] || []).length;
-    const mine  = feedMyReactions[exp.id] === type;
-    const emoji = { thumbs_up:'👍', love:'😍', fire:'🔥', sick:'🤢', shocked:'😱' }[type];
-    return `<button class="fa-react${mine ? ' active' : ''}" onclick="toggleReaction(event,'${exp.id}','${type}')">${emoji}${count > 0 ? `<span>${count}</span>` : ''}</button>`;
-  }).join('');
 
   return `<div class="fa-compact-card" data-exp-id="${exp.id}" onclick="openExpSheet('${exp.id}')">
     ${heroImg ? `<div class="fa-compact-thumb"><img src="${heroImg}" alt="" loading="lazy"></div>` : ''}
@@ -265,7 +241,7 @@ function renderFeedCardCompact(exp) {
         <span class="fa-compact-time">${date}</span>
       </div>
       ${exp.note ? `<div class="fa-compact-note">"${exp.note}"</div>` : ''}
-      <div class="fa-compact-reactions" onclick="event.stopPropagation()">${reactions}</div>
+      <div class="fa-compact-reactions" onclick="event.stopPropagation()">${renderActionBar(exp.id)}</div>
     </div>
   </div>`;
 }
