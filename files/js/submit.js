@@ -126,11 +126,15 @@ async function saveSubmitDish() {
   $('submit-uploading').style.display = 'flex';
 
   try {
+    // Read photo as dataUrl before upload so we can pre-fill check-in
+    const preloadFile   = submitPhotoFile || null;
+    const preloadDataUrl = preloadFile ? await readFileAsDataUrl(preloadFile) : null;
+
     let photo_url = null;
-    if (submitPhotoFile && sbClient) {
-      const ext = submitPhotoFile.name.split('.').pop() || 'jpg';
+    if (preloadFile && sbClient) {
+      const ext = preloadFile.name.split('.').pop() || 'jpg';
       const path = `community/${uid}_${Date.now()}.${ext}`;
-      const { error } = await sbClient.storage.from('dish-images').upload(path, submitPhotoFile, { upsert: true });
+      const { error } = await sbClient.storage.from('dish-images').upload(path, preloadFile, { upsert: true });
       if (!error) {
         const { data: pub } = sbClient.storage.from('dish-images').getPublicUrl(path);
         photo_url = pub.publicUrl;
@@ -157,7 +161,7 @@ async function saveSubmitDish() {
       setTimeout(() => {
         activeDish = result[0];
         activeColl = null;
-        openCheckin();
+        openCheckin(preloadFile, preloadDataUrl);
       }, 400);
     }
   } catch(e) {
