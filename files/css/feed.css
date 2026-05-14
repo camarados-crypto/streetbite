@@ -73,6 +73,7 @@
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(28,18,8,.07);
+  margin: 0 12px;
 }
 
 .feed-hero {
@@ -80,7 +81,7 @@
   aspect-ratio: 1 / 1;
   overflow: hidden;
   cursor: pointer;
-  margin: 10px 10px 0;
+  margin: 5px 5px 0;
   border-radius: 12px;
 }
 .feed-hero img {
