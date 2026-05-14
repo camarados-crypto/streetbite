@@ -67,7 +67,7 @@ async function openNotifSheet() {
       const action     = REACTION_LABELS[n.reaction_type] || '❤️ liked';
       const avatarHtml = fromAv ? `<img src="${fromAv}" alt="">` : fromName[0].toUpperCase();
 
-      return `<div class="notif-item${unread ? ' unread' : ''}" onclick="notifClick('${n.id}','${n.dish_id || ''}','${n.experience_id || ''}')">
+      return `<div class="notif-item${unread ? ' unread' : ''}" onclick="notifClick('${n.from_user_id || ''}')">
         <div class="notif-avatar">${avatarHtml}</div>
         <div class="notif-body">
           <div class="notif-text"><strong>${fromName}</strong> ${action} your check-in of <strong>${dishName}</strong></div>
@@ -98,9 +98,13 @@ async function markAllRead() {
   } catch(e) {}
 }
 
-function notifClick(notifId, dishId, experienceId) {
+function notifClick(fromUserId) {
   closeNotifSheet();
-  if (dishId) setTimeout(() => openCardFromHome(dishId), 300);
+  if (!fromUserId) return;
+  setTimeout(() => {
+    if (fromUserId === uid) showTab('profile');
+    else openBuddyProfile(fromUserId);
+  }, 300);
 }
 
 function formatNotifTime(iso) {
