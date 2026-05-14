@@ -120,7 +120,7 @@ async function loadFeedPage() {
 async function loadLikesForIds(ids) {
   if (!ids.length) return;
   try {
-    const rows = await api(`experience_reactions?experience_id=in.(${ids.join(',')})&reaction_type=eq.like&select=experience_id,user_id`);
+    const rows = await api(`experience_likes?experience_id=in.(${ids.join(',')})&select=experience_id,user_id`);
     (rows || []).forEach(r => {
       if (!feedLikes[r.experience_id]) feedLikes[r.experience_id] = [];
       feedLikes[r.experience_id].push(r.user_id);
@@ -219,17 +219,17 @@ async function toggleLike(event, expId) {
     feedMyLikes[expId] = false;
     feedLikes[expId] = (feedLikes[expId] || []).filter(u => u !== uid);
     updateCardActionBar(expId);
-    try { await api(`experience_reactions?experience_id=eq.${expId}&user_id=eq.${uid}&reaction_type=eq.like`, { method:'DELETE' }); } catch(e) {}
+    try { await api(`experience_likes?user_id=eq.${uid}&experience_id=eq.${expId}`, { method:'DELETE' }); } catch(e) {}
   } else {
     feedMyLikes[expId] = true;
     if (!feedLikes[expId]) feedLikes[expId] = [];
     feedLikes[expId].push(uid);
     updateCardActionBar(expId);
     try {
-      await api('experience_reactions', {
+      await api('experience_likes', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({ experience_id: expId, user_id: uid, reaction_type: 'like' })
+        body: JSON.stringify({ experience_id: expId, user_id: uid })
       });
     } catch(e) {}
   }
