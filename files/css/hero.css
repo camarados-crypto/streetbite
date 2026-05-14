@@ -57,7 +57,7 @@
 .fb-list-num{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);color:rgba(255,255,255,.8);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .fb-list-row.tried .fb-list-num{background:#F4B942;color:#1C1208}
 .fb-list-info{flex:1;min-width:0;padding:12px 0 12px 0}
-.fb-list-name{font-size:14px;font-weight:400;color:rgba(255,255,255,.45);text-transform:uppercase;line-height:1.2;margin-bottom:2px}
+.fb-list-name{font-size:12px;font-weight:400;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1px;line-height:1.2;margin-bottom:2px}
 .fb-list-en{font-size:18px;font-weight:700;color:#fff;margin-bottom:5px}
 .fb-list-status{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .fb-list-row.tried .fb-list-status{color:#74C69D}
