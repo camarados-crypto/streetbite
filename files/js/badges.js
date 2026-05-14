@@ -1,4 +1,16 @@
 // ── BADGE STORAGE ─────────────────────────────────────
+async function loadBadgesFromCloud() {
+  if (!uid || !sbUser || sbUser.is_anonymous) return;
+  try {
+    const rows = await api(`user_badges?user_id=eq.${uid}&select=badge_id`);
+    if (rows?.length) {
+      const current = loadClaimedBadges();
+      rows.forEach(r => current.add(r.badge_id));
+      localStorage.setItem('sb_badges', JSON.stringify([...current]));
+    }
+  } catch(e) {}
+}
+
 function loadClaimedBadges() {
   try { return new Set(JSON.parse(localStorage.getItem('sb_badges') || '[]')); } catch(e) { return new Set(); }
 }
@@ -51,7 +63,6 @@ function closeBadgeSheet() { $('badge-backdrop').classList.remove('open'); }
 function claimBadge(id) { saveBadge(id); closeBadgeSheet(); renderHome(); setTimeout(initScrollReveal, 80); }
 function continueToCollection(badgeId) {
   saveBadge(badgeId);
-  localStorage.setItem('sb_fb_dismissed_' + (currentCountry?.name || ''), '1');
   closeBadgeSheet();
   renderHome();
   setTimeout(initScrollReveal, 80);

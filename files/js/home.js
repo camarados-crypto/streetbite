@@ -326,12 +326,10 @@ function renderHome() {
 
   if (allDone) {
     const badgeId = `first_bites_${currentCountry?.name}`;
-    saveBadge(badgeId); // auto-save — no manual claim needed
     const claimed = isBadgeClaimed(badgeId);
-    const fbDismissed = !!localStorage.getItem('sb_fb_dismissed_' + (currentCountry?.name || ''));
 
-    if (fbDismissed) {
-      // First Bites acknowledged — show Essentials as next challenge
+    if (claimed) {
+      // Badge geclaimd via "Continue" → toon Essentials als next challenge
       const essentialsColl = collections.find(c => c.name.toLowerCase().includes('essential'));
       $('home-dynamic').innerHTML = `
         ${buildNextChallenge(essentialsColl)}
@@ -348,25 +346,14 @@ function renderHome() {
           ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
           <div class="completion-done-thumb-check">✓</div>
         </div>`).join('');
-      const topBanner = claimed
-        ? `<div class="claimed-pill" onclick="openBadgeSheet('${badgeId}')">
-            <div class="claimed-pill-icon">🏅</div>
-            <div class="claimed-pill-text"><div class="claimed-pill-title">First Bites Complete</div><div class="claimed-pill-sub">${currentCountry?.name} · Badge earned</div></div>
-            <div class="claimed-pill-chev">›</div>
-          </div>`
-        : `<div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
-            <div class="completion-sparkles"><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span></div>
-            <div class="completion-badge-row"><div class="completion-medal">🏅</div><div class="completion-badge-label">Achievement unlocked — tap to claim</div></div>
-            <div class="completion-title">First Bites Complete!</div>
-            <div class="completion-sub">You've experienced your first ${fbTotal} dishes in ${currentCountry?.name}. Ready to explore more local favorites?</div>
-            <div class="completion-done-thumbs">${doneThumbs}</div>
-          </div>`;
-      const progressNote = claimed
-        ? `<div class="progression-note scroll-reveal">You've experienced ${fbTotal} dishes in ${currentCountry?.name}. Ready to explore more local favorites?</div>`
-        : '';
       $('home-dynamic').innerHTML = `
-        ${topBanner}
-        ${progressNote}
+        <div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
+          <div class="completion-sparkles"><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span></div>
+          <div class="completion-badge-row"><div class="completion-medal">🏅</div><div class="completion-badge-label">Achievement unlocked — tap to claim</div></div>
+          <div class="completion-title">First Bites Complete!</div>
+          <div class="completion-sub">You've experienced your first ${fbTotal} dishes in ${currentCountry?.name}. Ready to explore more local favorites?</div>
+          <div class="completion-done-thumbs">${doneThumbs}</div>
+        </div>
         ${buildTodayForYou()}
         <div class="section-header scroll-reveal"><div class="section-title">Continue your journeys</div></div>
         <div class="home-jny-grid scroll-reveal">${exploreGridHtml}</div>

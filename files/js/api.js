@@ -21,6 +21,7 @@ async function initAuth() {
     if (event === 'SIGNED_IN' && sbUser && !sbUser.is_anonymous) {
       await upsertProfile();
       await loadUserDishes();
+      await loadBadgesFromCloud();
       if (_initDone) { renderHome(); setTimeout(initScrollReveal, 100); }
     }
     updateWelcome();
