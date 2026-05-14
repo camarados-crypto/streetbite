@@ -1,4 +1,5 @@
 // ── XP LEVEL SYSTEM ───────────────────────────────────
+const LEVEL_TITLES = ['Tourist','Wanderer','Explorer','Taster','Adventurer','Hunter','Regular','Insider','Collector','Local','Legend','Tourist No More'];
 function getXPLevel(xp) {
   const t = [0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500, 10000];
   let lv = 1;
@@ -6,7 +7,8 @@ function getXPLevel(xp) {
   const next = t[lv] || t[t.length - 1] + 5000;
   const prev = t[lv - 1] || 0;
   const pct  = Math.min(100, Math.round((xp - prev) / (next - prev) * 100));
-  return { level: lv, xp, next, prev, pct };
+  const title = LEVEL_TITLES[lv - 1] || LEVEL_TITLES[LEVEL_TITLES.length - 1];
+  return { level: lv, xp, next, prev, pct, title };
 }
 
 // ── RENDER PROFILE ────────────────────────────────────
@@ -113,7 +115,7 @@ async function renderProfile() {
           Continue with Google
         </button>
       ` : `
-        <div class="prof-hero-sub">Food traveler</div>
+        <div class="prof-hero-sub">${lvl.title}</div>
         <button class="prof-friends-btn" onclick="openFriendsModal()">👥 Friends${myFriends.length > 0 ? ` · ${myFriends.length}` : ''}</button>
       `}
       <div class="prof-xp-wrap">
