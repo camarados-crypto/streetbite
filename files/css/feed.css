@@ -220,19 +220,20 @@
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border: none;
-  border-radius: 50%;
-  width: 40px; height: 40px;
+  border-radius: 20px;
+  height: 38px;
+  padding: 0 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 6px;
   cursor: pointer;
   z-index: 2;
   -webkit-tap-highlight-color: transparent;
 }
 .feed-hero-like-count {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   color: #fff;
   line-height: 1;

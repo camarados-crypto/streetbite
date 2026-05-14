@@ -161,7 +161,7 @@ function renderFeedCard(exp) {
            ${collName ? `<span class="feed-coll-pill">${collName}</span>` : ''}
          </div>
          <button class="feed-hero-like${liked ? ' liked' : ''}" onclick="toggleLike(event,'${exp.id}')">
-           <svg width="20" height="20" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+           <svg width="22" height="22" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
            ${likes > 0 ? `<span class="feed-hero-like-count">${likes}</span>` : ''}
          </button>
          ${exp.price && exp.price > 0 ? `<div class="feed-hero-price">💰 ${formatPrice(exp.price, exp.currency)}</div>` : ''}
@@ -248,7 +248,7 @@ function updateCardActionBar(expId) {
   const likeBtn = card.querySelector('.feed-hero-like');
   if (likeBtn) {
     likeBtn.classList.toggle('liked', liked);
-    likeBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>${likes > 0 ? `<span class="feed-hero-like-count">${likes}</span>` : ''}`;
+    likeBtn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>${likes > 0 ? `<span class="feed-hero-like-count">${likes}</span>` : ''}`;
   }
 
   const commentBtn = card.querySelector('.feed-comment-inline');
