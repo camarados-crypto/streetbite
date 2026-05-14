@@ -95,7 +95,7 @@ async function renderProfile() {
   $('prof-content').innerHTML = `
     <div class="prof-hero-dark">
       <div class="prof-hero-topbar">
-        <div></div>
+        <div class="hero-logo">Street<span>Bite</span></div>
         <button class="prof-settings-btn" onclick="${isAnon ? 'signInWithGoogle()' : 'signOut()'}">
           ${settingsIcon}
         </button>
@@ -171,7 +171,7 @@ async function renderProfile() {
       `}
 
       <div class="prof-section-hd" style="margin-top:8px">Achievements</div>
-      <div class="prof-badges-grid">${earnedHtml}${lockedHtml}</div>
+      <div class="prof-badges-scroll">${earnedHtml}${lockedHtml}</div>
 
       ${recentHtml ? `
         <div class="prof-section-hd" style="margin-top:8px">Recent check-ins</div>

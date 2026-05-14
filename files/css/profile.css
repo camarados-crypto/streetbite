@@ -19,8 +19,9 @@
   pointer-events:none;
 }
 .prof-hero-topbar{
-  display:flex;align-items:center;justify-content:flex-end;
-  padding:max(env(safe-area-inset-top,18px),18px) 18px 0;
+  position:absolute;top:0;left:0;right:0;z-index:2;
+  padding:max(env(safe-area-inset-top,14px),14px) 16px 0;
+  display:flex;align-items:center;justify-content:space-between;
 }
 .prof-settings-btn{
   width:36px;height:36px;border-radius:50%;
@@ -31,7 +32,7 @@
 }
 
 /* ── AVATAR ── */
-.prof-av-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 0}
+.prof-av-wrap{display:flex;flex-direction:column;align-items:center;padding:max(calc(env(safe-area-inset-top,0px) + 56px),72px) 0 0}
 .prof-av-ring{
   width:88px;height:88px;border-radius:50%;
   background:linear-gradient(135deg,#F4B942 0%,#74C69D 100%);
@@ -140,9 +141,10 @@
 .prof-passport-cta-sub{font-size:12px;color:rgba(255,255,255,.5)}
 .prof-passport-cta-chev{font-size:20px;color:rgba(255,255,255,.3);flex-shrink:0}
 
-/* ── BADGES GRID ── */
-.prof-badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 14px}
-.prof-badge-item{background:#fff;border:1px solid #EAE0D5;border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;transition:transform .12s}
+/* ── BADGES SCROLL ── */
+.prof-badges-scroll{display:flex;gap:10px;padding:0 14px 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.prof-badges-scroll::-webkit-scrollbar{display:none}
+.prof-badge-item{flex:0 0 auto;width:82px;background:#fff;border:1px solid #EAE0D5;border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;transition:transform .12s}
 .prof-badge-item:active{transform:scale(.95)}
 .prof-badge-item.earned{background:#EDF5F0;border-color:#B8DBCA}
 .prof-badge-item.locked{opacity:.4;cursor:default}

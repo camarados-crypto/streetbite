@@ -22,8 +22,8 @@ function showTab(tab) {
     renderJourneys(); showScreen('s-journeys');
     $('nb-coll').classList.add('on');
   } else if (tab === 'profile') {
-    hdr.classList.remove('app-header-hidden');
-    document.body.classList.add('with-app-header');
+    hdr.classList.add('app-header-hidden');
+    document.body.classList.remove('with-app-header');
     renderProfile(); showScreen('s-profile');
     $('nb-profile').classList.add('on'); $('s-profile').scrollTop = 0;
   }
