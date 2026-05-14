@@ -11,6 +11,20 @@ function getXPLevel(xp) {
   return { level: lv, xp, next, prev, pct, title };
 }
 
+// ── CURRENT QUEST ─────────────────────────────────────
+function getProfileQuest() {
+  if (!collections?.length || !userDishes) return null;
+  let best = null, bestDone = 0;
+  for (const col of collections) {
+    const dishes = col.dishes || [];
+    if (!dishes.length) continue;
+    const done = dishes.filter(d => userDishes.has(d.id)).length;
+    if (done === 0 || done === dishes.length) continue;
+    if (done > bestDone) { bestDone = done; best = { col, done, total: dishes.length, left: dishes.length - done }; }
+  }
+  return best;
+}
+
 // ── RENDER PROFILE ────────────────────────────────────
 async function renderProfile() {
   await loadMyProfile();
@@ -63,19 +77,28 @@ async function renderProfile() {
     </div>`;
   }).join('');
 
-  // ── Badges ──
-  const earnedHtml = [...claimedSet].map(id => {
-    const b = BADGES[id]; if (!b) return '';
+  // ── Badges (earned only) ──
+  const earnedIds = [...claimedSet].filter(id => BADGES[id]);
+  const shownBadges = earnedIds.slice(0, 3);
+  const extraCount  = earnedIds.length - shownBadges.length;
+  const badgesHtml  = shownBadges.map(id => {
+    const b = BADGES[id];
     return `<div class="prof-badge-item earned" onclick="openBadgeSheet('${id}')">
       <div class="prof-badge-icon">${b.icon}</div>
       <div class="prof-badge-name">${b.title.replace('First Bites ', '')}</div>
     </div>`;
   }).join('');
-  const lockedHtml = BADGES_COMING.slice(0, Math.max(0, 4 - badgeCount)).map(b => `
-    <div class="prof-badge-item locked">
-      <div class="prof-badge-icon">${b.icon}</div>
-      <div class="prof-badge-name">${b.name}</div>
-    </div>`).join('');
+  const seeAllHtml = extraCount > 0
+    ? `<div class="prof-badge-seeall" onclick="profShowAllBadges()">+${extraCount} more</div>`
+    : !earnedIds.length
+      ? `<div class="prof-badge-empty">Collect dishes to earn badges</div>`
+      : '';
+
+  // ── Current quest ──
+  const quest = getProfileQuest();
+  const questHtml = quest
+    ? `<div class="prof-quest-line">🎯 ${quest.left} more dish${quest.left === 1 ? '' : 'es'} to go for <strong>${quest.col.name}</strong></div>`
+    : '';
 
   // ── Recent check-ins ──
   const recentHtml = recentDishIds.slice(0, 5).map(id => {
@@ -104,10 +127,10 @@ async function renderProfile() {
       </div>
       <div class="prof-av-wrap">
         <div class="prof-av-ring"><div class="prof-av">${avatarHtml}</div></div>
-        <div class="prof-av-level">Lv ${lvl.level}</div>
       </div>
       <div class="prof-hero-name">${isAnon ? 'Guest' : (name || 'Anonymous')}</div>
       ${myProfile ? `<div class="prof-hero-username">@${myProfile.username}</div>` : isAnon ? '' : `<div class="prof-hero-username prof-hero-username-cta" onclick="openUsernameModal(()=>renderProfile())">+ Set username</div>`}
+
       ${isAnon ? `
         <div class="prof-hero-sub">Save your progress & join friends</div>
         <button class="prof-login-hero-btn" onclick="signInWithGoogle()">
@@ -115,16 +138,21 @@ async function renderProfile() {
           Continue with Google
         </button>
       ` : `
-        <div class="prof-hero-sub">${lvl.title}</div>
+        <div class="prof-level-display">
+          <span class="prof-level-num">${lvl.level}</span>
+          <div class="prof-level-divider"></div>
+          <span class="prof-level-title">${lvl.title}</span>
+        </div>
+        <div class="prof-xp-wrap">
+          <div class="prof-xp-row">
+            <span class="prof-xp-label">${lvl.xp.toLocaleString()} XP</span>
+            <span class="prof-xp-nums">Next level at ${lvl.next.toLocaleString()} XP</span>
+          </div>
+          <div class="prof-xp-bar"><div class="prof-xp-fill" style="width:${lvl.pct}%"></div></div>
+        </div>
         <button class="prof-friends-btn" onclick="openFriendsModal()">👥 Friends${myFriends.length > 0 ? ` · ${myFriends.length}` : ''}</button>
       `}
-      <div class="prof-xp-wrap">
-        <div class="prof-xp-row">
-          <span class="prof-xp-label">Level ${lvl.level}</span>
-          <span class="prof-xp-nums">${lvl.xp.toLocaleString()} / ${lvl.next.toLocaleString()} XP</span>
-        </div>
-        <div class="prof-xp-bar"><div class="prof-xp-fill" style="width:${lvl.pct}%"></div></div>
-      </div>
+
       <div class="prof-stats-row">
         <div class="prof-stat-item">
           <div class="prof-stat-v">${countriesCount || '—'}</div>
@@ -150,6 +178,8 @@ async function renderProfile() {
 
     <div class="prof-body">
 
+      ${questHtml}
+
       ${visitedCountries.length > 0 ? `
         <div class="prof-section-row">
           <div class="prof-section-hd">Countries visited</div>
@@ -172,11 +202,13 @@ async function renderProfile() {
         </div>
       `}
 
-      <div class="prof-section-hd" style="margin-top:8px">Achievements</div>
-      <div class="prof-badges-scroll">${earnedHtml}${lockedHtml}</div>
+      <div class="prof-section-row" style="margin-top:8px">
+        <div class="prof-section-hd">Achievements</div>
+      </div>
+      <div class="prof-badges-scroll">${badgesHtml}${seeAllHtml}</div>
 
       ${recentHtml ? `
-        <div class="prof-section-hd" style="margin-top:8px">Recent check-ins</div>
+        <div class="prof-section-hd" style="margin-top:8px">Recent activity</div>
         <div class="prof-checkins-list">${recentHtml}</div>
       ` : ''}
 
@@ -198,4 +230,18 @@ async function renderProfile() {
       <div style="height:12px"></div>
     </div>
   `;
+}
+
+function profShowAllBadges() {
+  const claimedSet = loadClaimedBadges();
+  const earnedIds  = [...claimedSet].filter(id => BADGES[id]);
+  const scroll = document.querySelector('.prof-badges-scroll');
+  if (!scroll) return;
+  scroll.innerHTML = earnedIds.map(id => {
+    const b = BADGES[id];
+    return `<div class="prof-badge-item earned" onclick="openBadgeSheet('${id}')">
+      <div class="prof-badge-icon">${b.icon}</div>
+      <div class="prof-badge-name">${b.title.replace('First Bites ', '')}</div>
+    </div>`;
+  }).join('');
 }
