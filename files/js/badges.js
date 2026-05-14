@@ -28,12 +28,25 @@ function openBadgeSheet(badgeId) {
   const badge = BADGES[badgeId]; if (!badge) return;
   const claimed = isBadgeClaimed(badgeId);
 
-  // For First Bites badges: find the Essentials collection as next step
+  // For First Bites badges: find the Essentials of the SAME country, only if not yet started
   let nextCollName = '';
+  let nextCollObj = null;
   if (badgeId.startsWith('first_bites_')) {
-    const essentialsColl = (typeof collections !== 'undefined' ? collections : [])
-      .find(c => c.name.toLowerCase().includes('essential'));
-    if (essentialsColl) nextCollName = essentialsColl.name;
+    const countryName = badgeId.replace('first_bites_', '');
+    const country = (typeof allCountries !== 'undefined' ? allCountries : [])
+      .find(c => c.name === countryName);
+    if (country) {
+      const essentialsColl = (typeof collections !== 'undefined' ? collections : [])
+        .find(c => c.country_id === country.id && c.name.toLowerCase().includes('essential'));
+      if (essentialsColl) {
+        const collDishes = essentialsColl.dishes || [];
+        const doneInColl = collDishes.filter(d => (typeof userDishes !== 'undefined' ? userDishes : new Set()).has(d.id)).length;
+        if (doneInColl === 0) {
+          nextCollName = essentialsColl.name;
+          nextCollObj = essentialsColl;
+        }
+      }
+    }
   }
 
   $('badge-sheet-inner').innerHTML = `
@@ -51,7 +64,7 @@ function openBadgeSheet(badgeId) {
       </div>
     </div>
     ${nextCollName
-      ? `<button class="badge-next-btn" onclick="continueToCollection('${badgeId}')">Continue with ${nextCollName} →</button>`
+      ? `<button class="badge-next-btn" onclick="continueToCollection('${badgeId}','${nextCollObj?.id||''}')">Continue with ${nextCollName} →</button>`
       : !claimed
         ? `<button class="badge-claim-btn" style="margin-top:20px" onclick="claimBadge('${badgeId}')">🏅 Claim badge</button>`
         : `<div style="margin-top:20px;text-align:center;font-size:13px;color:#9E8E7A;font-weight:600">✓ Badge claimed</div>
@@ -61,9 +74,13 @@ function openBadgeSheet(badgeId) {
 }
 function closeBadgeSheet() { $('badge-backdrop').classList.remove('open'); }
 function claimBadge(id) { saveBadge(id); closeBadgeSheet(); renderHome(); setTimeout(initScrollReveal, 80); }
-function continueToCollection(badgeId) {
+function continueToCollection(badgeId, collId) {
   saveBadge(badgeId);
   closeBadgeSheet();
+  if (collId) {
+    const col = (typeof collections !== 'undefined' ? collections : []).find(c => c.id === collId);
+    if (col) { openColl(col); return; }
+  }
   renderHome();
   setTimeout(initScrollReveal, 80);
 }
