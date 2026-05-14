@@ -265,6 +265,8 @@
 .fa-react span{font-size:10px;font-weight:700;color:#7A6A5A}
 .fa-react.active{border-color:#D4692A;background:rgba(212,105,42,.08)}
 .fa-react.active span{color:#D4692A}
+.fa-event-card{background:#EDF5F0;border-color:#C8DFD0;cursor:default}
+.fa-event-card:active{background:#EDF5F0}
 
 /* ── HOME JOURNEYS GRID (3-koloms) ── */
 .home-jny-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px 4px}

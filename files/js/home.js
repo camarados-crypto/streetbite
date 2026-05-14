@@ -183,28 +183,65 @@ async function refreshFriendsActivity() {
   try {
     await loadFriends();
     if (!myFriends.length) return;
-    // fetch with image_url included
-    const ids  = myFriends.map(f => f.user_id);
-    const exps = await api(
-      `experiences?select=id,user_id,dish_id,user_display_name,user_avatar_url,created_at,rating,location_text,note,photo_url,dishes:dishes(name,image_url,collections(name))&user_id=in.(${ids.join(',')})&order=created_at.desc&limit=5`
-    );
-    if (!exps?.length) {
+    const ids = myFriends.map(f => f.user_id);
+
+    // Fetch check-ins + badge events in parallel
+    const [exps, badgeRows] = await Promise.all([
+      api(`experiences?select=id,user_id,dish_id,user_display_name,user_avatar_url,created_at,rating,location_text,note,photo_url,dishes:dishes(name,image_url,collections(name))&user_id=in.(${ids.join(',')})&order=created_at.desc&limit=5`),
+      api(`user_badges?user_id=in.(${ids.join(',')})&select=badge_id,user_id,created_at,profiles!user_badges_user_id_fkey(display_name,avatar_url)&order=created_at.desc&limit=4`).catch(() => [])
+    ]);
+
+    if (!exps?.length && !badgeRows?.length) {
       wrap.innerHTML = `
         <div class="section-header scroll-reveal"><div class="section-title">Friends activity</div></div>
         <div style="padding:0 14px 14px"><div style="background:#fff;border-radius:14px;border:1px solid #EAE0D5;padding:16px;font-size:13px;color:#9E8E7A;text-align:center">Your buddies haven't checked in yet. 👀</div></div>`;
       setTimeout(initScrollReveal, 80);
       return;
     }
-    const ids2 = exps.map(e => e.id);
-    await loadLikesForIds(ids2);
-    await loadCommentCountsForIds(ids2);
-    exps.forEach(e => { faExps[e.id] = e; });
-    const cards = exps.map(e => renderFeedCardCompact(e)).join('');
+
+    if (exps?.length) {
+      const ids2 = exps.map(e => e.id);
+      await loadLikesForIds(ids2);
+      await loadCommentCountsForIds(ids2);
+      exps.forEach(e => { faExps[e.id] = e; });
+    }
+
+    // Merge check-ins and badge events, sorted by date
+    const checkInItems = (exps || []).map(e => ({ _type: 'checkin', _date: e.created_at, data: e }));
+    const badgeItems   = (badgeRows || []).filter(b => BADGES[b.badge_id]).map(b => ({ _type: 'badge', _date: b.created_at, data: b }));
+    const merged = [...checkInItems, ...badgeItems]
+      .sort((a, b) => new Date(b._date || 0) - new Date(a._date || 0))
+      .slice(0, 7);
+
+    const cards = merged.map(item =>
+      item._type === 'badge' ? renderBadgeEvent(item.data) : renderFeedCardCompact(item.data)
+    ).join('');
+
     wrap.innerHTML = `
       <div class="section-header scroll-reveal"><div class="section-title">Friends activity</div></div>
       <div class="fa-compact-list scroll-reveal">${cards}</div>`;
     setTimeout(initScrollReveal, 80);
   } catch(e) { console.log('friendsActivity:', e?.message); }
+}
+
+function renderBadgeEvent(b) {
+  const profile  = b.profiles || {};
+  const name     = profile.display_name || 'Someone';
+  const initials = name[0].toUpperCase();
+  const badge    = BADGES[b.badge_id] || {};
+  const time     = b.created_at ? _timeAgo(b.created_at) : '';
+  return `<div class="fa-compact-card fa-event-card">
+    <div class="fa-compact-body" style="padding:12px 14px">
+      <div class="fa-compact-top">
+        <div class="fa-compact-avatar">${profile.avatar_url ? `<img src="${profile.avatar_url}" alt="">` : initials}</div>
+        <div class="fa-compact-meta">
+          <span class="fa-compact-name">${name}</span>
+          <span class="fa-compact-dish"> unlocked ${badge.icon || '🏅'} <strong>${badge.title || b.badge_id}</strong></span>
+        </div>
+        ${time ? `<span class="fa-compact-time">${time}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
 }
 
 function toggleFaExpand(expId) {} // kept for backwards compat
