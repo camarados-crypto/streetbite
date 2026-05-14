@@ -147,6 +147,11 @@ function renderFeedCard(exp) {
   const date     = exp.created_at ? new Date(exp.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'short'}) : '';
   const initials = (exp.user_display_name || '?').charAt(0).toUpperCase();
   const name     = exp.user_display_name || 'Anonymous';
+  const likes    = (feedLikes[exp.id] || []).length;
+  const liked    = feedMyLikes[exp.id] || false;
+  const comments = feedCommentCounts[exp.id] || 0;
+  const heartFill   = liked ? '#E8445A' : 'none';
+  const heartStroke = liked ? '#E8445A' : 'rgba(255,255,255,.9)';
 
   const heroHtml = heroImg
     ? `<div class="feed-hero" onclick="feedCardClick('${exp.dish_id}')">
@@ -155,17 +160,16 @@ function renderFeedCard(exp) {
            <span class="feed-dish-pill">${dish.name || ''}</span>
            ${collName ? `<span class="feed-coll-pill">${collName}</span>` : ''}
          </div>
+         <button class="feed-hero-like${liked ? ' liked' : ''}" onclick="toggleLike(event,'${exp.id}')">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+           ${likes > 0 ? `<span class="feed-hero-like-count">${likes}</span>` : ''}
+         </button>
+         ${exp.price && exp.price > 0 ? `<div class="feed-hero-price">💰 ${formatPrice(exp.price, exp.currency)}</div>` : ''}
        </div>`
     : `<div class="feed-card-notitle" onclick="feedCardClick('${exp.dish_id}')">
          <span class="feed-dish-pill-plain">${dish.name || ''}</span>
          ${collName ? `<span class="feed-coll-pill-plain">${collName}</span>` : ''}
        </div>`;
-
-  const isOwnPost   = exp.user_id === uid;
-  const isFollowing = myFollowing.has(exp.user_id);
-  const followBtn   = (!isOwnPost && exp.user_id)
-    ? `<button class="feed-follow-btn${isFollowing ? ' following' : ''}" data-uid="${exp.user_id}" onclick="toggleFollow(event,'${exp.user_id}')">${isFollowing ? 'Following' : 'Follow'}</button>`
-    : '';
 
   return `<div class="feed-card" data-exp-id="${exp.id}">
     ${heroHtml}
@@ -177,11 +181,13 @@ function renderFeedCard(exp) {
           <div class="feed-date">${date}</div>
         </div>
         ${stars ? `<div class="feed-stars">${stars}</div>` : ''}
-        ${followBtn}
+        <button class="feed-comment-inline" onclick="openCommentSheet('${exp.id}')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          ${comments > 0 ? `<span>${comments}</span>` : ''}
+        </button>
       </div>
-      ${exp.location_text || (exp.price && exp.price > 0) ? `<div class="feed-meta">${exp.location_text ? `<span class="feed-chip">📍 ${exp.location_text}</span>` : ''}${exp.price && exp.price > 0 ? `<span class="feed-chip">💰 ${formatPrice(exp.price, exp.currency)}</span>` : ''}</div>` : ''}
+      ${exp.location_text ? `<div class="feed-meta"><span class="feed-chip">📍 ${exp.location_text}</span></div>` : ''}
       ${exp.note ? `<div class="feed-note">"${exp.note}"</div>` : ''}
-      <div class="feed-actions">${renderActionBar(exp.id)}</div>
     </div>
   </div>`;
 }
@@ -232,8 +238,31 @@ async function toggleLike(event, expId) {
 function updateCardActionBar(expId) {
   const card = document.querySelector(`.feed-card[data-exp-id="${expId}"]`);
   if (!card) return;
-  const el = card.querySelector('.feed-actions');
-  if (el) el.innerHTML = renderActionBar(expId);
+
+  const likes   = (feedLikes[expId] || []).length;
+  const liked   = feedMyLikes[expId] || false;
+  const comments = feedCommentCounts[expId] || 0;
+  const heartFill   = liked ? '#E8445A' : 'none';
+  const heartStroke = liked ? '#E8445A' : 'rgba(255,255,255,.9)';
+
+  const likeBtn = card.querySelector('.feed-hero-like');
+  if (likeBtn) {
+    likeBtn.classList.toggle('liked', liked);
+    likeBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="${heartFill}" stroke="${heartStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>${likes > 0 ? `<span class="feed-hero-like-count">${likes}</span>` : ''}`;
+  }
+
+  const commentBtn = card.querySelector('.feed-comment-inline');
+  if (commentBtn) {
+    const span = commentBtn.querySelector('span');
+    if (comments > 0) {
+      if (span) span.textContent = comments;
+      else commentBtn.insertAdjacentHTML('beforeend', `<span>${comments}</span>`);
+    } else if (span) span.remove();
+  }
+
+  // Home compact cards still use renderActionBar
+  const actionsEl = card.querySelector('.feed-actions');
+  if (actionsEl) actionsEl.innerHTML = renderActionBar(expId);
 }
 
 // ── COMMENT SHEET ─────────────────────────────────────

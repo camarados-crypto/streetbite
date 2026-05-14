@@ -80,6 +80,8 @@
   aspect-ratio: 1 / 1;
   overflow: hidden;
   cursor: pointer;
+  margin: 10px 10px 0;
+  border-radius: 12px;
 }
 .feed-hero img {
   width: 100%;
@@ -207,6 +209,72 @@
   font-style: italic;
   line-height: 1.5;
   margin-bottom: 10px;
+}
+
+/* ── LIKE OP FOTO (top-right) ── */
+.feed-hero-like {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: rgba(0,0,0,.32);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+}
+.feed-hero-like-count {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── PRIJS OP FOTO (bottom-right) ── */
+.feed-hero-price {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  background: rgba(0,0,0,.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 2;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  pointer-events: none;
+}
+
+/* ── COMMENT INLINE (in user row) ── */
+.feed-comment-inline {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: #9E8E7A;
+  cursor: pointer;
+  padding: 6px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.feed-comment-inline span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7A6A5A;
 }
 
 /* ── LIKE + COMMENT BAR ── */
