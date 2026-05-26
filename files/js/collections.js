@@ -1,11 +1,18 @@
 // ── SCREEN NAVIGATION ─────────────────────────────────
+let _activeTab = '';
+
 function showScreen(id) {
-  ['s-home','s-journeys','s-coll','s-feed','s-profile'].forEach(s => $(s).classList.add('gone'));
+  // Show target FIRST so there's never a blank frame
   $(id).classList.remove('gone');
+  ['s-home','s-journeys','s-coll','s-feed','s-profile'].forEach(s => {
+    if (s !== id) $(s).classList.add('gone');
+  });
 }
 function showTab(tab) {
   ['nb-explore','nb-feed','nb-coll','nb-profile'].forEach(b => $(b).classList.remove('on'));
   const hdr = $('app-header');
+  const wasTab = _activeTab;
+  _activeTab = tab;
   if (tab === 'home') {
     hdr.classList.add('app-header-hidden');
     document.body.classList.remove('with-app-header');
@@ -15,26 +22,33 @@ function showTab(tab) {
     hdr.classList.remove('app-header-hidden');
     document.body.classList.add('with-app-header');
     showScreen('s-feed'); $('nb-feed').classList.add('on');
-    openFeed();
+    // Only reload feed when actually switching to it, not on repeat taps
+    if (wasTab !== 'feed') openFeed();
   } else if (tab === 'coll') {
     hdr.classList.remove('app-header-hidden');
     document.body.classList.add('with-app-header');
-    renderJourneys(); showScreen('s-journeys');
+    // Only re-render journeys when switching to this tab
+    if (wasTab !== 'coll') renderJourneys();
+    showScreen('s-journeys');
     $('nb-coll').classList.add('on');
   } else if (tab === 'profile') {
     hdr.classList.add('app-header-hidden');
     document.body.classList.remove('with-app-header');
-    renderProfile(); showScreen('s-profile');
+    // Only re-render profile when switching to this tab
+    if (wasTab !== 'profile') renderProfile();
+    showScreen('s-profile');
     $('nb-profile').classList.add('on'); $('s-profile').scrollTop = 0;
   }
 }
 function openColl(col) {
+  _activeTab = 'coll';
   $('app-header').classList.remove('app-header-hidden');
   document.body.classList.add('with-app-header');
   renderColl(col); showScreen('s-coll'); $('s-coll').scrollTop = 0;
   $('nb-coll').classList.add('on'); $('nb-explore').classList.remove('on');
 }
 function goHome() {
+  _activeTab = 'home';
   $('app-header').classList.add('app-header-hidden');
   document.body.classList.remove('with-app-header');
   renderHome(); showScreen('s-home');
@@ -42,6 +56,7 @@ function goHome() {
   setTimeout(initScrollReveal, 80);
 }
 function goJourneys() {
+  _activeTab = 'coll';
   $('app-header').classList.remove('app-header-hidden');
   document.body.classList.add('with-app-header');
   renderJourneys(); showScreen('s-journeys');
