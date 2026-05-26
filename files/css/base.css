@@ -85,6 +85,17 @@ body.with-app-header .screen { top: 52px; }
 .scroll-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1)}
 .scroll-reveal.revealed{opacity:1;transform:translateY(0)}
 
+/* ── DESKTOP GATE ── */
+.desktop-gate{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0D2318 0%,#1A4D35 100%);align-items:center;justify-content:center}
+@media(min-width:600px){.desktop-gate{display:flex}}
+.dg-card{text-align:center;padding:48px 40px;background:rgba(255,255,255,.04);border:1px solid rgba(116,198,157,.15);border-radius:28px;max-width:380px;width:90%}
+.dg-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
+.dg-logo span{color:#D4692A}
+.dg-tagline{font-size:14px;color:rgba(255,255,255,.45);font-weight:500;margin-bottom:32px}
+.dg-qr{width:180px;height:180px;border-radius:16px;display:block;margin:0 auto 20px;background:#F7F2EA;padding:8px}
+.dg-label{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px}
+.dg-sub{font-size:13px;color:rgba(255,255,255,.4);line-height:1.6}
+
 /* ── CONFETTI ── */
 .confetti-wrap{position:fixed;inset:0;z-index:500;pointer-events:none;overflow:hidden}
 .confetti-piece{position:absolute;top:-10px;width:10px;height:10px;border-radius:2px;opacity:0;animation:confetti-fall linear forwards}
