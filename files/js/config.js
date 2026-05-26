@@ -1,3 +1,5 @@
+const APP_VERSION = '2026.05.26';
+
 // ── SUPABASE ──────────────────────────────────────────
 const SB  = 'https://ztipltgnprzxxbkmsokj.supabase.co';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aXBsdGducHJ6eHhia21zb2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTMwODMsImV4cCI6MjA5MzE4OTA4M30.bsltWzAaFFQiF07nrPIlzRsxkBZhfNsPpegE1uqQxtk';

@@ -228,6 +228,7 @@ async function renderProfile() {
       </div>
 
       <div style="height:12px"></div>
+      <div style="text-align:center;font-size:11px;color:#C0B0A0;padding-bottom:20px">StreetBite v${APP_VERSION}</div>
     </div>
   `;
 }
