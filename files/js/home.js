@@ -1,5 +1,5 @@
 // ── EXPERIENCE SHEET ──────────────────────────────────
-let faExps = {}; // { expId: expObject }
+let faExps = {};
 
 function openExpSheet(expId) {
   const exp  = faExps[expId]; if (!exp) return;
@@ -32,9 +32,7 @@ function openExpSheet(expId) {
   $('exp-sheet-backdrop').classList.add('open');
 }
 
-function closeExpSheet() {
-  $('exp-sheet-backdrop').classList.remove('open');
-}
+function closeExpSheet() { $('exp-sheet-backdrop').classList.remove('open'); }
 
 function expSheetOpenDish() {
   const dishId = $('exp-sheet-dish-btn').dataset.dishId;
@@ -78,90 +76,36 @@ function updateWelcome() {
   }
 }
 
-// ── RECENT CHECK-INS ── (verwijderd)
-function buildRecentHtml() { return ''; }
+// ── RECENT CHECK-INS ──────────────────────────────────
+function buildRecentHtml() {
+  const recent = recentDishIds
+    .map(id => allDishes.find(d => d.id === id))
+    .filter(Boolean)
+    .slice(0, 8);
+  if (recent.length === 0) return '';
+  const cards = recent.map(dish => {
+    const col = collections.find(c => c.dishes.some(d => d.id === dish.id));
+    return `<div class="recent-card" onclick="openCardFromHome('${dish.id}')">
+      <div class="recent-img-wrap">
+        ${dish.image_url
+          ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">`
+          : `<div class="recent-img-placeholder">🍽️</div>`}
+        <div class="recent-check-badge">✓</div>
+      </div>
+      <div class="recent-card-name">${dish.name}</div>
+      <div class="recent-card-coll">${col?.name?.split(' ')[0] || ''}</div>
+    </div>`;
+  }).join('');
+  return `
+    <div class="recent-section scroll-reveal">
+      <div class="recent-title">Recent check-ins</div>
+    </div>
+    <div class="recent-scroll scroll-reveal">${cards}</div>
+  `;
+}
 
-// ── TODAY FOR YOU ─────────────────────────────────────
-function _dayHash(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0x7FFFFFFF;
-  return h;
-}
-function mockTravelerCount(id) {
-  return 80 + (_dayHash(id) % 350);
-}
-function pickTodayDishes() {
-  const uncollected = allDishes.filter(d => !userDishes.has(d.id));
-  if (!uncollected.length) return [];
-  const today = new Date().toDateString();
-  const seeded = [...uncollected].sort((a, b) => _dayHash(a.id + today) - _dayHash(b.id + today));
-  const easy = seeded.find(d => d.rarity === 'common') || seeded.find(d => d.rarity === 'uncommon') || seeded[0];
-  const popPool = seeded.filter(d => d !== easy);
-  const popular = popPool.find(d => d.rarity === 'uncommon') || popPool.find(d => d.rarity === 'common') || popPool[0];
-  const advPool = seeded.filter(d => d !== easy && d !== popular);
-  const adventurous = advPool.find(d => ['rare','epic','legendary'].includes(d.rarity)) || advPool[0];
-  return [
-    easy        && { dish: easy,        label: '😌 Easy choice',  accent: '#74C69D' },
-    popular     && { dish: popular,     label: '🔥 Popular now',   accent: '#D4692A' },
-    adventurous && { dish: adventurous, label: '🤯 Adventurous',   accent: '#F4B942' },
-  ].filter(Boolean);
-}
-function buildTodayForYou() {
-  const picks = pickTodayDishes();
-  if (!picks.length) return '';
-  const checkIcon = `<div class="fb-list-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D2318" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
-  const lockIcon  = `<div class="fb-list-lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`;
-  const rows = picks.map(({ dish, label, accent }) => {
-    const done  = userDishes.has(dish.id);
-    const emoji = label.split(' ')[0];
-    return `<div class="fb-list-row ${done ? 'tried' : ''}" onclick="openCardFromHome('${dish.id}')">
-      <div class="fb-list-img-wrap">
-        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : '<div class="fb-list-placeholder">🍽️</div>'}
-        <div class="fb-list-num" style="${done ? '' : `background:rgba(0,0,0,.35);color:#fff`}">${emoji}</div>
-      </div>
-      <div class="fb-list-info">
-        <div class="fb-list-name">${dish.name}</div>
-        ${dish.name_en ? `<div class="fb-list-en">${dish.name_en}</div>` : ''}
-        <div class="fb-list-status" style="color:${accent}">${label.split(' ').slice(1).join(' ')}</div>
-      </div>
-      ${done ? checkIcon : lockIcon}
-    </div>`;
-  }).join('');
-  return `
-    <div class="fb-list-section">
-      <div class="fb-list-header">
-        <div class="fb-list-title">✨ Today for you</div>
-        <div class="fb-list-viewall">${currentCountry?.name || ''}</div>
-      </div>
-      ${rows}
-    </div>`;
-}
-function buildTrendingNow() {
-  const rarityScore = { legendary:5, epic:4, rare:3, uncommon:2, common:1 };
-  const today = new Date().toDateString();
-  const trending = [...allDishes].sort((a, b) => {
-    const rs = (rarityScore[b.rarity] || 0) - (rarityScore[a.rarity] || 0);
-    return rs !== 0 ? rs : _dayHash(a.id + today + 't') - _dayHash(b.id + today + 't');
-  }).slice(0, 8);
-  if (!trending.length) return '';
-  const cards = trending.map(dish => {
-    const count = mockTravelerCount(dish.id);
-    const done = userDishes.has(dish.id);
-    return `<div class="trend-card" onclick="openCardFromHome('${dish.id}')">
-      <div class="trend-img-wrap">
-        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : '<div class="trend-img-ph">🍽️</div>'}
-        <div class="trend-count">${count}+</div>
-        ${done ? '<div class="trend-done">✓</div>' : ''}
-      </div>
-      <div class="trend-name">${dish.name_en || dish.name}</div>
-    </div>`;
-  }).join('');
-  return `
-    <div class="section-header scroll-reveal"><div class="section-title">Trending now</div></div>
-    <div class="trend-scroll scroll-reveal">${cards}</div>`;
-}
+// ── FRIENDS ACTIVITY ──────────────────────────────────
 function buildFriendsActivity() {
-  // always render the container so refreshFriendsActivity() can populate it
   return `<div id="home-friends-wrap"></div>`;
 }
 
@@ -177,6 +121,15 @@ function _timeAgo(dateStr) {
   return `${Math.floor(d / 7)}w ago`;
 }
 
+function _dayHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0x7FFFFFFF;
+  return h;
+}
+function mockTravelerCount(id) {
+  return 80 + (_dayHash(id) % 350);
+}
+
 async function refreshFriendsActivity() {
   const wrap = $('home-friends-wrap');
   if (!wrap) return;
@@ -185,7 +138,6 @@ async function refreshFriendsActivity() {
     if (!myFriends.length) return;
     const ids = myFriends.map(f => f.user_id);
 
-    // Fetch check-ins + badge events in parallel
     const [exps, badgeRows] = await Promise.all([
       api(`experiences?select=id,user_id,dish_id,user_display_name,user_avatar_url,created_at,rating,location_text,note,photo_url,dishes:dishes(name,image_url,collections(name))&user_id=in.(${ids.join(',')})&order=created_at.desc&limit=5`),
       api(`user_badges?user_id=in.(${ids.join(',')})&select=badge_id,user_id,created_at,profiles!user_badges_user_id_fkey(display_name,avatar_url)&order=created_at.desc&limit=4`).catch(() => [])
@@ -206,7 +158,6 @@ async function refreshFriendsActivity() {
       exps.forEach(e => { faExps[e.id] = e; });
     }
 
-    // Merge check-ins and badge events, sorted by date
     const checkInItems = (exps || []).map(e => ({ _type: 'checkin', _date: e.created_at, data: e }));
     const badgeItems   = (badgeRows || []).filter(b => BADGES[b.badge_id]).map(b => ({ _type: 'badge', _date: b.created_at, data: b }));
     const merged = [...checkInItems, ...badgeItems]
@@ -244,20 +195,16 @@ function renderBadgeEvent(b) {
   </div>`;
 }
 
-function toggleFaExpand(expId) {} // kept for backwards compat
+function toggleFaExpand(expId) {}
 
 async function openDishFromFeed(dishId) {
   let dish = allDishes.find(d => d.id === dishId);
   if (!dish) {
-    try {
-      const rows = await api(`dishes?id=eq.${dishId}&select=*`);
-      dish = rows?.[0];
-    } catch(e) {}
+    try { const rows = await api(`dishes?id=eq.${dishId}&select=*`); dish = rows?.[0]; } catch(e) {}
   }
   if (dish) openCard(dish, null);
 }
 
-// ── COMPACT FEED CARD (voor home screen) ──────────────
 function renderFeedCardCompact(exp) {
   const dish     = exp.dishes || {};
   const heroImg  = exp.photo_url || dish.image_url || '';
@@ -265,7 +212,6 @@ function renderFeedCardCompact(exp) {
   const date     = exp.created_at ? _timeAgo(exp.created_at) : '';
   const initials = (exp.user_display_name || '?').charAt(0).toUpperCase();
   const name     = exp.user_display_name || 'Anonymous';
-
   return `<div class="fa-compact-card" data-exp-id="${exp.id}" onclick="openExpSheet('${exp.id}')">
     ${heroImg ? `<div class="fa-compact-thumb"><img src="${heroImg}" alt="" loading="lazy"></div>` : ''}
     <div class="fa-compact-body">
@@ -283,44 +229,11 @@ function renderFeedCardCompact(exp) {
   </div>`;
 }
 
-// ── NEXT CHALLENGE SECTION ────────────────────────────
-function buildNextChallenge(coll) {
-  if (!coll) return '';
-  const info = COL_ICONS[coll.name] || { emoji:'⭐', bg:'#FFF3E0', color:'#C85A00' };
-  const dishes = coll.dishes || [];
-  const collDone = dishes.filter(d => userDishes.has(d.id)).length;
-  const checkIcon = `<div class="fb-list-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D2318" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
-  const lockIcon  = `<div class="fb-list-lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`;
-  const rows = dishes.map(dish => {
-    const done = userDishes.has(dish.id);
-    return `<div class="fb-list-row ${done ? 'tried' : ''}" onclick="openCardFromHome('${dish.id}')">
-      <div class="fb-list-img-wrap">
-        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : '<div class="fb-list-placeholder">🍽️</div>'}
-      </div>
-      <div class="fb-list-info">
-        <div class="fb-list-name">${dish.name}</div>
-        ${dish.name_en ? `<div class="fb-list-en">${dish.name_en}</div>` : ''}
-        <div class="fb-list-status" style="color:${info.color}">${done ? 'Collected' : 'Not collected'}</div>
-      </div>
-      ${done ? checkIcon : lockIcon}
-    </div>`;
-  }).join('');
-  return `
-    <div class="fb-list-section">
-      <div class="fb-list-header">
-        <div class="fb-list-title">${info.emoji} ${coll.name}</div>
-        <div class="fb-list-viewall">${collDone} / ${dishes.length}</div>
-      </div>
-      ${rows}
-    </div>`;
-}
-
 // ── RENDER HOME ───────────────────────────────────────
 function renderHome() {
   const countryInfo = COUNTRY_DATA[currentCountry?.name] || { tagline:'Discover the flavors of the streets.', bg:'' };
   const heroBg = currentCountry?.hero_image_url || countryInfo.bg || '';
 
-  // Update hero
   const heroImg = $('hero-bg-img');
   if (heroBg) { heroImg.src = heroBg; heroImg.style.display = 'block'; }
   else { heroImg.style.display = 'none'; }
@@ -328,20 +241,17 @@ function renderHome() {
   $('hero-country-flag').textContent = COUNTRY_FLAGS[currentCountry?.name] || '🌏';
   $('hero-tagline').textContent = countryInfo.tagline;
 
-  // Hero total progress
   const totalDishes = allDishes.length;
   const totalCollected = userDishes.size;
   const totalPct = totalDishes > 0 ? Math.round(totalCollected / totalDishes * 100) : 0;
   const hpf = $('hero-prog-fill'); if (hpf) hpf.style.width = totalPct + '%';
   const hpfrac = $('hero-prog-frac'); if (hpfrac) hpfrac.textContent = `${totalCollected} / ${totalDishes}`;
 
-  // XP + streak
   const xp = userDishes.size * 10;
   const streak = getStreak();
   const hxp = $('h-xp'); if (hxp) hxp.textContent = xp.toLocaleString();
   const hstr = $('h-streak'); if (hstr) hstr.textContent = streak + (streak === 1 ? ' day' : ' days');
 
-  // First Bites
   const firstBites = allDishes.filter(d => d.first_bite_order != null).sort((a,b) => a.first_bite_order - b.first_bite_order);
   const fbDone  = firstBites.filter(d => userDishes.has(d.id)).length;
   const fbTotal = firstBites.length;
@@ -351,54 +261,68 @@ function renderHome() {
     || collections.find(c => !c.name.toLowerCase().includes('essential') && c.dishes.length > 3)
     || collections[1] || collections[0];
 
-  const exploreGridHtml = collections.map(col => {
+  const exploreRowsHtml = collections.map(col => {
     const unlocked = isUnlocked(col);
     const info = COL_ICONS[col.name] || { emoji:'🍽️', bg:'#F5F0EA', color:'#9E8E7A' };
-    return `<div class="home-jny-cell${!unlocked ? ' locked' : ''}" ${unlocked ? `onclick="openColl_byId('${col.id}')"` : ''}>
-      <div class="home-jny-icon" style="background:${info.bg}">${unlocked ? info.emoji : '🔒'}</div>
-      <div class="home-jny-name">${col.name}</div>
-      <div class="home-jny-count" style="color:${info.color}">${col.collected}/${col.dishes.length}</div>
+    const desc = COL_DESCRIPTIONS[col.name] || 'Discover local favorites';
+    return `<div class="explore-row${!unlocked ? ' locked' : ''}" ${unlocked ? `onclick="openColl_byId('${col.id}')"` : ''}>
+      <div class="explore-icon" style="background:${info.bg}">${info.emoji}</div>
+      <div class="explore-info"><div class="explore-name">${col.name}</div><div class="explore-desc">${desc}</div></div>
+      <div class="explore-meta">
+        ${!unlocked ? '<span style="font-size:13px">🔒</span>' : ''}
+        <span class="explore-count" style="color:${info.color}">${col.collected}/${col.dishes.length}</span>
+        <span class="explore-chev">›</span>
+      </div>
     </div>`;
   }).join('');
+
+  const recentHtml = buildRecentHtml();
 
   if (allDone) {
     const badgeId = `first_bites_${currentCountry?.name}`;
     const claimed = isBadgeClaimed(badgeId);
-
-    if (claimed) {
-      // Badge geclaimd via "Continue" → toon Essentials als next challenge
-      const essentialsColl = collections.find(c => c.name.toLowerCase().includes('essential'));
-      $('home-dynamic').innerHTML = `
-        ${buildNextChallenge(essentialsColl)}
-        ${buildTodayForYou()}
-        <div class="section-header scroll-reveal"><div class="section-title">Continue your journeys</div></div>
-        <div class="home-jny-grid scroll-reveal">${exploreGridHtml}</div>
-        ${buildFriendsActivity()}
-        ${buildTrendingNow()}
-        <div style="height:8px"></div>
-      `;
-    } else {
-      const doneThumbs = firstBites.map(dish => `
-        <div class="completion-done-thumb">
-          ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
-          <div class="completion-done-thumb-check">✓</div>
-        </div>`).join('');
-      $('home-dynamic').innerHTML = `
-        <div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
+    const doneThumbs = firstBites.map(dish => `
+      <div class="completion-done-thumb">
+        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
+        <div class="completion-done-thumb-check">✓</div>
+      </div>`).join('');
+    const njImg  = nextColl?.dishes.find(d => d.image_url);
+    const njInfo = COL_ICONS[nextColl?.name] || { emoji:'🍜', bg:'#FFF8E1', color:'#B07800' };
+    const topBanner = claimed
+      ? `<div class="claimed-pill" onclick="openBadgeSheet('${badgeId}')">
+          <div class="claimed-pill-icon">🏅</div>
+          <div class="claimed-pill-text"><div class="claimed-pill-title">First Bites Complete</div><div class="claimed-pill-sub">${currentCountry?.name} · Badge earned</div></div>
+          <div class="claimed-pill-chev">›</div>
+        </div>`
+      : `<div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
           <div class="completion-sparkles"><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span></div>
           <div class="completion-badge-row"><div class="completion-medal">🏅</div><div class="completion-badge-label">Achievement unlocked — tap to claim</div></div>
           <div class="completion-title">First Bites Complete!</div>
-          <div class="completion-sub">You've experienced your first ${fbTotal} dishes in ${currentCountry?.name}. Ready to explore more local favorites?</div>
+          <div class="completion-sub">You've tasted the soul of ${currentCountry?.name}. Ready to go deeper?</div>
           <div class="completion-done-thumbs">${doneThumbs}</div>
+        </div>`;
+    $('home-dynamic').innerHTML = `
+      ${topBanner}
+      <div class="next-journey-wrap">
+        <div class="next-journey-card" onclick="openColl_byId('${nextColl?.id}')">
+          ${njImg ? `<img class="next-journey-img" src="${njImg.image_url}" alt="${nextColl?.name}" loading="lazy">` : '<div style="height:140px;background:linear-gradient(135deg,#2D6A4F,#1A2B22)"></div>'}
+          <div class="next-journey-content">
+            <div class="next-journey-eyebrow">${njInfo.emoji} Next stop</div>
+            <div class="next-journey-title">${nextColl?.name || ''}</div>
+            <div class="next-journey-sub">${COL_DESCRIPTIONS[nextColl?.name] || 'Discover what comes next'}</div>
+            <div class="next-journey-meta">
+              <span class="next-journey-count">${nextColl?.collected || 0} / ${nextColl?.dishes.length || 0} dishes</span>
+              <button class="next-journey-cta" onclick="event.stopPropagation();openColl_byId('${nextColl?.id}')">Continue →</button>
+            </div>
+          </div>
         </div>
-        ${buildTodayForYou()}
-        <div class="section-header scroll-reveal"><div class="section-title">Continue your journeys</div></div>
-        <div class="home-jny-grid scroll-reveal">${exploreGridHtml}</div>
-        ${buildFriendsActivity()}
-        ${buildTrendingNow()}
-        <div style="height:8px"></div>
-      `;
-    }
+      </div>
+      <div class="explore-header scroll-reveal">Explore more</div>
+      <div class="explore-list scroll-reveal">${exploreRowsHtml}</div>
+      ${buildFriendsActivity()}
+      ${recentHtml}
+      <div style="height:8px"></div>
+    `;
   } else {
     const listRowsHtml = fbTotal === 0
       ? '<div style="padding:8px 4px;font-size:13px;color:rgba(255,255,255,.4)">No First Bites set for this country yet.</div>'
@@ -429,10 +353,10 @@ function renderHome() {
         </div>
         ${listRowsHtml}
       </div>
-      <div class="section-header scroll-reveal"><div class="section-title">Continue your journeys</div></div>
-      <div class="home-jny-grid scroll-reveal">${exploreGridHtml}</div>
+      <div class="explore-header scroll-reveal">Explore more</div>
+      <div class="explore-list scroll-reveal">${exploreRowsHtml}</div>
       ${buildFriendsActivity()}
-      ${buildTrendingNow()}
+      ${recentHtml}
       <div style="height:8px"></div>
     `;
   }
