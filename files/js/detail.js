@@ -14,17 +14,34 @@ async function openDetail() {
   $('detail-backdrop').classList.add('open');
   $('detail-sheet').scrollTop = 0;
   try {
-    const exps = await api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`);
-    renderDetailExperiences(dish, exps || []);
+    const [exps, locs] = await Promise.all([
+      api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`),
+      api(`locations?dish_id=eq.${dish.id}&select=id`)
+    ]);
+    renderDetailExperiences(dish, exps || [], locs || []);
   } catch(e) { $('detail-exps').innerHTML = `<div class="exp-empty">Could not load experiences.</div>`; }
 }
 
-function renderDetailExperiences(dish, exps) {
+function renderDetailExperiences(dish, exps, locs) {
   $('ds-checkins').textContent = exps.length || '0';
   const withPrice  = exps.filter(e => e.price && e.price > 0);
   if (withPrice.length > 0) { const avg = withPrice.reduce((s,e) => s + parseFloat(e.price), 0) / withPrice.length; $('ds-price').textContent = formatPrice(avg, withPrice[0].currency || ''); }
   const withRating = exps.filter(e => e.rating && e.rating > 0);
   if (withRating.length > 0) { const avg = withRating.reduce((s,e) => s + e.rating, 0) / withRating.length; $('ds-rating').textContent = '★ ' + avg.toFixed(1); }
+  // Where to eat bar
+  const spotsWithCoords = exps.filter(e => e.lat && e.lng).length;
+  const totalSpots = (locs || []).length + spotsWithCoords;
+  const whereEl = $('detail-where-to-eat');
+  if (whereEl) {
+    if (totalSpots > 0) {
+      whereEl.style.display = 'flex';
+      whereEl.querySelector('.detail-where-label').textContent =
+        `📍 ${totalSpots} spot${totalSpots !== 1 ? 's' : ''} known — tap to explore`;
+    } else {
+      whereEl.style.display = 'none';
+    }
+  }
+
   const photos = exps.filter(e => e.photo_url);
   if (photos.length > 0) {
     $('detail-photos-section').style.display = 'block';

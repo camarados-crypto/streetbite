@@ -75,11 +75,11 @@ function handlePhotoSelect(e) {
 }
 
 // ── LOCATION PICKER (map) ─────────────────────────────
-let _locMap = null, _locUserMarker = null, _locMarkers = [], _locSelected = null, _locSearchTimer = null;
+let _locMap = null, _locUserMarker = null, _locMarkers = [], _locSelected = null, _locSelectedLat = null, _locSelectedLng = null, _locSearchTimer = null;
 
 function openLocationPicker() {
   $('locpicker-overlay').classList.add('open');
-  _locSelected = null;
+  _locSelected = null; _locSelectedLat = null; _locSelectedLng = null;
   $('locpicker-bottom').style.display = 'none';
   $('locpicker-search').value = '';
   $('locpicker-status').textContent = 'Finding your location…';
@@ -130,7 +130,7 @@ async function _loadNearbyPlaces(lat, lng) {
       const m     = L.marker([el.lat, el.lon], { icon })
         .addTo(_locMap)
         .bindTooltip(el.tags.name, { direction:'top', offset:[0,-16], className:'loc-place-tip' })
-        .on('click', () => _selectPlace(el.tags.name, m));
+        .on('click', () => _selectPlace(el.tags.name, m, el.lat, el.lon));
       _locMarkers.push(m);
     });
   } catch(e) {
@@ -143,13 +143,14 @@ function _placeEmoji(amenity) {
   return map[amenity] || '🍽️';
 }
 
-function _selectPlace(name, marker) {
-  // Reset all markers
+function _selectPlace(name, marker, lat, lng) {
   _locMarkers.forEach(m => {
     const el = m.getElement(); if (el) el.classList.remove('selected');
   });
   const el = marker?.getElement(); if (el) el.classList.add('selected');
   _locSelected = name;
+  _locSelectedLat = lat ?? null;
+  _locSelectedLng = lng ?? null;
   $('locpicker-sel-name').textContent = name;
   $('locpicker-bottom').style.display = 'flex';
 }
@@ -157,6 +158,7 @@ function _selectPlace(name, marker) {
 async function _reverseGeocode(lat, lng, moveMap) {
   if (moveMap) _locMap.setView([lat, lng], 16);
   $('locpicker-status').textContent = 'Looking up location…';
+  _locSelectedLat = lat; _locSelectedLng = lng;
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
     const d = await r.json();
@@ -191,7 +193,7 @@ async function _doLocSearch() {
     const lat = parseFloat(place.lat), lng = parseFloat(place.lon);
     const name = place.name || place.display_name.split(',')[0];
     _locMap.setView([lat, lng], 17);
-    _locSelected = name;
+    _locSelected = name; _locSelectedLat = lat; _locSelectedLng = lng;
     $('locpicker-sel-name').textContent = name;
     $('locpicker-bottom').style.display = 'flex';
     _loadNearbyPlaces(lat, lng);
@@ -238,6 +240,8 @@ async function saveCheckin() {
     user_id:           uid,
     rating:            ciRating || null,
     location_text:     $('ci-location').value.trim() || null,
+    lat:               _locSelectedLat,
+    lng:               _locSelectedLng,
     note:              $('ci-note').value.trim() || null,
     price:             parseFloat($('ci-price').value) || null,
     currency:          $('ci-currency').value || 'USD',

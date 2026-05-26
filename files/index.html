@@ -189,6 +189,10 @@
       <div class="detail-stat"><div class="detail-stat-v" id="ds-price">—</div><div class="detail-stat-l">Avg Price</div></div>
       <div class="detail-stat"><div class="detail-stat-v" id="ds-rating">—</div><div class="detail-stat-l">Rating</div></div>
     </div>
+    <div id="detail-where-to-eat" onclick="openDishMap()" style="display:none">
+      <span class="detail-where-label"></span>
+      <span class="detail-where-arrow">→</span>
+    </div>
     <div id="detail-photos-section" style="display:none">
       <div class="detail-section">
         <div class="detail-sec-title">📸 All photos</div>
@@ -208,6 +212,25 @@
 <div class="photo-viewer" id="photo-viewer" onclick="closePhotoViewer()">
   <img id="pv-img" src="" alt="">
   <button class="photo-viewer-close">✕</button>
+</div>
+
+<!-- ── DISH MAP SHEET ── -->
+<div class="modal-backdrop" id="dishmap-backdrop" onclick="closeDishMap()">
+  <div class="dishmap-sheet" id="dishmap-sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="dishmap-header">
+      <div id="dishmap-title" class="dishmap-title"></div>
+      <button class="dishmap-close" onclick="closeDishMap()">✕</button>
+    </div>
+    <div id="dishmap-map"></div>
+    <div id="dishmap-popup">
+      <div class="dishmap-popup-info">
+        <div id="dishmap-popup-name" class="dishmap-popup-name"></div>
+        <div id="dishmap-popup-meta" class="dishmap-popup-meta"></div>
+      </div>
+      <button class="dishmap-nav-btn" onclick="dishMapNavigate()">Navigate →</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── CHECK-IN SHEET ── -->
@@ -551,6 +574,7 @@
 <script src="js/card.js"></script>
 <script src="js/detail.js"></script>
 <script src="js/checkin.js"></script>
+<script src="js/dishmap.js"></script>
 <script src="js/passport.js"></script>
 <script src="js/social.js"></script>
 <script src="js/feed.js"></script>
