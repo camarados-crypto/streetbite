@@ -18,26 +18,13 @@ function openDishMap() {
 }
 
 async function _loadAndRender(dish) {
-  let curated = [], community = [];
+  let community = [];
   try {
-    const [c, e] = await Promise.all([
-      api('locations?dish_id=eq.' + dish.id + '&select=*'),
-      api('experiences?dish_id=eq.' + dish.id + '&select=id,lat,lng,location_text,user_display_name,user_avatar_url,rating')
-    ]);
-    curated   = (c || []);
+    const e = await api('experiences?dish_id=eq.' + dish.id + '&select=id,lat,lng,location_text,user_display_name,user_avatar_url,rating');
     community = (e || []).filter(x => x.lat != null && x.lng != null);
   } catch(err) { console.log('dishmap load error:', err); }
 
   _initMap();
-
-  // Curated spots (admin-added)
-  const goldIcon = L.divIcon({ className:'', iconSize:[36,36], iconAnchor:[18,36],
-    html:'<div class="dm-pin dm-pin--curated">📍</div>' });
-  curated.forEach(loc => {
-    const m = L.marker([loc.lat, loc.lng], { icon: goldIcon }).addTo(_dmMap);
-    m.on('click', () => _showPopup('📍 ' + loc.name, loc.address || '', loc.lat, loc.lng));
-    _dmMarkers.push(m);
-  });
 
   // Community check-in pins
   community.forEach(exp => {

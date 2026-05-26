@@ -14,29 +14,25 @@ async function openDetail() {
   $('detail-backdrop').classList.add('open');
   $('detail-sheet').scrollTop = 0;
   try {
-    const [exps, locs] = await Promise.all([
-      api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`),
-      api(`locations?dish_id=eq.${dish.id}&select=id`)
-    ]);
-    renderDetailExperiences(dish, exps || [], locs || []);
+    const exps = await api(`experiences?dish_id=eq.${dish.id}&order=created_at.desc&select=*`);
+    renderDetailExperiences(dish, exps || []);
   } catch(e) { $('detail-exps').innerHTML = `<div class="exp-empty">Could not load experiences.</div>`; }
 }
 
-function renderDetailExperiences(dish, exps, locs) {
+function renderDetailExperiences(dish, exps) {
   $('ds-checkins').textContent = exps.length || '0';
   const withPrice  = exps.filter(e => e.price && e.price > 0);
   if (withPrice.length > 0) { const avg = withPrice.reduce((s,e) => s + parseFloat(e.price), 0) / withPrice.length; $('ds-price').textContent = formatPrice(avg, withPrice[0].currency || ''); }
   const withRating = exps.filter(e => e.rating && e.rating > 0);
   if (withRating.length > 0) { const avg = withRating.reduce((s,e) => s + e.rating, 0) / withRating.length; $('ds-rating').textContent = '★ ' + avg.toFixed(1); }
-  // Where to eat bar
+  // Where to eat bar — only community check-ins with GPS
   const spotsWithCoords = exps.filter(e => e.lat && e.lng).length;
-  const totalSpots = (locs || []).length + spotsWithCoords;
   const whereEl = $('detail-where-to-eat');
   if (whereEl) {
-    if (totalSpots > 0) {
+    if (spotsWithCoords > 0) {
       whereEl.style.display = 'flex';
       whereEl.querySelector('.detail-where-label').textContent =
-        `📍 ${totalSpots} spot${totalSpots !== 1 ? 's' : ''} known — tap to explore`;
+        `📍 ${spotsWithCoords} spot${spotsWithCoords !== 1 ? 's' : ''} known — tap to explore`;
     } else {
       whereEl.style.display = 'none';
     }
