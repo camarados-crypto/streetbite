@@ -1,6 +1,54 @@
 // ── EXPERIENCE SHEET ──────────────────────────────────
 let faExps = {};
 
+// ── TODAY FOR YOU ─────────────────────────────────────
+function pickTodayDishes() {
+  const uncollected = allDishes.filter(d => !userDishes.has(d.id));
+  if (!uncollected.length) return [];
+  const today = new Date().toDateString();
+  const seeded = [...uncollected].sort((a, b) => _dayHash(a.id + today) - _dayHash(b.id + today));
+  const easy        = seeded.find(d => d.rarity === 'common') || seeded.find(d => d.rarity === 'uncommon') || seeded[0];
+  const popPool     = seeded.filter(d => d !== easy);
+  const popular     = popPool.find(d => d.rarity === 'uncommon') || popPool.find(d => d.rarity === 'common') || popPool[0];
+  const advPool     = seeded.filter(d => d !== easy && d !== popular);
+  const adventurous = advPool.find(d => ['rare','epic','legendary'].includes(d.rarity)) || advPool[0];
+  return [
+    easy        && { dish: easy,        label: '😌 Easy choice',  accent: '#74C69D' },
+    popular     && { dish: popular,     label: '🔥 Popular now',   accent: '#D4692A' },
+    adventurous && { dish: adventurous, label: '🤯 Adventurous',   accent: '#F4B942' },
+  ].filter(Boolean);
+}
+
+function buildTodayForYou() {
+  const picks = pickTodayDishes();
+  if (!picks.length) return '';
+  const checkIcon = `<div class="fb-list-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D2318" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+  const lockIcon  = `<div class="fb-list-lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`;
+  const rows = picks.map(({ dish, label, accent }) => {
+    const done  = userDishes.has(dish.id);
+    const emoji = label.split(' ')[0];
+    return `<div class="fb-list-row ${done ? 'tried' : ''}" onclick="openCardFromHome('${dish.id}')">
+      <div class="fb-list-img-wrap">
+        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : '<div class="fb-list-placeholder">🍽️</div>'}
+        <div class="fb-list-num" style="${done ? '' : 'background:rgba(0,0,0,.35);color:#fff'}">${emoji}</div>
+      </div>
+      <div class="fb-list-info">
+        <div class="fb-list-name">${dish.name}</div>
+        ${dish.name_en ? `<div class="fb-list-en">${dish.name_en}</div>` : ''}
+        <div class="fb-list-status" style="color:${accent}">${label.split(' ').slice(1).join(' ')}</div>
+      </div>
+      ${done ? checkIcon : lockIcon}
+    </div>`;
+  }).join('');
+  return `<div class="fb-list-section">
+    <div class="fb-list-header">
+      <div class="fb-list-title">✨ Tips for today</div>
+      <div class="fb-list-viewall">${currentCountry?.name || ''}</div>
+    </div>
+    ${rows}
+  </div>`;
+}
+
 // ── SWIPEABLE JOURNEYS ────────────────────────────────
 let _journeyIdx = 0, _journeyCountryId = null, _jnyBusy = false;
 
@@ -360,32 +408,40 @@ function renderHome() {
   if (allDone) {
     const badgeId = `first_bites_${currentCountry?.name}`;
     const claimed = isBadgeClaimed(badgeId);
-    const doneThumbs = firstBites.map(dish => `
-      <div class="completion-done-thumb">
-        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
-        <div class="completion-done-thumb-check">✓</div>
-      </div>`).join('');
-    const topBanner = claimed
-      ? `<div class="claimed-pill" onclick="openBadgeSheet('${badgeId}')">
-          <div class="claimed-pill-icon">🏅</div>
-          <div class="claimed-pill-text"><div class="claimed-pill-title">First Bites Complete</div><div class="claimed-pill-sub">${currentCountry?.name} · Badge earned</div></div>
-          <div class="claimed-pill-chev">›</div>
-        </div>`
-      : `<div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
+
+    if (claimed) {
+      // Badge already claimed — toon collecties + tips, geen melding meer
+      $('home-dynamic').innerHTML = `
+        ${buildSwipeableJourneys()}
+        ${buildTodayForYou()}
+        ${buildFriendsActivity()}
+        ${recentHtml}
+        <div style="height:8px"></div>
+      `;
+    } else {
+      // Nog niet geclaimd — toon completion banner + collecties + tips
+      const doneThumbs = firstBites.map(dish => `
+        <div class="completion-done-thumb">
+          ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
+          <div class="completion-done-thumb-check">✓</div>
+        </div>`).join('');
+      $('home-dynamic').innerHTML = `
+        <div class="completion-banner" onclick="openBadgeSheet('${badgeId}')" style="cursor:pointer">
           <div class="completion-sparkles"><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span><span class="completion-sparkle">✦</span></div>
           <div class="completion-badge-row"><div class="completion-medal">🏅</div><div class="completion-badge-label">Achievement unlocked — tap to claim</div></div>
           <div class="completion-title">First Bites Complete!</div>
           <div class="completion-sub">You've tasted the soul of ${currentCountry?.name}. Ready to go deeper?</div>
           <div class="completion-done-thumbs">${doneThumbs}</div>
-        </div>`;
-    $('home-dynamic').innerHTML = `
-      ${topBanner}
-      ${buildSwipeableJourneys()}
-      ${buildFriendsActivity()}
-      ${recentHtml}
-      <div style="height:8px"></div>
-    `;
+        </div>
+        ${buildSwipeableJourneys()}
+        ${buildTodayForYou()}
+        ${buildFriendsActivity()}
+        ${recentHtml}
+        <div style="height:8px"></div>
+      `;
+    }
   } else {
+    // First Bites nog niet klaar — alleen First Bites, geen collecties
     const listRowsHtml = fbTotal === 0
       ? '<div style="padding:8px 4px;font-size:13px;color:rgba(255,255,255,.4)">No First Bites set for this country yet.</div>'
       : firstBites.map(dish => {
@@ -415,7 +471,6 @@ function renderHome() {
         </div>
         ${listRowsHtml}
       </div>
-      ${buildSwipeableJourneys()}
       ${buildFriendsActivity()}
       ${recentHtml}
       <div style="height:8px"></div>
