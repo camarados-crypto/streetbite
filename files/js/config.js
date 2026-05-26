@@ -65,7 +65,8 @@ const COL_DESCRIPTIONS = {
 const BADGES = {
   first_bites_Vietnam:  { icon:'🏅', title:'First Bites Vietnam',  sub:'Tried all 5 must-eat dishes in Vietnam',  country:'Vietnam',  flag:'🇻🇳' },
   first_bites_Thailand: { icon:'🏅', title:'First Bites Thailand', sub:'Tried all 5 must-eat dishes in Thailand', country:'Thailand', flag:'🇹🇭' },
-  first_bites_Japan:    { icon:'🏅', title:'First Bites Japan',    sub:'Tried all 5 must-eat dishes in Japan',    country:'Japan',    flag:'🇯🇵' },
+  first_bites_Japan:        { icon:'🏅', title:'First Bites Japan',        sub:'Tried all 5 must-eat dishes in Japan',        country:'Japan',        flag:'🇯🇵' },
+  first_bites_Netherlands:  { icon:'🏅', title:'First Bites Netherlands',  sub:'Tried all 5 must-eat dishes in the Netherlands', country:'Netherlands', flag:'🇳🇱' },
 };
 const BADGES_COMING = [
   { icon:'🔥', name:'Street Master',  hint:'Complete Street Classics' },
