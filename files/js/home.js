@@ -1,6 +1,104 @@
 // ── EXPERIENCE SHEET ──────────────────────────────────
 let faExps = {};
 
+// ── SWIPEABLE JOURNEYS ────────────────────────────────
+let _journeyIdx = 0, _journeyCountryId = null, _jnyBusy = false;
+
+function _jnyArrows(journeys) {
+  return { atStart: _journeyIdx === 0, atEnd: _journeyIdx === journeys.length - 1 };
+}
+
+function jnyNav(dir) {
+  if (_jnyBusy) return;
+  const journeys = collections.filter(c => isUnlocked(c));
+  const newIdx = Math.max(0, Math.min(_journeyIdx + dir, journeys.length - 1));
+  if (newIdx === _journeyIdx) return;
+  _journeyIdx = newIdx;
+  _jnyBusy = true;
+
+  const slide = $('jny-slide');
+  if (!slide) { _jnyBusy = false; return; }
+
+  const newHtml = buildNextChallenge(journeys[_journeyIdx], _jnyArrows(journeys));
+  const DUR = 280, ease = 'cubic-bezier(.4,0,.2,1)';
+  const outX = dir > 0 ? '-100%' : '100%';
+  const inX  = dir > 0 ?  '100%' : '-100%';
+
+  slide.style.cssText = `height:${slide.offsetHeight}px;overflow:hidden;position:relative`;
+  const old = slide.firstElementChild;
+  if (old) old.style.cssText = 'position:absolute;top:0;left:0;right:0;will-change:transform';
+
+  const tmp = document.createElement('div');
+  tmp.innerHTML = newHtml;
+  const next = tmp.firstElementChild;
+  next.style.cssText = `position:absolute;top:0;left:0;right:0;transform:translateX(${inX});will-change:transform`;
+  slide.appendChild(next);
+
+  requestAnimationFrame(() => {
+    const t = `transform ${DUR}ms ${ease}`;
+    if (old) { old.style.transition = t; old.style.transform = `translateX(${outX})`; }
+    next.style.transition = t;
+    next.style.transform = 'translateX(0)';
+  });
+
+  setTimeout(() => { slide.style.cssText = ''; slide.innerHTML = newHtml; _jnyBusy = false; }, DUR + 20);
+}
+
+function buildSwipeableJourneys() {
+  const journeys = collections.filter(c => isUnlocked(c));
+  if (!journeys.length) return '';
+  if (_journeyCountryId !== countryId) { _journeyIdx = 0; _journeyCountryId = countryId; }
+  _journeyIdx = Math.min(_journeyIdx, journeys.length - 1);
+  return `<div id="home-swipe-wrap"><div id="jny-slide">${buildNextChallenge(journeys[_journeyIdx], _jnyArrows(journeys))}</div></div>`;
+}
+
+function buildNextChallenge(coll, navArrows = null) {
+  if (!coll) return '';
+  const info = COL_ICONS[coll.name] || { emoji:'⭐', bg:'#FFF3E0', color:'#C85A00' };
+  const dishes = coll.dishes || [];
+  const collDone = dishes.filter(d => userDishes.has(d.id)).length;
+  const checkIcon = `<div class="fb-list-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D2318" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+  const lockIcon  = `<div class="fb-list-lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`;
+  const rows = dishes.map(dish => {
+    const done = userDishes.has(dish.id);
+    return `<div class="fb-list-row ${done ? 'tried' : ''}" onclick="openCardFromHome('${dish.id}')">
+      <div class="fb-list-img-wrap">
+        ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : '<div class="fb-list-placeholder">🍽️</div>'}
+      </div>
+      <div class="fb-list-info">
+        <div class="fb-list-name">${dish.name}</div>
+        ${dish.name_en ? `<div class="fb-list-en">${dish.name_en}</div>` : ''}
+        <div class="fb-list-status" style="color:${info.color}">${done ? 'Collected' : 'Not collected'}</div>
+      </div>
+      ${done ? checkIcon : lockIcon}
+    </div>`;
+  }).join('');
+  const leftArrow  = navArrows ? `<span class="jny-arrow${navArrows.atStart ? ' disabled' : ''}" onclick="jnyNav(-1)">‹</span>` : '';
+  const rightArrow = navArrows ? `<span class="jny-arrow${navArrows.atEnd ? ' disabled' : ''}" onclick="jnyNav(1)">›</span>` : '';
+  return `<div class="fb-list-section">
+    <div class="fb-list-header">
+      ${leftArrow}
+      <div class="fb-list-title" style="${navArrows ? 'flex:1' : ''}">${info.emoji} ${coll.name}</div>
+      <div class="fb-list-viewall">${collDone} / ${dishes.length}</div>
+      ${rightArrow}
+    </div>
+    ${rows}
+  </div>`;
+}
+
+function initJourneySwipe() {
+  const wrap = $('home-swipe-wrap');
+  if (!wrap) return;
+  let tx = 0, ty = 0;
+  wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+  wrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    jnyNav(dx < 0 ? 1 : -1);
+  }, {passive:true});
+}
+
 function openExpSheet(expId) {
   const exp  = faExps[expId]; if (!exp) return;
   const dish = exp.dishes || {};
@@ -257,25 +355,6 @@ function renderHome() {
   const fbTotal = firstBites.length;
   const allDone = fbTotal > 0 && fbDone >= fbTotal;
 
-  const nextColl = collections.find(c => c.name.toLowerCase().includes('classic'))
-    || collections.find(c => !c.name.toLowerCase().includes('essential') && c.dishes.length > 3)
-    || collections[1] || collections[0];
-
-  const exploreRowsHtml = collections.map(col => {
-    const unlocked = isUnlocked(col);
-    const info = COL_ICONS[col.name] || { emoji:'🍽️', bg:'#F5F0EA', color:'#9E8E7A' };
-    const desc = COL_DESCRIPTIONS[col.name] || 'Discover local favorites';
-    return `<div class="explore-row${!unlocked ? ' locked' : ''}" ${unlocked ? `onclick="openColl_byId('${col.id}')"` : ''}>
-      <div class="explore-icon" style="background:${info.bg}">${info.emoji}</div>
-      <div class="explore-info"><div class="explore-name">${col.name}</div><div class="explore-desc">${desc}</div></div>
-      <div class="explore-meta">
-        ${!unlocked ? '<span style="font-size:13px">🔒</span>' : ''}
-        <span class="explore-count" style="color:${info.color}">${col.collected}/${col.dishes.length}</span>
-        <span class="explore-chev">›</span>
-      </div>
-    </div>`;
-  }).join('');
-
   const recentHtml = buildRecentHtml();
 
   if (allDone) {
@@ -286,8 +365,6 @@ function renderHome() {
         ${dish.image_url ? `<img src="${dish.image_url}" alt="${dish.name}" loading="lazy">` : ''}
         <div class="completion-done-thumb-check">✓</div>
       </div>`).join('');
-    const njImg  = nextColl?.dishes.find(d => d.image_url);
-    const njInfo = COL_ICONS[nextColl?.name] || { emoji:'🍜', bg:'#FFF8E1', color:'#B07800' };
     const topBanner = claimed
       ? `<div class="claimed-pill" onclick="openBadgeSheet('${badgeId}')">
           <div class="claimed-pill-icon">🏅</div>
@@ -303,22 +380,7 @@ function renderHome() {
         </div>`;
     $('home-dynamic').innerHTML = `
       ${topBanner}
-      <div class="next-journey-wrap">
-        <div class="next-journey-card" onclick="openColl_byId('${nextColl?.id}')">
-          ${njImg ? `<img class="next-journey-img" src="${njImg.image_url}" alt="${nextColl?.name}" loading="lazy">` : '<div style="height:140px;background:linear-gradient(135deg,#2D6A4F,#1A2B22)"></div>'}
-          <div class="next-journey-content">
-            <div class="next-journey-eyebrow">${njInfo.emoji} Next stop</div>
-            <div class="next-journey-title">${nextColl?.name || ''}</div>
-            <div class="next-journey-sub">${COL_DESCRIPTIONS[nextColl?.name] || 'Discover what comes next'}</div>
-            <div class="next-journey-meta">
-              <span class="next-journey-count">${nextColl?.collected || 0} / ${nextColl?.dishes.length || 0} dishes</span>
-              <button class="next-journey-cta" onclick="event.stopPropagation();openColl_byId('${nextColl?.id}')">Continue →</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="explore-header scroll-reveal">Explore more</div>
-      <div class="explore-list scroll-reveal">${exploreRowsHtml}</div>
+      ${buildSwipeableJourneys()}
       ${buildFriendsActivity()}
       ${recentHtml}
       <div style="height:8px"></div>
@@ -353,13 +415,13 @@ function renderHome() {
         </div>
         ${listRowsHtml}
       </div>
-      <div class="explore-header scroll-reveal">Explore more</div>
-      <div class="explore-list scroll-reveal">${exploreRowsHtml}</div>
+      ${buildSwipeableJourneys()}
       ${buildFriendsActivity()}
       ${recentHtml}
       <div style="height:8px"></div>
     `;
   }
   updateWelcome();
+  setTimeout(initJourneySwipe, 50);
   setTimeout(refreshFriendsActivity, 50);
 }
