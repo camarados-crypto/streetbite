@@ -62,9 +62,15 @@ async function openCard(dish, num) {
   requestAnimationFrame(() => requestAnimationFrame(() => inner.classList.add('entering')));
   inner.addEventListener('animationend', () => inner.classList.remove('entering'), { once: true });
 
-  // Fetch rating + traveler reactions async
+  // Reset locate button while loading
+  $('cf-locate-btn').style.display = 'none';
+
+  // Fetch rating + traveler reactions + location spots async
   try {
-    const exps = await api(`experiences?dish_id=eq.${dish.id}&rating=not.is.null&select=rating,note,user_display_name&limit=5`);
+    const [exps, locs] = await Promise.all([
+      api(`experiences?dish_id=eq.${dish.id}&rating=not.is.null&select=rating,note,user_display_name&limit=5`),
+      api(`locations?dish_id=eq.${dish.id}&select=id&limit=1`)
+    ]);
     if (exps?.length > 0) {
       const avg = exps.reduce((s, e) => s + e.rating, 0) / exps.length;
       $('cf-rating').textContent = `⭐ ${avg.toFixed(1)}`;
@@ -77,6 +83,7 @@ async function openCard(dish, num) {
         }).join('');
       }
     }
+    if (locs?.length > 0) $('cf-locate-btn').style.display = '';
   } catch(e) {}
 }
 
