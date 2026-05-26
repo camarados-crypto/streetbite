@@ -605,6 +605,14 @@
 <script src="js/notifications.js?v=536"></script>
 <script src="js/buddy.js?v=536"></script>
 <script src="js/app.js?v=536"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/streetbite/sw.js')
+        .catch(err => console.log('SW reg failed:', err));
+    });
+  }
+</script>
 
 </body>
 </html>

@@ -1,12 +1,16 @@
 {
   "name": "StreetBite",
   "short_name": "StreetBite",
-  "description": "Street food. Collected.",
+  "description": "Street food. Collected. Track dishes you've tried, share experiences, and discover new food.",
   "start_url": "/streetbite/",
+  "scope": "/streetbite/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0D2318",
   "theme_color": "#0D2318",
   "orientation": "portrait",
+  "lang": "en",
+  "categories": ["food", "travel", "social"],
   "icons": [
     {
       "src": "icons/icon-192.png",
