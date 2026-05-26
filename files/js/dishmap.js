@@ -14,7 +14,7 @@ function openDishMap() {
   popupEl.style.display = 'none';
   backdropEl.classList.add('open');
 
-  setTimeout(() => _loadAndRender(dish), 350);
+  setTimeout(() => _loadAndRender(dish), 500);
 }
 
 async function _loadAndRender(dish) {
@@ -66,15 +66,25 @@ async function _loadAndRender(dish) {
 }
 
 function _initMap() {
-  // Clear old markers
   _dmMarkers.forEach(m => m.remove());
   _dmMarkers = [];
 
-  if (!_dmMap) {
-    _dmMap = L.map('dishmap-map', { zoomControl:true, attributionControl:false });
+  try {
+    const container = document.getElementById('dishmap-map');
+    if (!container) return;
+
+    if (_dmMap) {
+      _dmMap.invalidateSize();
+      return;
+    }
+
+    _dmMap = L.map(container, { zoomControl:true, attributionControl:false });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(_dmMap);
+    setTimeout(() => { if (_dmMap) _dmMap.invalidateSize(); }, 200);
+  } catch(err) {
+    console.error('dishmap init error:', err);
+    _dmMap = null;
   }
-  _dmMap.invalidateSize();
 }
 
 // When no curated/community spots: locate user and show nearby food venues
